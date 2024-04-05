@@ -1,0 +1,18 @@
+Project Review Process
+
+15-minute Review of Each Persons's Current Project
+
+Brief Overview
+Title and Description
+High-Level Requirements
+Low-Level Requirements
+Application Logic (workflow, dataflow, flowchart)
+Package(s) Required
+Functions, Classes, Objects required to implement workflow
+
+Environment and Tools Setup
+Status of Coding and Testing
+Status of Documentation in Code
+
+Github setup
+Github Commits

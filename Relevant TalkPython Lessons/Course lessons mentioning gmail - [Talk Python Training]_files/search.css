@@ -1,0 +1,221 @@
+
+.search-page h3 {
+    text-align: center;
+    color: white;
+    color: #2aabd2;
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.search-page h3, .search-page h2, .search-page h1 {
+    text-align: center;
+}
+
+.search-page a {
+    color: #2aabd2;
+    font-weight: normal;
+}
+
+.search-page .intro {
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 40px;
+    font-weight: normal;
+    font-size: 14px;
+}
+
+.search-page.course-search h1 {
+    font-size: 24px;
+}
+
+.text-muted {
+    font-weight: normal;
+    color: #999;
+}
+
+ul > li {
+    font-size: 16px;
+    font-weight: normal;
+    margin-bottom: 5px;
+}
+
+.sorry {
+    margin-top: 20px;
+    text-align: center;
+}
+
+form#search_form button {
+    margin-top: -3px;
+    margin-left: 10px;
+}
+
+form#search_form {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+form#search_form .form-control {
+    display: inline-block;
+    max-width: 450px;
+}
+
+
+.search-results .search-course-image img {
+    margin: 10px;
+    margin-bottom: 0px;
+}
+
+.search-results .search-course-summary {
+    margin: 5px;
+}
+
+.search-results .search-course-summary > a {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.search-results .search-course-extras {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.search-results .search-course-summary .search-course-description {
+    font-size: 10px;
+    font-weight: normal;
+    color: #b4b4b4;
+}
+
+.course-search-page .search-results .search-course-summary .search-course-description {
+    font-size: 13px;
+}
+
+.course-search-page h1 {
+    font-size: 24px;
+}
+
+.course-search-page .chapter-results > * {
+    font-size: 22px;
+}
+
+.course-search-page .chapter-results .lecture-result > * {
+    font-size: 18px;
+}
+
+.course-search-page .chapter-results .lecture-result .lecture-action-button {
+    font-size: 10px;
+}
+
+.search-results .no-results {
+    margin-top: 10px;
+    font-size: 10px;
+    color: #d2c872;
+}
+
+.search-results .lecture-results .lecture-result.no-results {
+    font-size: 12px;
+}
+
+.search-results .chapter-results .chapter-result {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/*.search-results .chapter-results .chapter-result i.fa-info-circle,*/
+/*.search-results .chapter-results .chapter-result i.fa-book-alt {*/
+/*    color: white;*/
+/*}*/
+
+/*.search-results .chapter-results .chapter-result i.fa-play {*/
+/*    color: #ff3c3c;*/
+/*}*/
+
+.search-results .lecture-results .lecture-result {
+    margin-top: 5px;
+    margin-left: 30px;
+    font-size: 14px;
+}
+
+/*.size-test {*/
+/*    color: blue;*/
+/*}*/
+.non-last-course-result {
+    border-bottom: 1px solid gray;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+.lecture-action-button {
+    border-radius: 5px;
+    border: 1px solid #a9a9a9;
+    background: #363636;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+a.lecture-action-button {
+    color: white;
+}
+
+.lecture-action-button.red,
+a.lecture-action-button.red {
+    background: #d00000;
+    border-color: #fa4a4a;
+
+}
+
+
+.lecture-action-button.green,
+a.lecture-action-button.green {
+    background: #027005;
+    border-color: #07b70e;
+}
+
+.lecture-action-area {
+    margin-top: 5px;
+    font-size: 10px;
+    margin-left: 20px;
+}
+
+.lecture-action-area > * {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+@media (max-width: 800px) {
+    .search-results .search-course-summary > a {
+        text-align: center;
+    }
+
+    .lecture-action-area {
+        margin-left: 0px;
+        text-align: center;
+    }
+
+    .search-results .chapter-results.no-results {
+        text-align: center;
+    }
+
+    .break-on-small {
+        display: block;
+        margin-top: 5px;
+        margin-bottom: 1em;
+    }
+
+    /*.size-test {*/
+    /*    color: red;*/
+    /*}*/
+}
+
+/*@media(max-width:767px){} xs */
+/*@media(min-width:768px){} sm */
+/*@media(min-width:992px){} md */
+/*@media(min-width:1200px){} lg */

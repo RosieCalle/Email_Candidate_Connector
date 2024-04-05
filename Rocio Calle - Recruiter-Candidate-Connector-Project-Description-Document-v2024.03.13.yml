@@ -1,0 +1,69 @@
+# Project and "Product" Description: Email Candidate Connect Application
+
+Updated On: 2024.03.13 
+
+NEXT STEPS: 
+    Create Github repo for this project: 
+    Create VSCode workspace for this, 
+    Sync Github Desktop with github for this project
+    Watch DigitalSreeni for GCP Setup: (not for gmail extraction?) 
+        https://www.youtube.com/watch?v=K21BSZPFIjQ&ab_channel=DigitalSreeni
+
+    Document this code and then get it running: 
+        How to extract emails and attachments from Gmail with Python | by Andreiaugustin | Medium : https://medium.com/analytics-vidhya/how-to-extract-emails-and-attachments-from-gmail-with-python-f694f297818b
+
+
+## Project Review Process - Instructions:
+
+## Project Leader: Rocio Calle
+
+### Brief Overview: Developing a Python application to connect job seekers with potential employers. 
+The application will use machine learning to match job seekers and fellow Recruiters with open positions.
+
+### Project Title:  
+    
+### Project and "Product" Description: Email Candidate Connect Application
+
+    Implementation: Python Functions Implementation: 
+    
+    #### Workflow Outline 
+    
+    Step 1: (Setting up a GCP (Google Cloud Platform) project account for email service.
+    Step 2: Create Credentials for Google Cloud Platform (GCP) API.
+    Step 3: Install Required Python Libraries for GCP API ("GCP Client" FROM GOOGLE??).
+
+# FOLLOW THIS FIRST:     
+    ##### GCP Platform Setup and email Configuration: 
+        AMT2 - Extracting Emails from your Gmail Inbox using python 
+        by DigitalSreeni
+        https://www.youtube.com/watch?v=K21BSZPFIjQ&ab_channel=DigitalSreeni
+
+    ##### AMT_02_extract_gmails_from_a_user/ 
+        https://github.com/bnsreenu/python_for_microscopists/tree/master/AMT_02_extract_gmails_from_a_user
+        
+    
+    Step 4: Write Python Functions for extracting Gmail.
+
+           
+        How to extract emails and attachments from Gmail with Python | by Andreiaugustin | Medium : https://medium.com/analytics-vidhya/how-to-extract-emails-and-attachments-from-gmail-with-python-f694f297818b
+
+        
+        ?? Gmail extractor and vCard Extractor for Rocio Calle:  (redundant code with AndreiAugustin)
+            https://www.one-tab.com/page/9wm1hpQmR3GuK1v1sykAWg
+
+   
+## Python Implementation    
+
+### Possible Python Packages to start with for implementation: 
+    andreiaugustin / gmail_extractor
+    A Python powered Gmail mailbox extractor tool. 
+    Use this to extract all emails and attachments of a Gmail mailbox. 
+        https://github.com/andreiaugustin/gmail_extractor/tree/master
+
+
+    #Final Notes:
+    *Ensure you have the necessary permissions and scopes for your application to send emails on behalf of users. 
+    *Always test your application thoroughly, especially when handling user data and authentication. 
+    *Consider adding error handling and logging to your functions for a more robust application.
+    
+    

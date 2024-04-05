@@ -1,0 +1,22 @@
+Project Review Process - Instructions:
+
+15-minute Review of Your Current Project and Status:
+
+Project Leader: Rocio Calle
+
+Brief Overview: Developing a Python application to connect job seekers with potential employers. The application will use machine learning to match job seekers and fellow Recruiters with open positions.
+
+Project Title:  
+    Project and "Product" Description: Email Candidate Connect Application
+
+    Implementation: Python Functions Implementation: 
+    Workflow Outline 
+    Step 1: (Setting up a GCP (Google Cloud Platform) project account for email service.
+    Step 2: Create Credentials for Google Cloud Platform (GCP) API.
+    Step 3: Install Require Python Libraries for GCP API.
+    Step 4: Write Python Functions.
+
+    #Final Notes:
+    *Ensure you have the necessary permissions and scopes for your application to send emails on behalf of users. 
+    *Always test your application thoroughly, especially when handling user data and authentication. 
+    *Consider adding error handling and logging to your functions for a more robust application.

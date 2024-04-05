@@ -1,0 +1,714 @@
+Delivered-To: rocio.calle4@gmail.com
+Received: by 2002:a05:7208:6096:b0:7e:3911:778f with SMTP id j22csp1903748rba;
+        Sat, 2 Mar 2024 07:41:16 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGmoQrHJphTHbLfSd5AIT5tw4gzk7/M2eZRdahXreSzTWVygmHe0PKCpI35r/zUupjFXBl/
+X-Received: by 2002:a05:6358:4194:b0:17b:2bc6:e843 with SMTP id w20-20020a056358419400b0017b2bc6e843mr4856943rwc.18.1709394076566;
+        Sat, 02 Mar 2024 07:41:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1709394076; cv=none;
+        d=google.com; s=arc-20160816;
+        b=D8gA+5aaJxd4GZ6NbkTN9RvJB15f7WeYjQLnLZBthM1pyXz9Hyt9OqklVDXkkdaSPK
+         ZQA7BrndIeNZD8CZKibKuGSUP9pXx+s9JBquP3GmTVbk6WRJgHrOISDePFNfxhjEZs2V
+         zyWlRg4G+7eHJ8m6ejNKItm+r60Z9YUwiLFpQatwRpXr9aQLrkzNZ115QGAmm8BSrkYc
+         boHQJqXHzafItBhHwbpsPmka/du3YCVfd6cLiHdB/1rzDEEtkHhBtR+1dQKuDI49CEXC
+         8xho3r+Rf604osELEnOEgLATT8qxODu0yvu3lvFyTA88fqP2zk+EVFRTVaJO/5N9r6lw
+         btJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=message-id:list-unsubscribe:list-unsubscribe-post:to:from:subject
+         :mime-version:date:dkim-signature:dkim-signature;
+        bh=bbt72A/Q8jTazXXobzqQrRvWsDtrX1hA4xBmnFhxgfU=;
+        fh=9jaxFQ0p01hub8aF+04QJQlZCWuLuc0ycpIWdfJ5NjU=;
+        b=tcoUh9TpJ+b7trUxBBZ90wrY8PW6Qnb8Xl3pwy5PGX5mcfuyr0jyx3HL4k2sLw1kUP
+         qaBZ3HJMWsYoVB1sz8NiO9onJjZJfNRdqPygU0h5C8+H0nkHp8CyONjHFXu5Pl4CqFix
+         gJS+FfhrTMlayjJwjqqwImeyWhZkjcOwK1kSfwBXD/ow27Szj2JnTyjl2r97zXNkDOim
+         SvhugFjRcInniS3DBRQg5PZ4fT0Z6UgxUKfwhg0PyxuGIjgJ13Cg/0MWZBWWjtqtks0m
+         uQMZyzv/LblPCCkpIvtFdlHWVwLS1JH4L9uiIYgdDtyyEkfW8LFNLPj5UcnTJ7jlM/OE
+         Grlg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@cio78101.realpython.com header.s=krs header.b=DFuKITTj;
+       dkim=pass header.i=@mailgun.org header.s=mg header.b=MYUkercO;
+       spf=pass (google.com: domain of postmaster@cio78101.realpython.com designates 159.112.241.47 as permitted sender) smtp.mailfrom=postmaster@cio78101.realpython.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=realpython.com
+Return-Path: <postmaster@cio78101.realpython.com>
+Received: from m241-47.mailgun.net (m241-47.mailgun.net. [159.112.241.47])
+        by mx.google.com with UTF8SMTPS id j8-20020a05620a146800b00787fa92d1ccsi5753499qkl.4.2024.03.02.07.41.16
+        for <rocio.calle4@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Mar 2024 07:41:16 -0800 (PST)
+Received-SPF: pass (google.com: domain of postmaster@cio78101.realpython.com designates 159.112.241.47 as permitted sender) client-ip=159.112.241.47;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@cio78101.realpython.com header.s=krs header.b=DFuKITTj;
+       dkim=pass header.i=@mailgun.org header.s=mg header.b=MYUkercO;
+       spf=pass (google.com: domain of postmaster@cio78101.realpython.com designates 159.112.241.47 as permitted sender) smtp.mailfrom=postmaster@cio78101.realpython.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=realpython.com
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=cio78101.realpython.com; q=dns/txt; s=krs; t=1709394076; x=1709401276; h=Message-Id: List-Unsubscribe: List-Unsubscribe-Post: To: To: From: From: Subject: Subject: Content-Type: Mime-Version: Date: X-Feedback-Id: Sender; bh=bbt72A/Q8jTazXXobzqQrRvWsDtrX1hA4xBmnFhxgfU=; b=DFuKITTjvi+5jpqPqBY/nqFJFP2ngWu+Je2dHdX9BZ7f59Ly6HlA+P11OJNpyV7fQxXElXQrleJfdx1UvJWSsYSitSvXbDQnjWdPgqu2Lz4JqUo/PUCC06tGC+pnOpyBAvCtaHsxSamxlU+zvy2Aw1gaiqBJtvVJC3q3ccI6YQo=
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mailgun.org; q=dns/txt; s=mg; t=1709394076; x=1709401276; h=Message-Id: List-Unsubscribe: List-Unsubscribe-Post: To: To: From: From: Subject: Subject: Content-Type: Mime-Version: Date: X-Feedback-Id: Sender; bh=bbt72A/Q8jTazXXobzqQrRvWsDtrX1hA4xBmnFhxgfU=; b=MYUkercOd72SIIODziyUnJj2QxUwhlQBGY4aiU4ysAhef0uiNi3My2O5RyHkeuMAH1CseJzURiwPGGNPoDbPI2yzwgYxPiODgRnfwpV4Gz8QSstvjD/NwShSM98XOwophVEY2TS3ngddpxPff+VM1ocKgHVDm2wdMytFBIeCv9Q=
+X-Feedback-Id: postmaster@cio78101.realpython.com::631103bcc0cf530fc3393d12:mailgun
+X-Mailgun-Sending-Ip: 159.112.241.47
+X-Mailgun-Sid: WyIzZGRjZSIsInJvY2lvLmNhbGxlNEBnbWFpbC5jb20iLCI1NzRjMCJd
+Received: from <unknown> (<unknown> []) by 5c827c2872e3 with HTTP id 65e3489ccc7fc5e5a15cb497; Sat, 02 Mar 2024 15:41:16 GMT
+Date: Sat, 02 Mar 2024 15:41:16 +0000
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary="cfe8d15462cf1a7b19c161d2f95b5f5def98a31df3cd131a9afa5eeef7d0"
+Subject: 🐍 New Python tutorials on Real Python
+From: Dan at Real Python <info@realpython.com>
+To: rocio.calle4@gmail.com
+X-Mailgun-Dkim: true
+X-Mailgun-Native-Send: true
+X-Mailgun-Track-Clicks: false
+X-Mailgun-Track-Opens: false
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+X-Mailer: Customer.io (dgSUzQcDAKqIU6mIUwGN_8s98umZwFzhINBL1O0=; +https://whatis.customeriomail.com)
+X-Report-Abuse-To: badactor@customer.io
+List-Unsubscribe: <mailto:32.MRTVGVL2KFRUIQKLOFEVKNTNJFKXOR2OL44HGOJYOVWVU52GPJUESTSCJQYU6MB5@unsubscribe2.customer.io>, <https://links.realpython.com/unsubscribe/dgSUzQcDAKqIU6mIUwGN_8s98umZwFzhINBL1O0=>
+X-Mailgun-Variables: {"email_id": "dgSUzQcDAKqIU6mIUwGN_8s98umZwFzhINBL1O0="}
+Message-Id: <20240302154116.a847139a5651000d@cio78101.realpython.com>
+
+--cfe8d15462cf1a7b19c161d2f95b5f5def98a31df3cd131a9afa5eeef7d0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+
+Hey Rosie,
+
+There=E2=80=99s always something going on over at realpython.com as far as =
+Python tutorials go.
+
+Here=E2=80=99s what you may have missed this past week:
+
+Duck Typing in Python: Writing Flexible and Decoupled Code ( https://realpy=
+thon.com/duck-typing-python/ )
+
+In this tutorial, you'll learn about duck typing in Python. It's a typing s=
+ystem based on objects' behaviors rather than on inheritance. By taking adv=
+antage of duck typing, you can create flexible and decoupled sets of Python=
+ classes that you can use together or individually:
+
+=E2=86=92 realpython.com/duck-typing-python ( https://realpython.com/duck-t=
+yping-python/ )
+
+Python Basics Exercises: Installing Packages With pip ( https://realpython.=
+com/courses/basics-exercises-install-packages-with-pip/ )
+
+In this Python Basics Exercises video course, you'll practice installing pa=
+ckages with pip. You'll also practice creating virtual environments, making=
+ lists of requirements, and recreating a development environment:
+
+=E2=86=92 realpython.com/courses/basics-exercises-install-packages-with-pip=
+ ( https://realpython.com/courses/basics-exercises-install-packages-with-pi=
+p/ )
+
+The CTO's Guide to Retrieval-Augmented Generation (RAG) ( https://realpytho=
+n.com/newsletter/link/53409a20-57d2-4750-bd6b-31c19a4e0876 )
+
+Sponsored by MindsDB
+
+( https://realpython.com/newsletter/link/53409a20-57d2-4750-bd6b-31c19a4e08=
+76 )
+=F0=9F=9A=80 Elevate Your Chatbot with RAG! =F0=9F=A4=96=E2=9C=A8 Discover =
+the magic of Retrieval-Augmented Generation (RAG) - the game-changer for ch=
+atbots! =F0=9F=8C=90=F0=9F=94=8D Boost accuracy, relevance, and security in=
+ responses.
+
+=E2=86=92 Download the CTO's Guide to RAG ( https://realpython.com/newslett=
+er/link/53409a20-57d2-4750-bd6b-31c19a4e0876 )
+
+Python's Requests Library (Guide) ( https://realpython.com/python-requests/=
+ )
+
+In this tutorial on Python's Requests library, you'll see some of the most =
+useful features that Requests has to offer as well as ways to customize and=
+ optimize those features. You'll learn how to use requests efficiently and =
+stop requests to external services from slowing down your application:
+
+=E2=86=92 realpython.com/python-requests ( https://realpython.com/python-re=
+quests/ )
+
+The Real Python Podcast =E2=80=93 Episode #194: Automate Tasks With Python =
+& Building a Small Search Engine ( https://realpython.com/podcasts/rpp/194/=
+ )
+
+What are the typical computer tasks you do manually every week? Could you a=
+utomate those tasks with a Python script? Christopher Trudeau is back on th=
+e show this week, bringing another batch of PyCoder's Weekly articles and p=
+rojects:
+
+=E2=86=92 realpython.com/podcasts/rpp/194 ( https://realpython.com/podcasts=
+/rpp/194/ )
+
+We're Building the Future of Humanity Using Python. No Other Language is Be=
+tter ( https://realpython.com/newsletter/link/569442eb-4ac2-4b7c-8076-18834=
+0d1a779 )
+
+Sponsored by Taipy
+
+( https://realpython.com/newsletter/link/569442eb-4ac2-4b7c-8076-188340d1a7=
+79 )
+Today, you can build AI & data applications using only Python! Taipy, the o=
+pen-source Python end-to-end application builder helps you with this. It's =
+similar to Steamlit but designed to build production-ready apps. Some diffe=
+rences: it scales as more users hit the app, can work with huge datasets, i=
+s multi-user, and covers the full software development cycle, from applicat=
+ion version management (dev, test, prod), to unique pipeline versioning.
+
+=E2=86=92 Work Smarter, Not Harder! And Star Our Repo ( https://realpython.=
+com/newsletter/link/569442eb-4ac2-4b7c-8076-188340d1a779 )
+
+Quiz: Defining Main Functions in Python ( https://realpython.com/quizzes/py=
+thon-main-function/ )
+
+In this quiz, you'll test your understanding of the Python main() function =
+and the special __name__ variable. With this knowledge, you'll be able to u=
+nderstand the best practices for defining main() in Python:
+
+=E2=86=92 realpython.com/quizzes/python-main-function ( https://realpython.=
+com/quizzes/python-main-function/ )
+
+Using Data Classes in Python ( https://realpython.com/courses/python-data-c=
+lasses/ )
+
+Data classes are one of the new features introduced in Python 3.7. When usi=
+ng data classes, you don't have to write boilerplate code to get proper ini=
+tialization, representation, and comparisons for your objects:
+
+=E2=86=92 realpython.com/courses/python-data-classes ( https://realpython.c=
+om/courses/python-data-classes/ )
+
+PyCoder's Weekly =E2=80=93 Get the Latest Python News & Updates ( https://p=
+ycoders.com/ )
+
+Become a better Pythonista and stay up-to-date with your weekly dose of Pyt=
+hon news & projects:
+
+=C2=A0=E2=86=92=C2=A0pycoders.com ( https://pycoders.com/ ) or click here t=
+o get the latest issue via email ( https://pycoders.com/subscribe?email=3Dr=
+ocio.calle4%40gmail.com&token=3Df9406e1ffd25c716605dd7404bcaa0a390e6b95824d=
+2b041a0342aeff2990aeb )
+
+A lot of time and effort goes into the Real Python team bringing you new an=
+d in-depth Python tutorials every week.
+
+Please do us a solid and share your favorite Real Python content to help us=
+ spread the word.
+
+Thanks for your time and for being a dedicated reader!
+
+=E2=80=94 Dan Bader (realpython.com)
+
+Level Up With Unlimited Access to 3,500+=C2=A0Python Tutorials and Video Le=
+ssons=C2=A0=3D> Join Real Python ( https://realpython.com/account/join/ )
+
+Make the Leap From Beginner to Intermediate=C2=A0=3D>=C2=A0Get Python Basic=
+s: A Practical Introduction to Python 3 ( https://realpython.com/products/p=
+ython-basics-book/?utm_source=3Dcio&utm_medium=3Demail&utm_campaign=3Dprodu=
+ctfooter&utm_content=3Dpybasicsbook )
+
+Get a comprehensive introduction to Python and build real-world application=
+s=C2=A0=3D>=C2=A0Get the Real Python Course Bundle ( https://realpython.com=
+/products/real-python-course/?utm_source=3Dcio&utm_medium=3Demail&utm_campa=
+ign=3Dproductfooter&utm_content=3Drealpythoncoursebundle )
+
+Discover Python's best practices with simple examples and start writing bea=
+utiful + Pythonic code =3D>=C2=A0Get Python Tricks: The Book ( https://real=
+python.com/products/python-tricks-book/?utm_source=3Dcio&utm_medium=3Demail=
+&utm_campaign=3Dproductfooter&utm_content=3Dpytricksbook )
+
+Unlock the inner workings of the Python language, compile the Python interp=
+reter from source code, and participate in the development of CPython=C2=A0=
+=3D>=C2=A0Get CPython Internals: Your Guide to the Python 3 Interpreter ( h=
+ttps://realpython.com/products/cpython-internals-book/?utm_source=3Dcio&utm=
+_medium=3Demail&utm_campaign=3Dproductfooter&utm_content=3Dcpythonbook )
+
+Master Pip, requirements files, virtual environments & learn how to pick qu=
+ality Python libraries =3D>=C2=A0Managing Python Dependencies Course ( http=
+s://realpython.com/products/managing-python-dependencies/?utm_source=3Dcio&=
+utm_medium=3Demail&utm_campaign=3Dproductfooter&utm_content=3Dmpd )
+
+Python Tips, Interviews, and More =3D>The Real Python Podcast ( https://rea=
+lpython.com/podcasts/rpp/?utm_source=3Drp_newsletter&utm_medium=3Demail&utm=
+_campaign=3Dfooter_link )
+
+Get Help With Your Coding Questions=C2=A0Experts on the RP Team=C2=A0=3D>=
+=C2=A0Real Python Office Hours ( https://realpython.com/office-hours/ )
+
+Find Your Dream Python Job=C2=A0=3D> Python Job Board ( https://www.pythonj=
+obshq.com/ )
+
+A Peer-to-Peer Learning Community for Python Enthusiasts=E2=80=A6Just Like =
+You =3D>=C2=A0PythonistaCafe ( https://www.pythonistacafe.com/ )
+
+Give Your Team the Real-World Python Skills They Need to Succeed =3D>=C2=A0=
+Online Python Training for Teams ( https://realpython.com/teams )
+
+To make sure you keep getting these emails, please add info@realpython.com =
+to your address book or allowlist. Want out of the loop? Unsubscribe ( http=
+://track.customer.io/unsubscribe/dgSUzQcDAKqIU6mIUwGN_8s98umZwFzhINBL1O0=3D=
+ )
+
+Our postal address: #720-999 West Broadway, Vancouver BC V5Z 1K5, Canada
+--cfe8d15462cf1a7b19c161d2f95b5f5def98a31df3cd131a9afa5eeef7d0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="utf-8"
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns=3D"http://www.w3.=
+org/1999/xhtml"><head>
+<title></title>
+<meta name=3D"viewport" content=3D"width=3Ddevice-width,initial-scale=3D1.0=
+,user-scalable=3D1"/>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8"/>
+<style type=3D"text/css">
+#outlook a {padding: 0;}
+body {
+background-color: #ffffff;
+margin: 0;
+padding: 0;
+-webkit-text-size-adjust: 100%;
+-ms-text-size-adjust: 100%;
+}
+table,td {
+border-collapse: collapse;
+mso-table-lspace: 0pt;
+mso-table-rspace: 0pt;
+}
+.column {
+display: inline-block;
+width: 100%;
+text-align: left;
+vertical-align: top;
+}
+@media only screen and (min-width: 480px) {
+.column-100, * [aria-labelledby=3D'column-100'] {
+width: 100% !important;
+display: inline-block;
+text-align: left;
+vertical-align: top;
+}}
+h1 {
+font-size: 21px;
+}
+img {
+max-width: 440px;
+}
+</style>
+</head>
+<body style=3D"background-color: #ffffff; -webkit-text-size-adjust: 100%; -=
+ms-text-size-adjust: 100%; margin: 0; padding: 0;" bgcolor=3D"#ffffff">
+<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPer=
+Inch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<div style=3D"background-color: #ffffff;">
+<!--[if mso]><table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tr><t=
+d><![endif]-->
+<div style=3D"max-width: 450px; background-color: rgb(255, 255, 255);">
+<table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" st=
+yle=3D"font-size: 0px; width: 100%; background-color: rgb(255, 255, 255); b=
+order-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;" bg=
+color=3D"rgb(255, 255, 255)">
+<tbody><tr><td style=3D"text-align: center; vertical-align: top; font-size:=
+ 0px; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0=
+pt;" align=3D"center" valign=3D"top">
+<!--[if mso]><table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tr><t=
+d style=3D"vertical-align:top;width:600px;"><![endif]-->
+<div class=3D"column column-100" aria-labelledby=3D"column-100" style=3D"di=
+splay: inline-block; width: 100%; text-align: left; vertical-align: top;" a=
+lign=3D"left"><table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" style=3D"border-collapse: collapse; mso-table-lspace: 0pt; mso-ta=
+ble-rspace: 0pt;"><tbody><tr>
+<td style=3D"word-wrap: break-word; word-break: break-word; font-size: 0px;=
+ text-align: left; border-collapse: collapse; mso-table-lspace: 0pt; mso-ta=
+ble-rspace: 0pt;" align=3D"left">
+<div style=3D"color: rgb(52, 52, 52); font-family: Helvetica, Arial, sans-s=
+erif; font-size: 15px; line-height: 1.4; margin: 0px; padding: 11px;">
+Hey Rosie,<br/>
+<br/>
+There=E2=80=99s always something going on over at realpython.com as far as =
+Python tutorials go.<br/>
+<br/>
+Here=E2=80=99s what you may have missed this past week:<br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9kdWNrLXR5cGluZy1weXRob24vIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4N=
+TMiLCJsaW5rX2lkIjo5Mzc4fQ/17ee08b80f8c20f025851c6e2dce0c9ca5acf286d62800329=
+177587d4e195928">Duck Typing in Python: Writing Flexible and Decoupled Code=
+</a><br/>
+<br/>
+
+In this tutorial, you&#39;ll learn about duck typing in Python. It&#39;s a =
+typing system based on objects&#39; behaviors rather than on inheritance. B=
+y taking advantage of duck typing, you can create flexible and decoupled se=
+ts of Python classes that you can use together or individually:<br/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9kdWNrLXR5cGluZy1weXRob24vIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI=
+5NTVhYTg4NTMiLCJsaW5rX2lkIjo5Mzc4fQ/17ee08b80f8c20f025851c6e2dce0c9ca5acf28=
+6d62800329177587d4e195928">realpython.com/duck-typing-python</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9jb3Vyc2VzL2Jhc2ljcy1leGVyY2lzZXMtaW5zdGFsbC1wYWNrYWdlcy13aXRoLXBpc=
+C8iLCJpbnRlcm5hbCI6Ijk0Y2QwNzJkYjk1NWFhODg1MyIsImxpbmtfaWQiOjkzNzl9/cc77a02=
+4b56d2c38a72eb4874f8f9508334646918f8bd07c3af69e694c696a2a">Python Basics Ex=
+ercises: Installing Packages With pip</a><br/>
+<br/>
+
+In this Python Basics Exercises video course, you&#39;ll practice installin=
+g packages with pip. You&#39;ll also practice creating virtual environments=
+, making lists of requirements, and recreating a development environment:<b=
+r/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9jb3Vyc2VzL2Jhc2ljcy1leGVyY2lzZXMtaW5zdGFsbC1wYWNrYWdlcy1=
+3aXRoLXBpcC8iLCJpbnRlcm5hbCI6Ijk0Y2QwNzJkYjk1NWFhODg1MyIsImxpbmtfaWQiOjkzNz=
+l9/cc77a024b56d2c38a72eb4874f8f9508334646918f8bd07c3af69e694c696a2a">realpy=
+thon.com/courses/basics-exercises-install-packages-with-pip</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTM0MDlhMjAtNTdkMi00NzUwLWJkNmItMzFjMTlhNGUwO=
+Dc2IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5MzgwfQ/98cf8=
+c4e19e7e433500b418652aabb01d8100a53f33e723c16af2a69fcce68a5">The CTO&#39;s =
+Guide to Retrieval-Augmented Generation (RAG)</a><br/>
+<em>Sponsored by MindsDB</em><br/><br/>
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTM0MDlhMjAtNTdkMi00NzUwLWJkNmItMzFjMTlhNGUwO=
+Dc2IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5MzgwfQ/98cf8=
+c4e19e7e433500b418652aabb01d8100a53f33e723c16af2a69fcce68a5"><img alt=3D"" =
+src=3D"https://files.realpython.com/media/newsletter/Reverted-Bear-only-500=
+x500_Real_Python.7f020c69db81.jpg" style=3D"float: right; max-width: 100px;=
+ max-height: 100px; margin-left: 8px;" align=3D"right"/></a>
+=F0=9F=9A=80 Elevate Your Chatbot with RAG! =F0=9F=A4=96=E2=9C=A8 Discover =
+the magic of Retrieval-Augmented Generation (RAG) - the game-changer for ch=
+atbots! =F0=9F=8C=90=F0=9F=94=8D Boost accuracy, relevance, and security in=
+ responses.<br/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTM0MDlhMjAtNTdkMi00NzUwLWJkNmItMzF=
+jMTlhNGUwODc2IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5Mz=
+gwfQ/98cf8c4e19e7e433500b418652aabb01d8100a53f33e723c16af2a69fcce68a5">Down=
+load the CTO&#39;s Guide to RAG</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9weXRob24tcmVxdWVzdHMvIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiL=
+CJsaW5rX2lkIjo5MzgxfQ/3298159d93693664089b83d6ab48974fdf75572749a2dc7be9154=
+767139c5b0a">Python&#39;s Requests Library (Guide)</a><br/>
+<br/>
+
+In this tutorial on Python&#39;s Requests library, you&#39;ll see some of t=
+he most useful features that Requests has to offer as well as ways to custo=
+mize and optimize those features. You&#39;ll learn how to use requests effi=
+ciently and stop requests to external services from slowing down your appli=
+cation:<br/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9weXRob24tcmVxdWVzdHMvIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTV=
+hYTg4NTMiLCJsaW5rX2lkIjo5MzgxfQ/3298159d93693664089b83d6ab48974fdf75572749a=
+2dc7be9154767139c5b0a">realpython.com/python-requests</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9wb2RjYXN0cy9ycHAvMTk0LyIsImludGVybmFsIjoiOTRjZDA3MmRiOTU1YWE4ODUzI=
+iwibGlua19pZCI6OTM4Mn0/8ab2d2714c04a3f9ab540569cb967cea9a13db3d08d56ac5b8a1=
+98e303685803">The Real Python Podcast =E2=80=93 Episode #194: Automate Task=
+s With Python &amp; Building a Small Search Engine</a><br/>
+<br/>
+
+What are the typical computer tasks you do manually every week? Could you a=
+utomate those tasks with a Python script? Christopher Trudeau is back on th=
+e show this week, bringing another batch of PyCoder&#39;s Weekly articles a=
+nd projects:<br/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9wb2RjYXN0cy9ycHAvMTk0LyIsImludGVybmFsIjoiOTRjZDA3MmRiOTU=
+1YWE4ODUzIiwibGlua19pZCI6OTM4Mn0/8ab2d2714c04a3f9ab540569cb967cea9a13db3d08=
+d56ac5b8a198e303685803">realpython.com/podcasts/rpp/194</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTY5NDQyZWItNGFjMi00YjdjLTgwNzYtMTg4MzQwZDFhN=
+zc5IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5MzgzfQ/ac26a=
+7434ffc45e7d7867b8befa73c83ab2c3f6a4ebded91898374daa121efc1">We&#39;re Buil=
+ding the Future of Humanity Using Python. No Other Language is Better</a><b=
+r/>
+<em>Sponsored by Taipy</em><br/><br/>
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTY5NDQyZWItNGFjMi00YjdjLTgwNzYtMTg4MzQwZDFhN=
+zc5IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5MzgzfQ/ac26a=
+7434ffc45e7d7867b8befa73c83ab2c3f6a4ebded91898374daa121efc1"><img alt=3D"" =
+src=3D"https://files.realpython.com/media/newsletter/rsz_1avatar.2874615e98=
+92.png" style=3D"float: right; max-width: 100px; max-height: 100px; margin-=
+left: 8px;" align=3D"right"/></a>
+Today, you can build AI &amp; data applications using only Python! Taipy, t=
+he open-source Python end-to-end application builder helps you with this. I=
+t&#39;s similar to Steamlit but designed to build production-ready apps. So=
+me differences: it scales as more users hit the app, can work with huge dat=
+asets, is multi-user, and covers the full software development cycle, from =
+application version management (dev, test, prod), to unique pipeline versio=
+ning.<br/><br/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9uZXdzbGV0dGVyL2xpbmsvNTY5NDQyZWItNGFjMi00YjdjLTgwNzYtMTg=
+4MzQwZDFhNzc5IiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5Mz=
+gzfQ/ac26a7434ffc45e7d7867b8befa73c83ab2c3f6a4ebded91898374daa121efc1">Work=
+ Smarter, Not Harder! And Star Our Repo</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9xdWl6emVzL3B5dGhvbi1tYWluLWZ1bmN0aW9uLyIsImludGVybmFsIjoiOTRjZDA3M=
+mRiOTU1YWE4ODUzIiwibGlua19pZCI6OTM4NH0/f55b318bb2741c533fcbd3199112f4cdbf82=
+dd60a0fe8805ca254738351bb7a0">Quiz: Defining Main Functions in Python</a><b=
+r/>
+<br/>
+
+In this quiz, you&#39;ll test your understanding of the Python main() funct=
+ion and the special __name__ variable. With this knowledge, you&#39;ll be a=
+ble to understand the best practices for defining main() in Python:<br/><br=
+/>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9xdWl6emVzL3B5dGhvbi1tYWluLWZ1bmN0aW9uLyIsImludGVybmFsIjo=
+iOTRjZDA3MmRiOTU1YWE4ODUzIiwibGlua19pZCI6OTM4NH0/f55b318bb2741c533fcbd31991=
+12f4cdbf82dd60a0fe8805ca254738351bb7a0">realpython.com/quizzes/python-main-=
+function</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG=
+9uLmNvbS9jb3Vyc2VzL3B5dGhvbi1kYXRhLWNsYXNzZXMvIiwiaW50ZXJuYWwiOiI5NGNkMDcyZ=
+GI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5Mzg1fQ/b982d4389e0807d62fdd9b4d69e584d99dca2=
+5ab41e916098c466312cfaaeecd">Using Data Classes in Python</a><br/>
+<br/>
+
+Data classes are one of the new features introduced in Python 3.7. When usi=
+ng data classes, you don&#39;t have to write boilerplate code to get proper=
+ initialization, representation, and comparisons for your objects:<br/><br/=
+>
+=E2=86=92 <a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU=
+1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9y=
+ZWFscHl0aG9uLmNvbS9jb3Vyc2VzL3B5dGhvbi1kYXRhLWNsYXNzZXMvIiwiaW50ZXJuYWwiOiI=
+5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjo5Mzg1fQ/b982d4389e0807d62fdd9b4d69e=
+584d99dca25ab41e916098c466312cfaaeecd">realpython.com/courses/python-data-c=
+lasses</a><br/>
+<br/><br/>
+
+<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUt=
+xSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9weWNvZGVycy=
+5jb20vIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjoyOX0/aef51=
+9eba2addbf3c84ad67109f1502d7da74fd473bb72f48a04a9a1d27db86e"><span>PyCoder&=
+#39;s Weekly =E2=80=93 Get the Latest Python News &amp; Updates</span></a><=
+br/>
+<br/>
+Become a better Pythonista and stay up-to-date with your weekly dose of Pyt=
+hon news &amp; projects:<br/>
+<br/>
+=C2=A0=E2=86=92=C2=A0<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF=
+9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoia=
+HR0cHM6Ly9weWNvZGVycy5jb20vIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJs=
+aW5rX2lkIjoyOX0/aef519eba2addbf3c84ad67109f1502d7da74fd473bb72f48a04a9a1d27=
+db86e"><span>pycoders.com</span></a> or <a href=3D"https://links.realpython=
+.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTD=
+FPMD0iLCJocmVmIjoiaHR0cHM6Ly9weWNvZGVycy5jb20vc3Vic2NyaWJlP2VtYWlsPXJvY2lvL=
+mNhbGxlNCU0MGdtYWlsLmNvbVx1MDAyNnRva2VuPWY5NDA2ZTFmZmQyNWM3MTY2MDVkZDc0MDRi=
+Y2FhMGEzOTBlNmI5NTgyNGQyYjA0MWEwMzQyYWVmZjI5OTBhZWIiLCJpbnRlcm5hbCI6Ijk0Y2Q=
+wNzJkYjk1NWFhODg1MyIsImxpbmtfaWQiOjMwfQ/0a720701ab3d4679db48616b5debb78f3d1=
+22225e3532f5a4410609e43c24906"><span>click here to get the latest issue via=
+ email</span></a><br/>
+<br/><br/>
+A lot of time and effort goes into the Real Python team bringing you new an=
+d in-depth Python tutorials every week.<br/>
+<br/>
+Please do us a solid and share your favorite Real Python content to help us=
+ spread the word.<br/>
+<br/>
+Thanks for your time and for being a dedicated reader!<br/>
+<br/>
+=E2=80=94 Dan Bader (realpython.com)<br/>
+<br/><br/>
+<strong>Level Up With Unlimited Access to 3,500+=C2=A0Python Tutorials and =
+Video Lessons=C2=A0=3D&gt;</strong> <a href=3D"https://links.realpython.com=
+/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD=
+0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9hY2NvdW50L2pvaW4vIiwiaW50ZXJuY=
+WwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjoyMDgwfQ/c2de3fe923dbf5e69a1e3=
+a02fcf9bb74e0c30dbeb5f6c2f604d56d3d3cc4d748">Join Real Python</a>
+<br/>
+<br/>
+<strong>Make the Leap From Beginner to Intermediate=C2=A0=3D&gt;</strong>=
+=C2=A0<a href=3D"https://links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6U=
+WNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFs=
+cHl0aG9uLmNvbS9wcm9kdWN0cy9weXRob24tYmFzaWNzLWJvb2svP3V0bV9zb3VyY2U9Y2lvXHU=
+wMDI2dXRtX21lZGl1bT1lbWFpbFx1MDAyNnV0bV9jYW1wYWlnbj1wcm9kdWN0Zm9vdGVyXHUwMD=
+I2dXRtX2NvbnRlbnQ9cHliYXNpY3Nib29rIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4N=
+TMiLCJsaW5rX2lkIjoyMDgxfQ/3226275ade10be6aa3249ce847ecd983f83da6c33eb734d9b=
+8321ed2e6f5f7de">Get Python Basics: A Practical Introduction to Python 3</a=
+>
+<br/>
+<br/>
+<strong>Get a comprehensive introduction to Python and build real-world app=
+lications=C2=A0=3D&gt;</strong>=C2=A0<a href=3D"https://links.realpython.co=
+m/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPM=
+D0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9wcm9kdWN0cy9yZWFsLXB5dGhvbi1j=
+b3Vyc2UvP3V0bV9zb3VyY2U9Y2lvXHUwMDI2dXRtX21lZGl1bT1lbWFpbFx1MDAyNnV0bV9jYW1=
+wYWlnbj1wcm9kdWN0Zm9vdGVyXHUwMDI2dXRtX2NvbnRlbnQ9cmVhbHB5dGhvbmNvdXJzZWJ1bm=
+RsZSIsImludGVybmFsIjoiOTRjZDA3MmRiOTU1YWE4ODUzIiwibGlua19pZCI6MjA4Mn0/98b24=
+206bd159cc3c270a88bcc961480393ea4bf7d9e71c8fe5d839a772cb571">Get the Real P=
+ython Course Bundle</a>
+<br/>
+<br/>
+<strong>Discover Python&#39;s best practices with simple examples and start=
+ writing beautiful + Pythonic code =3D&gt;</strong>=C2=A0<a href=3D"https:/=
+/links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzO=
+Th1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9wcm9kdWN0=
+cy9weXRob24tdHJpY2tzLWJvb2svP3V0bV9zb3VyY2U9Y2lvXHUwMDI2dXRtX21lZGl1bT1lbWF=
+pbFx1MDAyNnV0bV9jYW1wYWlnbj1wcm9kdWN0Zm9vdGVyXHUwMDI2dXRtX2NvbnRlbnQ9cHl0cm=
+lja3Nib29rIiwiaW50ZXJuYWwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjoyMDgzf=
+Q/44b65cb4eda5e6a04e88c816ce7dcb20bed6eae794634111f2a9421f2197ca19">Get Pyt=
+hon Tricks: The Book</a>
+<br/>
+<br/>
+<strong>Unlock the inner workings of the Python language, compile the Pytho=
+n interpreter from source code, and participate in the development of CPyth=
+on=C2=A0=3D&gt;</strong>=C2=A0<a href=3D"https://links.realpython.com/e/c/e=
+yJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJo=
+cmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9wcm9kdWN0cy9jcHl0aG9uLWludGVybmFscy1=
+ib29rLz91dG1fc291cmNlPWNpb1x1MDAyNnV0bV9tZWRpdW09ZW1haWxcdTAwMjZ1dG1fY2FtcG=
+FpZ249cHJvZHVjdGZvb3Rlclx1MDAyNnV0bV9jb250ZW50PWNweXRob25ib29rIiwiaW50ZXJuY=
+WwiOiI5NGNkMDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjoyMDg0fQ/d8aef1aa38f1cd6544148=
+d5543d6f48263a7df752a4299413f9ec0c5e05e139b">Get CPython Internals: Your Gu=
+ide to the Python 3 Interpreter</a>
+<br/>
+<br/>
+<strong>Master Pip, requirements files, virtual environments &amp; learn ho=
+w to pick quality Python libraries =3D&gt;</strong>=C2=A0<a href=3D"https:/=
+/links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzO=
+Th1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9wcm9kdWN0=
+cy9tYW5hZ2luZy1weXRob24tZGVwZW5kZW5jaWVzLz91dG1fc291cmNlPWNpb1x1MDAyNnV0bV9=
+tZWRpdW09ZW1haWxcdTAwMjZ1dG1fY2FtcGFpZ249cHJvZHVjdGZvb3Rlclx1MDAyNnV0bV9jb2=
+50ZW50PW1wZCIsImludGVybmFsIjoiOTRjZDA3MmRiOTU1YWE4ODUzIiwibGlua19pZCI6MjA1N=
+n0/cbd4396f5cbba45e9c7a540ec72c4e92b8249f45d99b3f7ceb8a7b9fe2698858">Managi=
+ng Python Dependencies Course</a>
+<br/>
+<br/>
+<strong>Python Tips, Interviews, and More =3D&gt;</strong><a href=3D"https:=
+//links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhz=
+OTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9wb2RjYXN=
+0cy9ycHAvP3V0bV9zb3VyY2U9cnBfbmV3c2xldHRlclx1MDAyNnV0bV9tZWRpdW09ZW1haWxcdT=
+AwMjZ1dG1fY2FtcGFpZ249Zm9vdGVyX2xpbmsiLCJpbnRlcm5hbCI6Ijk0Y2QwNzJkYjk1NWFhO=
+Dg1MyIsImxpbmtfaWQiOjM3fQ/32a625db2a4009d2cce20b1fd515a8a14d86feed2b8cafd28=
+bd906eb159e89bb">The Real Python Podcast</a>
+<br/>
+<br/>
+<strong>Get Help With Your Coding Questions=C2=A0Experts on the RP Team=C2=
+=A0=3D&gt;</strong>=C2=A0<a href=3D"https://links.realpython.com/e/c/eyJlbW=
+FpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmI=
+joiaHR0cHM6Ly9yZWFscHl0aG9uLmNvbS9vZmZpY2UtaG91cnMvIiwiaW50ZXJuYWwiOiI5NGNk=
+MDcyZGI5NTVhYTg4NTMiLCJsaW5rX2lkIjozOH0/fa33884a8346aba87e3aec83757f0701e72=
+bc4551810369f94a1e527054803ca">Real Python Office Hours</a>
+<br/>
+<br/>
+<strong>Find Your Dream Python Job=C2=A0=3D&gt;</strong> <a href=3D"https:/=
+/links.realpython.com/e/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzO=
+Th1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoiaHR0cHM6Ly93d3cucHl0aG9uam9ic2hxLmNvbS8i=
+LCJpbnRlcm5hbCI6Ijk0Y2QwNzJkYjk1NWFhODg1MyIsImxpbmtfaWQiOjM5fQ/12da29de1387=
+7778f082595027fe85433132472ad216eb4e3200064a309523b6">Python Job Board</a>
+<br/>
+<br/>
+<strong>A Peer-to-Peer Learning Community for Python Enthusiasts=E2=80=A6Ju=
+st Like You =3D&gt;</strong>=C2=A0<a href=3D"https://links.realpython.com/e=
+/c/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0i=
+LCJocmVmIjoiaHR0cHM6Ly93d3cucHl0aG9uaXN0YWNhZmUuY29tLyIsImludGVybmFsIjoiOTR=
+jZDA3MmRiOTU1YWE4ODUzIiwibGlua19pZCI6NDF9/30c58cdf87c9051ab7773e44c23bee97d=
+1c5a88d2773707a57496d7c64a560b3">PythonistaCafe</a>
+<br/>
+<br/>
+<strong>Give Your Team the Real-World Python Skills They Need to Succeed =
+=3D&gt;=C2=A0</strong><a href=3D"https://links.realpython.com/e/c/eyJlbWFpb=
+F9pZCI6ImRnU1V6UWNEQUtxSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0iLCJocmVmIjoi=
+aHR0cHM6Ly9yZWFscHl0aG9uLmNvbS90ZWFtcyIsImludGVybmFsIjoiOTRjZDA3MmRiOTU1YWE=
+4ODUzIiwibGlua19pZCI6NDJ9/9395eaaa4c89b45013082a683ade83b0468f919587e2cd1f0=
+36864835b933d58">Online Python Training for Teams</a>
+</div></td></tr></tbody></table></div>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr></tbody></table></div>
+<!--[if mso]></td></tr></table><table border=3D"0" cellpadding=3D"0" cellsp=
+acing=3D"0"><tr><td><![endif]-->
+<div style=3D"max-width: 450px; background-color: rgb(255, 255, 255);">
+<table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"center" st=
+yle=3D"font-size: 0px; width: 100%; background-color: rgb(255, 255, 255); b=
+order-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;" bg=
+color=3D"rgb(255, 255, 255)">
+<tbody><tr><td style=3D"text-align: center; vertical-align: top; font-size:=
+ 0px; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0=
+pt;" align=3D"center" valign=3D"top">
+<!--[if mso]><table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tr><t=
+d style=3D"vertical-align:top;width:600px;"><![endif]-->
+<div class=3D"column column-100" aria-labelledby=3D"column-100" style=3D"di=
+splay: inline-block; width: 100%; text-align: left; vertical-align: top;" a=
+lign=3D"left"><table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" style=3D"border-collapse: collapse; mso-table-lspace: 0pt; mso-ta=
+ble-rspace: 0pt;"><tbody><tr>
+<td class=3D"alignmentContainer" style=3D"word-wrap: break-word; word-break=
+: break-word; font-size: 0px; text-align: center; border-collapse: collapse=
+; mso-table-lspace: 0pt; mso-table-rspace: 0pt; padding: 25px 11px;" align=
+=3D"center">
+<div>
+<!--[if mso]>
+<hr
+xmlns=3D"http://www.w3.org/1999/xhtml" align=3D"center" style=3D"width: 100=
+%;
+border-color: rgb(208, 208, 208); background-color: rgb(208, 208, 208);
+color: rgb(208, 208, 208); border-width: 1px 0px 0px; height: 1px;" />
+<![endif]-->
+<div style=3D"width: 100%; background-color: rgb(208, 208, 208); color: rgb=
+(208, 208, 208); height: 1px; mso-hide: all; margin: 0px auto; border: rgb(=
+208,208,208);" xmlns=3D"http://www.w3.org/1999/xhtml"></div>
+</div></td></tr></tbody></table></div>
+<!--[if mso]></td></tr></table><![endif]--></td></tr></tbody></table></div>
+<!--[if mso]></td></tr></table><table border=3D"0"cellpadding=3D"0" cellspa=
+cing=3D"0"><tr><td><![endif]-->
+<div style=3D"max-width: 450px; background-color: rgb(255, 255, 255);"><tab=
+le border=3D"0" cellspacing=3D"0" cellpadding=3D"0" style=3D"font-size: 0px=
+; width: 100%; background-color: rgb(255, 255, 255); border-collapse: colla=
+pse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;" bgcolor=3D"rgb(255, 255=
+, 255)"><tbody><tr><td style=3D"border-collapse: collapse; mso-table-lspace=
+: 0pt; mso-table-rspace: 0pt;">
+<!--[if mso]><table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tr><t=
+d style=3D"vertical-align:top;width:600px;"><![endif]-->
+<div class=3D"column column-100" aria-labelledby=3D"column-100" style=3D"di=
+splay: inline-block; width: 100%; text-align: left; vertical-align: top;" a=
+lign=3D"left"><table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" width=
+=3D"100%" style=3D"border-collapse: collapse; mso-table-lspace: 0pt; mso-ta=
+ble-rspace: 0pt;"><tbody><tr>
+<td class=3D"alignmentContainer" style=3D"word-wrap: break-word; word-break=
+: break-word; font-size: 0px; text-align: left; border-collapse: collapse; =
+mso-table-lspace: 0pt; mso-table-rspace: 0pt; padding: 11px;" align=3D"left=
+">
+<div style=3D"margin-left: auto; margin-right: auto; font-family: Helvetica=
+, Arial, sans-serif; line-height: 1.4; color: rgb(153, 153, 153); font-size=
+: 11px; padding: 0px;">
+<div id=3D"footer">
+To make sure you keep getting these emails, please add info@realpython.com =
+to your address book or allowlist. Want out of the loop? <a href=3D"https:/=
+/links.realpython.com/unsubscribe/dgSUzQcDAKqIU6mIUwGN_8s98umZwFzhINBL1O0=
+=3D" style=3D"color: rgb(153, 153, 153);">Unsubscribe</a><br/>
+<br/>
+Our postal address: #720-999 West Broadway, Vancouver BC V5Z 1K5, Canada
+</div>
+</div></td></tr></tbody></table></div><!--[if mso]></td></tr></table><![end=
+if]-->
+</td></tr></tbody></table></div><!--[if mso]></td></tr></table><![endif]-->
+</div>
+
+<img src=3D"https://links.realpython.com/e/o/eyJlbWFpbF9pZCI6ImRnU1V6UWNEQU=
+txSVU2bUlVd0dOXzhzOTh1bVp3RnpoSU5CTDFPMD0ifQ=3D=3D" style=3D"height: 1px !i=
+mportant; max-height: 1px !important; max-width: 1px !important; width: 1px=
+ !important; display: none !important;" alt=3D""/></body></html>
+--cfe8d15462cf1a7b19c161d2f95b5f5def98a31df3cd131a9afa5eeef7d0--

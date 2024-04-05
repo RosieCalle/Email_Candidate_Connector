@@ -1,0 +1,121 @@
+Project Review Process - Instructions:
+
+15-minute Review of Your Current Project and Status:
+
+Project Leader: Rocio Calle
+
+Brief Overview: Developing a Python application to connect job seekers with potential employers. The application will use machine learning to match job seekers and fellow Recruiters with open positions.
+
+Project Title:  
+    Project and "Product" Description: Email Candidate Connect Application
+
+    Implementation: Python Functions Implementation: 
+    Workflow Outline 
+    Step 1: (Setting up a GCP (Google Cloud Platform) project account for email service.
+    Step 2: Create Credentials for Google Cloud Platform (GCP) API.
+    Step 3: Install Require Python Libraries for GCP API.
+    Step 4: Write Python Functions.
+
+    #Final Notes:
+    *Ensure you have the necessary permissions and scopes for your application to send emails on behalf of users. 
+    *Always test your application thoroughly, especially when handling user data and authentication. 
+    *Consider adding error handling and logging to your functions for a more robust application.
+
+
+
+Project Title:  
+    Project and "Product" Description:
+
+    Implementation: 
+
+
+Project Title:  
+    Project and "Product" Description:
+    
+    Implementation: 
+        use Pytorch to classification and inference of medications
+
+
+Project Title:  Stock Price Prediction Modeler
+    Project and "Product" Description:
+    
+    Implementation: 
+        use Pytorch to infer stock prices
+        Investigate: https://www.kaggle.com/code/taronzakaryan/predicting-stock-price-using-lstm-model-pytorch
+
+        Investigate PROPHET: 
+            https://facebook.github.io/prophet/
+            Using Facebook/Meta Prophet package for time series prediction: 
+                https://facebook.github.io/prophet/docs/quick_start.html
+            
+            https://stackoverflow.com/questions/53178281/installing-fbprophet-python-on-windows-10
+
+        Investigate (for Tensorflow): https://www.kaggle.com/code/anastasia484/stock-price-prediction-with-rnn
+    Status: 
+
+    Stock price prediction with RNN OneTab:  
+        https://www.kaggle.com/code/anastasia484/stock-price-prediction-with-rnn
+    Predicting Stock Price using LSTM model, PyTorch:
+    https://www.kaggle.com/code/taronzakaryan/predicting-stock-price-using-lstm-model-pytorch
+    https://www.kaggle.com/models/google/gemma?utm_medium=nudge&utm_source=kaggle&utm_campaign=models-gemmalaunch | Gemma | Kaggle
+    https://stackoverflow.com/questions/53178281/installing-fbprophet-python-on-windows-10 | Installing fbprophet Python on Windows 10 - Stack Overflow
+    https://www.google.com/search?q=compare+Python+prophet+and+Pytorch+for+time+series+prediction&client=firefox-b-1-d&sca_esv=9b74a4c0b9e67cb5&sxsrf=ACQVn08cSxFKGpra_faoFu5ZS8XfX2zeJQ%3A1710374540552&ei=jD7yZfibIZ2x5NoPvN-E8AI&ved=0ahUKEwj4kbDXufKEAxWdGFkFHbwvAS4Q4dUDCBA&uact=5&oq=compare+Python+prophet+and+Pytorch+for+time+series+prediction&gs_lp=Egxnd3Mtd2l6LXNlcnAiPWNvbXBhcmUgUHl0aG9uIHByb3BoZXQgYW5kIFB5dG9yY2ggZm9yIHRpbWUgc2VyaWVzIHByZWRpY3Rpb25IgrABULYIWNOrAXAFeAGQAQCYAd0CoAHHOKoBCDguNDcuMi4yuAEDyAEA-AEBmAI3oAKkMsICChAAGEcY1gQYsAPCAggQIRigARjDBMICBBAjGCfCAgUQABiABMICCxAAGIAEGIoFGJECwgINEC4YFBiHAhixAxiABMICEBAuGIAEGBQYhwIYsQMYgwHCAggQABiABBixA8ICCxAAGIAEGLEDGIMBwgIIEC4YgAQYsQPCAgcQIxiwAhgnwgIKEC4YDRixAxiABMICExAuGIAEGA0YsQMYgwEYsQMYgwHCAgoQABiABBgNGLEDwgITEAAYgAQYDRixAxiDARixAxiDAcICDRAuGIAEGA0YsQMYsQPCAhAQABiABBgNGLEDGLEDGIMBwgIGEAAYBxgewgIIEAAYCBgHGB7CAgsQABiABBiKBRiGA8ICCBAAGIAEGKIEwgIFECEYoAHCAgQQIRgVmAMAiAYBkAYIkgcIOC40NC4xLjKgB432AQ&sclient=gws-wiz-serp | compare Python prophet and Pytorch for time series prediction - Google Search
+    https://facebook.github.io/prophet/docs/quick_start.html | Quick Start | Prophet
+    https://facebook.github.io/prophet/ | Prophet | Forecasting at scale.
+    https://dataamber.medium.com/neural-prophet-vs-prophet-why-neural-prophet-is-so-accurate-60fe1313ac05 | Neural Prophet vs. Prophet, Why Neural Prophet is So Accurate | by Bingblackbean | Medium
+    https://bytepawn.com/comparing-neuralprophet-and-prophet-for-timeseries-forecasting.html | Bytepawn - Marton Trencseni – Comparing NeuralProphet and Prophet for timeseries forecasting
+    https://towardsdatascience.com/neural-prophet-a-time-series-modeling-library-based-on-neural-networks-dd02dc8d868d | NeuralProphet: A Time-Series Modeling Library based on Neural-Networks | by Essi Alizadeh | Towards Data Science
+    https://machinelearningmastery.com/time-series-forecasting-with-prophet-in-python/ | Time Series Forecasting With Prophet in Python - MachineLearningMastery.com
+
+
+OTHER PROJECTS OF INTEREST (FOR LEARNING): 
+    Boston Housing Price Prediction
+    Boston Housing Rent Prediction ?
+
+Target Users (Audience): 
+
+High-Level Requirements:
+	Version 0.NN - proof of concept(s)
+	Version 1.0 - "minimum viable product"
+	Version 1.NN.nn - near future release
+	Version x.NN.nn - future releases
+	
+Identifying the Real-world Objects:
+	Objects (Nouns) and Functions (Verbs, Actions, Behavior)
+
+Low-Level Requirements:
+
+Application Logic (workflow, dataflow, flowchart):
+
+Package(s) Required:
+
+Functions, Classes, Objects Required for Your Workflow:
+
+Environment and Tools Setup (instructions for someone else):
+
+STATUS: 
+    Project Setup: (Declaration)    
+        Github Account Setup:
+        Github Work Done (#Commits Done):
+    Current Status of Define Stage:  
+        Requirements currently being defined
+        Initial Scope 
+    Current Status of Design Stage: TBD
+        
+    Current Status of Develop Stage:
+
+        Current Status of Coding and Testing:
+
+    Current Status of Debug Stage:
+    Current Status of Develop Stage:
+        Current Status of Documentation in Code:
+
+    Current Status of Develop Stage:
+
+
+Github Account Setup:
+
+Github Commits Done:
+
+Remaining Tasks before "final product release"
+	Extensions to V1.0

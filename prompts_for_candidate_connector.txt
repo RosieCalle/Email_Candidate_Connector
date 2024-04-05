@@ -1,0 +1,10 @@
+Recruter first contact with canidate
+Email contact with candidate
+Conect candidate using emial recruiter with candidate for the first time using emial
+
+I want to develop a Python application for job recruiters to connect with potential job candidates for the first time using Google email (gmail).  
+
+Please give me a DETAILED "atomic" step-by-step outline of the workflow required to build this Python.  
+
+Then give me the Python functions to implement each (atomic) workflow step in sequence.
+

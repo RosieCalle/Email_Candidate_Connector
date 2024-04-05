@@ -1,0 +1,17 @@
+<PROMPT> 
+
+Now rewrite the entire Python application for job recruiters to connect with potential job candidates for the first time using Google email (gmail).  Include all the relevant code with the SCOPES object included in the right place.  Include all documented steps and code to grant these permissions during the OAuth flow.   
+
+Include the steps to parse email sender data in the header.from field, and other fields like First_name, Full_Name, Body_Text, etc.
+
+Provide a python function named "response_template_generator" to create the response template in jinja2 format, and name the file "response_template.jinja".  The jinja2 response template should have fields for Full_Name, Address, Salutation, First_name, Body_Text, Regards, Attachments.  
+
+Next load the mail merge response template ("response_template.jinja") and insert the recipient data.
+ 
+Then create and response email to each recipient using their first name.  
+
+Then use Python to open a browser and display the message to see how it would look to the recipient.  
+
+Then give me the option to send the reply message back to the original sender.  
+
+Finally, wrap all the code into a Streamlit application called "candidate_job_connector" using all the correct fields and functions defined early. 
