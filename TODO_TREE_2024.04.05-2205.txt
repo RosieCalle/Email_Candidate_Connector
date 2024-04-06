@@ -1,0 +1,25 @@
+└─ Email_Candidate_Connector
+   ├─ recruiter_email.py
+   │  ├─ line 52: TODO : Implement the above steps in Python code.
+   │  └─ line 53: TODO : Add drawio diagram packges to the project.
+   ├─ recruiter_email_v2.py
+   │  ├─ line 52: TODO : Implement the above steps in Python code.
+   │  ├─ line 53: TODO : Add drawio diagram packges to the project.
+   │  └─ line 72: TODO : create a startup "run" script to run the Jupyter Notebook server and intialize the itables widget.
+   ├─ recruiter_email_v3 - Copy.py
+   │  ├─ line 55: TODO : Implement the above steps in Python code.
+   │  ├─ line 56: TODO : Add drawio diagram packges to the project.
+   │  ├─ line 57: TODO : ADD LOGGING TO THIS PROJECT.  SUPER IMPORTANT !!!
+   │  └─ line 87: TODO : create a startup "run" script to run the Jupyter Notebook server and intialize the itables widget.
+   └─ recruiter_email_v3.py
+      ├─ line 55: TODO : Implement the above steps in Python code.
+      ├─ line 56: TODO : Add drawio diagram packges to the project.
+      ├─ line 57: TODO : ADD LOGGING TO THIS PROJECT.  SUPER IMPORTANT !!!
+      ├─ line 88: TODO : create a startup "run" script to run the Jupyter Notebook server and intialize the itables widget.
+      ├─ line 238: TODO : add a progress bar to show the progress of the email message downloading process.
+      ├─ line 289: TODO : email_batch_download or email_download_batch?  Make sure the folder name is consistent throughout the code.
+      ├─ line 383: TODO : Add docstrings to all functions, instead of just inline comments.
+      ├─ line 384: TODO : reorder the functions in the order they are called in the main function.
+      ├─ line 385: TODO : The email template files were renamed to include the word "TEMPLATE" in the name.
+      ├─ line 386: TODO :     Rename the email templates so the program references the correct template for each email message.
+      └─ line 390: TODO : Move all utility functions here.
