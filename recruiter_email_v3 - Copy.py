@@ -68,7 +68,6 @@ import dateutil.parser as parser
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import smtplib
@@ -235,217 +234,24 @@ def send_email(subject, body, to_email, from_email, password):
     text = msg.as_string()
     server.sendmail(from_email, to_email, text)
     server.quit()
-# TODO: add a progress bar to show the progress of the email message downloading process.  
-# Implement in the next version of the code.
-
-def load_downloaded_message_ids():
-    # Load the list of downloaded message IDs from a file
-    try:
-        with open('downloaded_message_ids.txt', 'r') as file:
-            return file.read().splitlines()
-    except FileNotFoundError:
-        return []
-
-# # Message Processing  # Commented out because it is replaced by the full implementation of the function below.
-# def process_message(service, message):
-#     # Placeholder for processing a message
-#     email_content = "Email content here"
-#     attachments = ["Attachment data here"]
-#     return email_content, attachments
 
 
-def process_message(service, message):
-    """
-    Processes a single message by extracting its content and attachments,
-    and saves them to a folder named email_batch_download_{timestamp}.
-    """
-    # Extract the email content
-    msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-    payload = msg['payload']
-    headers = payload.get("headers")
-    parts = payload.get("parts")
-    email_content = ""
-
-    if parts:
-        for part in parts:
-            mimeType = part.get("mimeType")
-            body = part.get("body")
-            data = part.get("data")
-            if part.get("filename"):
-                # This part is an attachment
-                file_data = base64.urlsafe_b64decode(data.encode('ASCII'))
-                file_path = os.path.join('email_batch_download', f"{message['id']}_{part.get('filename')}")
-                with open(file_path, 'wb') as f:
-                    f.write(file_data)
-            else:
-                # This part is the email body
-                email_content += parse_parts(service, part)
-
-    # Create a time-stamped folder for this batch of emails
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    folder_path = os.path.join('email_batch_download', timestamp)
-    os.makedirs(folder_path, exist_ok=True)
-
-    #TODO: email_batch_download or email_download_batch?  Make sure the folder name is consistent throughout the code.
-    
-    # Save the email content to a text file
-    email_path = os.path.join(folder_path, f"{message['id']}_email_content.txt")
-    with open(email_path, 'w') as file:
-        file.write(email_content)
-
-    return email_content, folder_path
-
-def parse_parts(service, part):
-    """
-    Utility function that parses the content of an email partition
-    """
-    data = part.get("body").get("data")
-    if data:
-        data = data.replace("-", "+").replace("_", "/")
-        decoded_data = base64.b64decode(data)
-        return decoded_data.decode()
-    else:
-        return ""
-
-
-# Saving Messages and Attachments
-# def save_emails_and_attachments(emails, attachments):
-
-#     # Create a time-stamped folder for this batch of emails
-#     timestamp = time.strftime("%Y%m%d-%H%M%S")
-#     folder_path = os.path.join('email_download_batch', timestamp)
-#     os.makedirs(folder_path, exist_ok=True)
-
-#     # Save each email to a text file
-#     for i, email in enumerate(emails):
-#         email_path = os.path.join(folder_path, f'email_{i}.txt')
-#         with open(email_path, 'w') as file:
-#             file.write(email)
-
-#     # Save each attachment to its own file
-#     for i, attachment in enumerate(attachments):
-#         attachment_path = os.path.join(folder_path, f'attachment_{i}')
-#         with open(attachment_path, 'wb') as file:
-#             file.write(attachment)
-
-
-def save_emails_and_attachments(emails, attachments):
-    # Create a time-stamped folder for this batch of emails
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    folder_path = os.path.join('email_download_batch', timestamp)
-    try:
-        os.makedirs(folder_path, exist_ok=True)
-    except Exception as e:
-        print(f"Error creating folder for this batch of emails: {e}")
-        return
-
-    # Save each email to a text file
-    for i, email in enumerate(emails):
-        email_path = os.path.join(folder_path, f'email_{i}.txt')
-        try:
-            with open(email_path, 'w') as file:
-                file.write(email)
-            print(f"Saved email to {email_path}")
-        except Exception as e:
-            print(f"Error saving email to {email_path}: {e}")
-
-    # Save each attachment to its own file
-
-    # Inside the save_emails_and_attachments function, when saving each attachment
-    for i, attachment in enumerate(attachments):
-        attachment_path = os.path.join(folder_path, f'attachment_{i}')
-        try:
-            # Check if the attachment is a string and needs to be converted to bytes
-            if isinstance(attachment, str):
-                # Assuming the attachment is base64-encoded, decode it to bytes
-                attachment_bytes = base64.b64decode(attachment)
-            else:
-                # If the attachment is already bytes, use it as is
-                attachment_bytes = attachment
-
-            with open(attachment_path, 'wb') as file:
-                file.write(attachment_bytes)
-            print(f"Saved attachment to {attachment_path}")
-        except Exception as e:
-            print(f"Error saving attachment to {attachment_path}: {e}")
-
-
-def save_downloaded_message_ids(message_ids, folder_path):
-    # Save the list of downloaded message IDs to a file within the same timestamped folder
-    # save the downloaded_message_ids.txt file with the same batch_id timestamp, 
-    # you can modify the save_downloaded_message_ids function to accept an additional parameter
-    # for the folder path. Create the downloaded_message_ids.txt file within the same timestamped folder.
-    ids_file_path = os.path.join(folder_path, 'downloaded_message_ids.txt')
-    with open(ids_file_path, 'w') as file:
-        for msg_id in message_ids:
-            file.write(f"{msg_id}\n")
-
-# TODO: Add docstrings to all functions, instead of just inline comments.
-# TODO: reorder the functions in the order they are called in the main function.
-# TODO: The email template files were renamed to include the word "TEMPLATE" in the name. 
-# TODO:     Rename the email templates so the program references the correct template for each email message.
-
-
-# Utility Functions
-# TODO: Move all utility functions here. 
 
 def main():
     # Step 1: Setup Python Environment
     # This is done manually
 
-    print("Step 1: Starting the email processing script...")
-
     # Step 2: Authorize Application to Use Gmail
     # This is done manually
-    print("Step 2: Authorize Application to Use Gmail...")
 
-    # Step 3: Authenticate 
-    # Initialize the Gmail API service
+    # Step 3: Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
-    print(f"Step 3: Authentication completed successfully.  The service object is now available for use.")
+    print(f"Authentication completed successfully.  The service object is now available for use.")
 
     # Step 4: Read Gmail Inbox, download all new messages to a local folder
-    # Load the list of already downloaded message IDs
-    downloaded_message_ids = load_downloaded_message_ids()
-    print("Step 4a: Loaded list of downloaded message IDs.")
-
-    # Search for unread messages
     messages = search_messages(service, "is:unread")
-    print(f"Step 4b: Found {len(messages)} unread messages.")
+    print(f"Number of unread messages: {len(messages)}")
     print("Messages: ", messages)
-
-
-    # Filter out messages that have already been downloaded
-    new_messages = [msg for msg in messages if msg['id'] not in downloaded_message_ids]
-    print(f"Step 4c: {len(new_messages)} new messages will be processed.")
-
-    # Create a time-stamped folder for this batch of emails
-    # Create the email_download_batch folder immediately
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    folder_path = os.path.join('email_download_batch', timestamp)
-    os.makedirs(folder_path, exist_ok=True)
-    print(f"Created folder for this batch of emails: {folder_path}")
-
-
-    # Process and download new messages
-    for msg in new_messages:
-        # Process the message (e.g., extract content and attachments)
-        email_content, attachments = process_message(service, msg)
-
-        # Save the email and attachments
-        save_emails_and_attachments([email_content], attachments)
-        print(f"Saved email and attachments for message ID: {msg['id']}")
-
-        # Add the message ID to the list of downloaded message IDs
-        downloaded_message_ids.append(msg['id'])
-
-        # save_downloaded_message_ids(downloaded_message_ids)
-        # After creating the timestamped batch folder_path, save the downloaded message IDs to a file within that folder.
-        save_downloaded_message_ids(downloaded_message_ids, folder_path)
-        print(f"Updated list of downloaded message IDs.")
-
-
-    # Step 4a: Save emails and attachments to a local folder
 
     # Step 4b: Create a dataframe to store the messages
     messages_df = pd.DataFrame(messages)
@@ -491,8 +297,5 @@ def main():
     # for msg in messages_reply_list:
     #     service.users().messages().modify(userId='me', id=msg['id'], body={'removeLabelIds': ['UNREAD']}).execute()
 
-
-# Ensure this line is at the end of your file, before the if __name__ == '__main__': line
 if __name__ == '__main__':
     main()
-
