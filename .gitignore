@@ -8,6 +8,9 @@ __pycache__/
 # old code to delete
 zzz_code_to_delete/
 
+# old code to delete
+zzz-old-pickles/
+
 # Environments
 .env
 .venv

@@ -1,0 +1,9 @@
+Step 4c: 36710 new messages will be processed.
+Created folder for this batch of emails: email_download_batch\20240408-181308
+Traceback (most recent call last):
+  File "C:\Users\Staff\OneDrive\Documents\GitHub\Email_Candidate_Connector\recruiter_email_v3.py", line 612, in <module>
+    main()
+  File "C:\Users\Staff\OneDrive\Documents\GitHub\Email_Candidate_Connector\recruiter_email_v3.py", line 548, in main
+    email_content, attachments = process_message(service, msg)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 2)
