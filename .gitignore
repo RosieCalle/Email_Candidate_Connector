@@ -5,12 +5,28 @@ __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# old code to delete
+zzz_code_to_delete/
+
 # Environments
 .env
 .venv
 env/
 venv/
 condaenv/
+
+# pickle files with sensitive data
+token.pickle
+*.pickle
+
+# Email messages
+*email_content.txt
+
+# Exclude all email message related files
+*.msg
+*email_batch_download*/*
+*email_download_batch*/*
+downloaded_message_ids.txt
 
 # Log files
 *.log
