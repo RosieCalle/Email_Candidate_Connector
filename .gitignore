@@ -34,4 +34,4 @@ zzz-old-pickles/
 
 # Conda Files WILL be included to provide instructions for other people
 # to build their own working development environment.
-# environment.yml
+# environment.yml"*.pickle" 
