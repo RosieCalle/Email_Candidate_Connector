@@ -1,5 +1,13 @@
 <PROMPT> 
 
+Recruter first contact with candidate
+Email contact with candidate
+Connect candidate using emial recruiter with candidate for the first time using emial
+
+I want to develop a Python application for job recruiters to connect with potential job candidates for the first time using Google email (gmail).  
+
+Please give me a DETAILED "atomic" step-by-step outline of the workflow required to build this Python.  
+
 Now rewrite the entire Python application for job recruiters to connect with potential job candidates for the first time using Google email (gmail).  Include all the relevant code with the SCOPES object included in the right place.  Include all documented steps and code to grant these permissions during the OAuth flow.   
 
 Include the steps to parse email sender data in the header.from field, and other fields like First_name, Full_Name, Body_Text, etc.
@@ -11,6 +19,9 @@ Next load the mail merge response template ("response_template.jinja") and inser
 Then create and response email to each recipient using their first name.  
 
 Then use Python to open a browser and display the message to see how it would look to the recipient.  
+
+
+Then give me the Python functions to implement each (atomic) workflow step in sequence.
 
 Then give me the option to send the reply message back to the original sender.  
 

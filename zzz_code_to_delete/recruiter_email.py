@@ -223,5 +223,5 @@ if __name__ == '__main__':
 """
 Please replace 'credentials.json' with the path to your actual credentials.json file. Also, please note that you need to allow less secure apps on your Google account to send emails using smtplib. You can do this by going to your Google account settings.
 This is a basic implementation. Depending on your needs, you might want to add error handling, logging, more personalized emails, etc. Also, remember to handle sensitive data, like email addresses and names, securely and in compliance with all relevant laws and regulations.
-Please let me know if you need further assistance or more details. Happy coding! 😊
+Please let me know if you need further assistance or more details. Happy coding! 
 """

@@ -17,9 +17,20 @@ condaenv/
 
 # Data files
 *.data
+*.csv
+*.json
+
+#email data files
+email_batch_dowload/
+email_dowload_batch/
+zzz-messages-to-delete/
 
 # Secrets
 *.secrets
+token.pickle
+*.pickle
+zzz-old-pickles/
+
 
 # Conda Files WILL be included to provide instructions for other people
 # to build their own working development environment.
