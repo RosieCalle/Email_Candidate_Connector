@@ -14,47 +14,16 @@ Functions:
     create_response(template, first_name): Creates a personalized response using a jinja2 template.
     main(): The main function that uses the above functions to automate the email reading and response process.
 
-This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, 
-google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
+This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
 
-Please replace 'credentials.json' with the path to your actual credentials.json file. Also, please note that you need 
-to allow less secure apps on your Google account to send emails using smtplib. You can do this by going to your Google 
-account settings.
+Please replace 'credentials.json' with the path to your actual credentials.json file. Also, please note that you need to allow less secure apps on your Google account to send emails using smtplib. You can do this by going to your Google account settings.
 
-This is a basic implementation. Depending on your needs, you might want to add error handling, logging, more personalized 
-emails, etc. Also, remember to handle sensitive data, like email addresses and names, securely and in compliance with all 
+Remember to handle sensitive data, like email addresses and names, securely and in compliance with all 
 relevant laws and regulations.
-
-## Bing
-
-Sure, I can help you with that. Here's the updated workflow:
-- Setup Python Environment
-    - Install Python
-    - Setup virtual environment
-    - Install necessary libraries (Google Client Library for Gmail API, pandas for data handling, jinja2 for templating)
-- Authorize Application to Use Gmail
-    - Create a project on Google Cloud Console
-    - Enable Gmail API
-    - Download the credentials.json file
-    - Use the credentials.json file to authorize the application
-- Authenticate and Initialize Gmail API Service
-    - Authenticate using the credentials.json file
-    - Initialize the Gmail API service
-- Read Gmail Inbox
-    - Use the Gmail API service to read the inbox
-    - Download new messages to a local folder
-- Select First 5 New Messages
-    - Filter the messages to get only the new ones
-    - Select the first 5 new messages
-- Load Mail Merge Template
-    - Load a jinja2 template from a file
-- Create Response Using Mail Merge
-    - Create a function to generate personalized responses for each message using the jinja2 template
-    - Send the responses
 
     TODO: Implement the above steps in Python code. 
     TODO: Add drawio diagram packges to the project.
-    TODO: ADD LOGGING TO THIS PROJECT.  SUPER IMPORTANT !!! 
+    TODO: ADD LOGGING THROUGHOUT THIS PROJECT.  SUPER IMPORTANT !!! 
 """
 
 
@@ -70,6 +39,7 @@ import dateutil.parser as parser
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import smtplib
@@ -106,18 +76,19 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
 
+
 def gmail_authenticate():
     """
-    Shows basic usage of the Gmail API.  Lists the user's Gmail labels.
-    """
+    Authenticates the user and initializes the Gmail API service.
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-
+    """
     creds = None
-
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    # Specify the path to token.pickle
+    token_path = 'C:\\webservices\\gmail_credentials\\token.pickle'
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as token:
             creds = pickle.load(token)
 
     # If there are no (valid) credentials available, let the user log in.
@@ -126,19 +97,29 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             # Update the path to the credentials.json file
-            flow = InstalledAppFlow.from_client_secrets_file('c:\\webservices\\credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('C:\\webservices\\gmail_credentials\\credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
+        with open(token_path, 'wb') as token:
             pickle.dump(creds, token)
+
+    # Log and print token information
+    if creds:
+        log_message(f"Bearer token expires in: {creds.expiry}")
+        print(f"Bearer token expires in: {creds.expiry}")
+        log_message(f"Refresh token: {creds.refresh_token}")
+        print(f"Refresh token: {creds.refresh_token}")
 
     try:
         service = build('gmail', 'v1', credentials=creds)
+        log_message("Service created successfully")
         print("Service created successfully")
         return service
     except Exception as e:
+        log_message(f"An error occurred: {e}")
         print(f"An error occurred: {e}")
         return None
+    
 
 def save_data_to_file(data, file_path):
     """
@@ -226,6 +207,18 @@ def process_message(service, message):
         log_message(f"No parts found in message {message['id']}")
         print(f"No parts found in message {message['id']}")
 
+
+# TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
+# TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
+# See the data structure HERE --> https://developers.google.com/gmail/api/reference/rest/v1/users.messages#Message 
+#                         messages.append({
+#                         'id': message['id'],
+#                         'threadId': message['threadId'],
+#                         'messageTitle': '', # Assuming you have a way to extract this
+#                         'senderName': '', # Assuming you have a way to extract this
+#                         'messageDateTime': '', # Assuming you have a way to extract this
+#                         'body': data
+#                     })
 # def search_messages(service, query):
 #     messages = []
 #     page_token = None
