@@ -30,12 +30,20 @@ relevant laws and regulations.
 import os
 import os.path
 import base64
+
+# not used ?
 import re
 import time
+
 import pickle
 import json
+
 import datetime
+
+import logging
+
 import dateutil.parser as parser
+
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
@@ -46,36 +54,37 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-####### LOGGING  #######
-import logging
+##### itables imports #####
+# #import itables.interactive  # deprecated in favor of the line below  
+# from itables import init_notebook_mode
+import itables.options as opt
+from itables import show
+from itables import init_notebook_mode
+from bs4 import BeautifulSoup
 
 # Configure logging
 logging.basicConfig(filename='email_processing.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
+# Varaiables
+# Linux
+DATA_FOLDER = 'data/'
+# Windows 
+#DATA_FOLDER = 'data\'
+
 # Function to log messages
 def log_message(message):
     logging.info(message)
 
-
-##### itables imports #####
-#import itables.interactive  # deprecated in favor of the line below  
-from itables import init_notebook_mode
-import itables.options as opt
-from itables import show
-from itables import init_notebook_mode
-
 # Enable the itables widget in Jupyter Notebook
-init_notebook_mode(all_interactive=True)
+# init_notebook_mode(all_interactive=True)
 # TODO: create a startup "run" script to run the Jupyter Notebook server and intialize the itables widget.
-
 
 # Define the SCOPES
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
-
 
 def gmail_authenticate():
     """
@@ -86,7 +95,9 @@ def gmail_authenticate():
     """
     creds = None
     # Specify the path to token.pickle
-    token_path = 'C:\\webservices\\gmail_credentials\\token.pickle'
+    # token_path = 'C:\\webservices\\gmail_credentials\\token.pickle'
+    token_path = '../token.pickle'
+
     if os.path.exists(token_path):
         with open(token_path, 'rb') as token:
             creds = pickle.load(token)
@@ -97,7 +108,9 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             # Update the path to the credentials.json file
-            flow = InstalledAppFlow.from_client_secrets_file('C:\\webservices\\gmail_credentials\\credentials.json', SCOPES)
+            # flow = InstalledAppFlow.from_client_secrets_file('C:\\webservices\\gmail_credentials\\credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('../client_secret_desktop-app.json', SCOPES)
+
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open(token_path, 'wb') as token:
@@ -119,19 +132,6 @@ def gmail_authenticate():
         log_message(f"An error occurred: {e}")
         print(f"An error occurred: {e}")
         return None
-    
-
-def save_data_to_file(data, file_path):
-    """
-    Saves data to a file.   
-    """
-    try:
-        with open(file_path, 'wb') as file:
-            file.write(data)
-        print(f"Data saved to {file_path}")
-    except Exception as e:
-        print(f"Failed to save data to {file_path}: {e}")
-
 
 def get_messages(service, query):
     """
@@ -165,6 +165,49 @@ def get_messages(service, query):
     log_message(f"Retrieved {len(messages)} messages.")
     return messages
 
+def save_data_to_file(data, folder, file_name):
+    """
+    Saves data to a file.   
+    """
+    file_path = os.path.join(folder, file_name)  # data/file
+    try:
+        with open(file_path, 'wb') as file:
+            file.write(data)
+        print(f"Data saved to {file_path}")      
+        # Convert HTML to text
+        text = convert_html_to_text(data)   
+
+        # Save text to a separate file
+        file_name_text = file_name + ".txt"
+        text_file_path = os.path.join(folder, file_name_text)
+        with open(text_file_path, 'w', encoding='utf-8') as text_file:
+            text_file.write(text)
+        print(f"Text data saved to {text_file_path}")      
+    except Exception as e:
+        print(f"Failed to save data to {file_path}: {e}")
+
+def convert_html_to_text(html_data):
+    """
+    Converts HTML data to plain text, removing images and HTML formatting.
+    """
+    soup = BeautifulSoup(html_data, 'html.parser')
+    
+    # Remove images
+    for img in soup.find_all('img'):
+        img.decompose()
+    
+    # Remove HTML formatting
+    text = soup.get_text(separator=' ')
+
+    # # Remove extra spaces and newlines, keep just one newline
+    # text = re.sub(r'\n+', '\n', text).strip()
+    # Remove extra spaces
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Remove extra newlines
+    text = re.sub(r'\n+', '\n', text)
+    
+    return text
 
 def process_message(service, message):
     """
@@ -174,6 +217,7 @@ def process_message(service, message):
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
+
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
@@ -187,16 +231,18 @@ def process_message(service, message):
                 else:
                     padded_data = body['data']
                 try:
+                    padded_data = padded_data.replace("-","+").replace("_","/")
                     decoded_data = base64.b64decode(padded_data)
+
                     if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
-                        print(f"Decoded text part for message {message['id']}")
-                        save_data_to_file(decoded_data, f"message_body_{message['id']}.txt")
-                    elif mimeType and mimeType.startswith('application/'):
+                        # print(f"Decoded text part for message {message['id']}")
+                        save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                    elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
                         print(f"Decoded attachment for message {message['id']}")
                         file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
-                        save_data_to_file(decoded_data, file_name)
+                        save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
                 except Exception as e:
                     log_message(f"An error occurred while decoding data for message {message['id']}: {e}")
                     print(f"Error decoding data for message {message['id']}: {e}")
@@ -206,74 +252,6 @@ def process_message(service, message):
     else:
         log_message(f"No parts found in message {message['id']}")
         print(f"No parts found in message {message['id']}")
-
-
-# TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
-# TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
-# See the data structure HERE --> https://developers.google.com/gmail/api/reference/rest/v1/users.messages#Message 
-#                         messages.append({
-#                         'id': message['id'],
-#                         'threadId': message['threadId'],
-#                         'messageTitle': '', # Assuming you have a way to extract this
-#                         'senderName': '', # Assuming you have a way to extract this
-#                         'messageDateTime': '', # Assuming you have a way to extract this
-#                         'body': data
-#                     })
-# def search_messages(service, query):
-#     messages = []
-#     page_token = None
-#     while True:
-#         try:
-#             if page_token:
-#                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
-#             else:
-#                 result = service.users().messages().list(userId='me', q=query).execute()
-#             if 'messages' in result:
-#                 for message in result['messages']:
-#                     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-#                     headers = msg['payload']['headers']
-#                     parts = msg['payload'].get("parts") # Use get() to avoid KeyError if 'parts' is not present
-#                     data = {}
-#                     if parts:
-#                         for part in parts:
-#                             mimeType = part.get("mimeType")
-#                             body = part.get("body")
-#                             #data = parse_parts(service, part)  #JUNK to REMOVE
-#                             if mimeType and mimeType.startswith('text/'):
-#                                 # This is a text part, likely the message body
-#                                 decoded_data = base64.b64decode(body['data'])
-#                                 save_data_to_file(decoded_data, f"message_body_{message['id']}.txt")
-#                             elif mimeType and mimeType.startswith('application/'):
-#                                 # This is an attachment
-#                                 decoded_data = base64.b64decode(body['data'])
-#                                 file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
-#                                 save_data_to_file(decoded_data, file_name)
-#                             # Add more conditions here to handle other mimeTypes as needed
-#                     messages.append({
-#                         'id': message['id'],
-#                         'threadId': message['threadId'],
-#                         'messageTitle': '', # Assuming you have a way to extract this
-#                         'senderName': '', # Assuming you have a way to extract this
-#                         'messageDateTime': '', # Assuming you have a way to extract this
-#                         'body': data
-#                     })
-#             page_token = result.get('nextPageToken', None)
-#             if not page_token:
-#                 break
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             break
-#     return messages
-
-def parse_parts(service, parts):
-    """
-    Utility function that parses the content of an email partition
-    """
-    print("Entering parse_parts() ... ")       # replace this with formal logging to a time-stamped file
-    data = parts['body']['data']
-    data = data.replace("-","+").replace("_","/")
-    decoded_data = base64.b64decode(data)
-    return decoded_data.decode()
 
 def read_message(service, message):
     """
@@ -358,16 +336,20 @@ def main():
     for message in messages:
         process_message(service, message)
 
+    # TODO: move to a function
     # Save the stream of all email message IDs to a timestamped file
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    with open(f"message_ids_{timestamp}.json", "w") as file:
+    file_name = f"message_ids_{timestamp}.json"
+    file_path = os.path.join(DATA_FOLDER, file_name)
+    with open(file_path, "w", encoding="utf-8") as file:
         json.dump(messages, file)
 
     # # Step 4b: Create a dataframe to store the messages
     # Convert messages to DataFrame and save to JSON and CSV
     messages_df = pd.DataFrame(messages)
-    messages_df.to_json(f"messages_df_{timestamp}.json")
-    messages_df.to_csv(f"messages_df_{timestamp}.csv", index=False)
+    messages_df.to_json(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.json"))
+    messages_df.to_csv(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.csv"), index=False)
+
 
     # TODO: Save all message bodies and attachments to a timestamped folder
     # This part requires additional logic to handle attachments and save them correctly
@@ -418,3 +400,63 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+# TODO REVIEW
+# TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
+# TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
+# See the data structure HERE --> https://developers.google.com/gmail/api/reference/rest/v1/users.messages#Message 
+#                         messages.append({
+#                         'id': message['id'],
+#                         'threadId': message['threadId'],
+#                         'messageTitle': '', # Assuming you have a way to extract this
+#                         'senderName': '', # Assuming you have a way to extract this
+#                         'messageDateTime': '', # Assuming you have a way to extract this
+#                         'body': data
+#                     })
+# def search_messages(service, query):
+#     messages = []
+#     page_token = None
+#     while True:
+#         try:
+#             if page_token:
+#                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
+#             else:
+#                 result = service.users().messages().list(userId='me', q=query).execute()
+#             if 'messages' in result:
+#                 for message in result['messages']:
+#                     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+#                     headers = msg['payload']['headers']
+#                     parts = msg['payload'].get("parts") # Use get() to avoid KeyError if 'parts' is not present
+#                     data = {}
+#                     if parts:
+#                         for part in parts:
+#                             mimeType = part.get("mimeType")
+#                             body = part.get("body")
+#                             #data = parse_parts(service, part)  #JUNK to REMOVE
+#                             if mimeType and mimeType.startswith('text/'):
+#                                 # This is a text part, likely the message body
+#                                 decoded_data = base64.b64decode(body['data'])
+#                                 save_data_to_file(decoded_data, f"message_body_{message['id']}.txt")
+#                             elif mimeType and mimeType.startswith('application/'):
+#                                 # This is an attachment
+#                                 decoded_data = base64.b64decode(body['data'])
+#                                 file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
+#                                 save_data_to_file(decoded_data, file_name)
+#                             # Add more conditions here to handle other mimeTypes as needed
+#                     messages.append({
+#                         'id': message['id'],
+#                         'threadId': message['threadId'],
+#                         'messageTitle': '', # Assuming you have a way to extract this
+#                         'senderName': '', # Assuming you have a way to extract this
+#                         'messageDateTime': '', # Assuming you have a way to extract this
+#                         'body': data
+#                     })
+#             page_token = result.get('nextPageToken', None)
+#             if not page_token:
+#                 break
+#         except Exception as e:
+#             print(f"An error occurred: {e}")
+#             break
+#     return messages

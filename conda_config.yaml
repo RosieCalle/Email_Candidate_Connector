@@ -1,0 +1,28 @@
+name: emailagent
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+
+  # Packages from import_set
+  - google_auth_oauthlib
+  - dateutil
+  - google.auth
+  - jinja2
+  - pandas
+  - cloudpickle
+  - jsonpickle
+  - bs4
+  # Packages from import_from_set_without_dot
+  - python-dotenv
+
+  # Packages from pip
+  - pip:
+    - google-api-python-client
+    - smtplib
+    - email
+    - itables
+    # - pickle
+    # - datetime
