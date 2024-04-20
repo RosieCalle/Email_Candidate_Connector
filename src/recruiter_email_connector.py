@@ -54,32 +54,34 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-##### itables imports #####
-# #import itables.interactive  # deprecated in favor of the line below  
-# from itables import init_notebook_mode
 import itables.options as opt
 from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 
+
+# Check the operating system
+if os.name == 'nt': # 'nt' stands for Windows
+    DATA_FOLDER = "..\\data\\"
+    TOKEN_PATH = 'C:\\webservices\\gmail_credentials\\token.pickle'
+    CREDENTIALS_PATH = 'C:\\webservices\\gmail_credentials\\credentials.json'
+    LOG_FILE = 'logs\\app.log'
+elif os.name == 'posix': # 'posix' stands for Linux/Unix
+    DATA_FOLDER = "../data/"
+    TOKEN_PATH = '../../token.pickle'
+    CREDENTIALS_PATH ='../../client_secret_desktop-app.json'
+    LOG_FILE = 'logs/app.log'
+else:
+    raise OSError("Unsupported operating system")
+ 
 # Configure logging
-logging.basicConfig(filename='email_processing.log', level=logging.INFO,
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
-
-
-# Linux
-# DATA_FOLDER = '../data/'
-# Windows 
-DATA_FOLDER = "..\\data\\"
 
 # Function to log messages
 def log_message(message):
     logging.info(message)
-
-# Enable the itables widget in Jupyter Notebook
-# init_notebook_mode(all_interactive=True)
-# TODO: create a startup "run" script to run the Jupyter Notebook server and intialize the itables widget.
 
 # Define the SCOPES
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
@@ -94,15 +96,9 @@ def gmail_authenticate():
     # time.
     """
     creds = None
-    # Specify the path to token.pickle
-    # Windows
-    token_path = 'C:\\webservices\\gmail_credentials\\token.pickle'
-    # token_path = '..\\token.pickle'
-    # Linux
-    # token_path = '../token.pickle'
 
-    if os.path.exists(token_path):
-        with open(token_path, 'rb') as token:
+    if os.path.exists(TOKEN_PATH):
+        with open(TOKEN_PATH, 'rb') as token:
             creds = pickle.load(token)
 
     # If there are no (valid) credentials available, let the user log in.
@@ -111,16 +107,11 @@ def gmail_authenticate():
             creds.refresh(Request())
         else:
             # Update the path to the credentials.json file
-
-            #windows
-            flow = InstalledAppFlow.from_client_secrets_file('C:\\webservices\\gmail_credentials\\credentials.json', SCOPES)
-
-            #LINUX
-            # flow = InstalledAppFlow.from_client_secrets_file('../client_secret_desktop-app.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
 
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open(token_path, 'wb') as token:
+        with open(TOKEN_PATH, 'wb') as token:
             pickle.dump(creds, token)
 
     # Log and print token information
@@ -260,26 +251,26 @@ def process_message(service, message):
         log_message(f"No parts found in message {message['id']}")
         print(f"No parts found in message {message['id']}")
 
-def read_message(service, message):
-    """
-    This function takes Gmail API `service` and the `id` of a Gmail email
-    and returns a dictionary with all the parts of the email.
-    """
-    print("Entering read_message() function ... ")       # replace this with formal logging to a time-stamped file
+# def read_message(service, message):
+#     """
+#     This function takes Gmail API `service` and the `id` of a Gmail email
+#     and returns a dictionary with all the parts of the email.
+#     """
+#     print("Entering read_message() function ... ")       # replace this with formal logging to a time-stamped file
     
-    msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+#     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     
-    # parts can be the message body, or attachments
-    payload = msg['payload']
-    headers = payload.get("headers")
-    parts = payload.get("parts")
-    data = {}
-    if parts:
-        for part in parts:
-            mimeType = part.get("mimeType")
-            body = part.get("body")
-            data = parse_parts(service, part)
-    return data
+#     # parts can be the message body, or attachments
+#     payload = msg['payload']
+#     headers = payload.get("headers")
+#     parts = payload.get("parts")
+#     data = {}
+#     if parts:
+#         for part in parts:
+#             mimeType = part.get("mimeType")
+#             body = part.get("body")
+#             data = parse_parts(service, part)
+#     return data
 
 
 def create_response(template, first_name):
@@ -321,12 +312,6 @@ def send_email(subject, body, to_email, from_email, password):
 # TODO Create a Mmermaid diagram to show the function call order of the code, to visualize the code and make it easier to understand.
 
 def main():
-    # Step 1: Setup Python Environment
-    # This is done manually
-
-    # Step 2: Authorize Application to Use Gmail
-    # This is done manually
-
     # Step 3: Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
     print(f"Authentication completed successfully.  The service object is now available for use.")
@@ -408,8 +393,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-
-
 # TODO REVIEW
 # TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
 # TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
@@ -422,48 +405,3 @@ if __name__ == '__main__':
 #                         'messageDateTime': '', # Assuming you have a way to extract this
 #                         'body': data
 #                     })
-# def search_messages(service, query):
-#     messages = []
-#     page_token = None
-#     while True:
-#         try:
-#             if page_token:
-#                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
-#             else:
-#                 result = service.users().messages().list(userId='me', q=query).execute()
-#             if 'messages' in result:
-#                 for message in result['messages']:
-#                     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-#                     headers = msg['payload']['headers']
-#                     parts = msg['payload'].get("parts") # Use get() to avoid KeyError if 'parts' is not present
-#                     data = {}
-#                     if parts:
-#                         for part in parts:
-#                             mimeType = part.get("mimeType")
-#                             body = part.get("body")
-#                             #data = parse_parts(service, part)  #JUNK to REMOVE
-#                             if mimeType and mimeType.startswith('text/'):
-#                                 # This is a text part, likely the message body
-#                                 decoded_data = base64.b64decode(body['data'])
-#                                 save_data_to_file(decoded_data, f"message_body_{message['id']}.txt")
-#                             elif mimeType and mimeType.startswith('application/'):
-#                                 # This is an attachment
-#                                 decoded_data = base64.b64decode(body['data'])
-#                                 file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
-#                                 save_data_to_file(decoded_data, file_name)
-#                             # Add more conditions here to handle other mimeTypes as needed
-#                     messages.append({
-#                         'id': message['id'],
-#                         'threadId': message['threadId'],
-#                         'messageTitle': '', # Assuming you have a way to extract this
-#                         'senderName': '', # Assuming you have a way to extract this
-#                         'messageDateTime': '', # Assuming you have a way to extract this
-#                         'body': data
-#                     })
-#             page_token = result.get('nextPageToken', None)
-#             if not page_token:
-#                 break
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             break
-#     return messages
