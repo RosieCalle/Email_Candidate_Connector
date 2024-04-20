@@ -7,15 +7,15 @@ dependencies:
   - python=3.12
 
   # Packages from import_set
-  - google_auth_oauthlib
-  - dateutil
-  - google.auth
+  #- google_auth_oauthlib
+  #- dateutil
+  #- google.auth
   - jinja2
   - pandas
   - cloudpickle
   - jsonpickle
   - bs4
-  # Packages from import_from_set_without_dot
+  - pip
   - python-dotenv
 
   # Packages from pip
@@ -24,5 +24,3 @@ dependencies:
     - smtplib
     - email
     - itables
-    # - pickle
-    # - datetime
