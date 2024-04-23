@@ -68,7 +68,7 @@ if os.name == 'nt': # 'nt' stands for Windows
     LOG_FILE = 'logs\\app.log'
 elif os.name == 'posix': # 'posix' stands for Linux/Unix
     DATA_FOLDER = "../data/"
-    TOKEN_PATH = '../../token.pickle'
+    TOKEN_PATH = '../token.pickle'
     CREDENTIALS_PATH ='../../client_secret_desktop-app.json'
     LOG_FILE = 'logs/app.log'
 else:
