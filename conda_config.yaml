@@ -21,6 +21,5 @@ dependencies:
   # Packages from pip
   - pip:
     - google-api-python-client
-    - smtplib
-    - email
     - itables
+    - request

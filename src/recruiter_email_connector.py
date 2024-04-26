@@ -1,6 +1,6 @@
 """
 Updated By: Rosie Calle
-Updated on: 2024.04.01 1551h
+Updated on: 2024.04.26 1555h
 
 This module contains functions to automate the process of reading emails from a Gmail account, 
 selecting the first 5 unread messages, and sending personalized responses using a mail merge template.
@@ -26,7 +26,6 @@ relevant laws and regulations.
     TODO: ADD LOGGING THROUGHOUT THIS PROJECT.  SUPER IMPORTANT !!! 
 """
 
-
 import os
 import os.path
 import base64
@@ -39,9 +38,6 @@ import pickle
 import json
 
 import datetime
-
-import logging
-
 import dateutil.parser as parser
 
 import pandas as pd
@@ -59,29 +55,83 @@ from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 
+print(f"Current working directory: {os.getcwd()}")
 
+MAX_EMAILS = 1
+
+# check for the correct folder paths for Windows and Linux
 # Check the operating system
 if os.name == 'nt': # 'nt' stands for Windows
     DATA_FOLDER = "..\\data\\"
     TOKEN_PATH = 'C:\\webservices\\gmail_credentials\\token.pickle'
     CREDENTIALS_PATH = 'C:\\webservices\\gmail_credentials\\credentials.json'
-    LOG_FILE = 'logs\\app.log'
+    #LOG_FILE = '..\\logs\\app.log'
+    LOG_FILE = 'app.log'
 elif os.name == 'posix': # 'posix' stands for Linux/Unix
     DATA_FOLDER = "../data/"
     TOKEN_PATH = '../token.pickle'
     CREDENTIALS_PATH ='../../client_secret_desktop-app.json'
-    LOG_FILE = 'logs/app.log'
+    LOG_FILE = '../logs/app.log'
 else:
     raise OSError("Unsupported operating system")
  
-# Configure logging
-logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+##############################################################
+# Create and configure logging
+##############################################################
+import logging
 
-# Function to log messages
-def log_message(message):
-    logging.info(message)
+def setup_log_file():
+    """
+    Checks if the logs folder and log file exist. If they don't, it creates them.
+    """
+    # Define the path to the logs folder
+    logs_folder_path = os.path.join(os.getcwd(), 'logs')
+    # Define the path to the log file
+    log_file_path = os.path.join(logs_folder_path, 'app.log')
+
+    # Check if the logs folder exists, if not, create it
+    if not os.path.exists(logs_folder_path):
+        os.makedirs(logs_folder_path)
+        print(f"Logs folder created at: {logs_folder_path}")
+
+    # Check if the log file exists, if not, create it
+    if not os.path.exists(log_file_path):
+        with open(log_file_path, 'w') as log_file:
+            log_file.write("Log file created.\n")
+        print(f"Log file created at: {log_file_path}")
+
+    return log_file_path
+
+# Configure logging using the paths provided by setup_log_file() function.
+def configure_logging(log_file_path):
+    global logger
+    print(f"global logger object added in the first line of configure_loggin() function.")
+    logging.basicConfig(filename=log_file_path, level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+
+    # Create a logger
+    logger = logging.getLogger('email_candidate_connector')
+    logger.setLevel(logging.INFO)
+
+    # Create a file handler
+    handler = logging.FileHandler(log_file_path)
+    handler.setLevel(logging.INFO)
+
+    # Create a logging format
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+
+    # Add the handler to the logger
+    logger.addHandler(handler)
+
+    # Test logging to ensure it's working
+    logger.info("Test log message")
+
+    return logger
+
+# global logger
+# print(f"global logger object added.")
 
 # Define the SCOPES
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
@@ -95,58 +145,76 @@ def gmail_authenticate():
     # created automatically when the authorization flow completes for the first
     # time.
     """
+    global logger # Ensure logger is accessible
+    logger.info("Starting Gmail authentication process...")
+
     creds = None
+
+    # # Read the configuration from config.json
+    # with open(CREDENTIALS_PATH, 'r') as config_file:
+    #     config = json.load(config_file)
+
+    # # Save the credentials for the next run
+    # with open(TOKEN_PATH, 'wb') as token:
+    #     pickle.dump(creds, token)
 
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH, 'rb') as token:
             creds = pickle.load(token)
+            logger.info("Credentials loaded from token file.")
 
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
+            logger.info("Credentials refreshed.")
         else:
             # Update the path to the credentials.json file
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
-
             creds = flow.run_local_server(port=0)
+            logger.info("New credentials obtained through local server.")
+
         # Save the credentials for the next run
         with open(TOKEN_PATH, 'wb') as token:
             pickle.dump(creds, token)
+            logger.info("New credentials saved to token file.")
 
     # Log and print token information
     if creds:
-        log_message(f"Bearer token expires in: {creds.expiry}")
-        print(f"Bearer token expires in: {creds.expiry}")
-        log_message(f"Refresh token: {creds.refresh_token}")
-        print(f"Refresh token: {creds.refresh_token}")
+        logger.info(f"Bearer token expires in: {creds.expiry}")
+        print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
+        
+        logger.info(f"Refresh token: {creds.refresh_token}")
+        print(f"Refresh token: {creds.refresh_token}")  # for debugging purposes
 
     try:
         service = build('gmail', 'v1', credentials=creds)
-        log_message("Service created successfully")
-        print("Service created successfully")
+        logger.info("Service created successfully.")
+        print("Service created successfully")     # for debugging purposes
         return service
+    
     except Exception as e:
-        log_message(f"An error occurred: {e}")
-        print(f"An error occurred: {e}")
+        logger.info(f"An error occurred during Gmail authentication: {e}")
+        print(f"An error occurred: {e}")         # for debugging purposes
         return None
 
-def get_messages(service, query):
+def get_messages(service, query, max_messages=100):
     """
-    Retrieves messages based on the provided query.
-
+    Retrieves messages based on the provided query, up to a maximum number of messages.
     The get_messages() function now handles the `pageToken` correctly and includes error handling to catch any exceptions that occur during the API request.
-    
     Function initializes page_token to None and only includes it in the API request if it has a value. 
     It also includes error handling to catch and print any exceptions that occur during the API request, which can help in diagnosing issues.
-    
     # TODO Add more error handling for the message parsing process.  
-    
     """
-    log_message("Retrieving messages...")
+
+    global logger # Ensure logger is accessible
+
+    logger.info("Retrieving messages...")
     messages = []
     page_token = None
-    while True:
+    cont = True
+    count = 0 # Initialize count here
+    while cont:
         try:
             if page_token:
                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
@@ -155,23 +223,34 @@ def get_messages(service, query):
             if 'messages' in result:
                 messages.extend(result['messages'])
             page_token = result.get('nextPageToken', None)
-            if not page_token:
-                break
+            if not page_token or len(messages) >= max_messages:
+                cont = False
+
+            logger.info(f"Page {count} retrieved")            
+            #print (f"Page {count} retrieved")   # for debugging purposes
+
+            # if count >= MAX_EMAILS:  # commented out when max_messages argument was added
+            #     cont = False  # REMOVE THIS WHEN TESTING IS COMPLETE
+            count = count + 1
+
         except Exception as e:
-            log_message(f"An error occurred while retrieving messages: {e}")
+            logger.error(f"An error occurred while retrieving messages: {e}")
+            #print(f"An error occurred while retrieving messages: {e}")    # for debugging purposes
             break
-    log_message(f"Retrieved {len(messages)} messages.")
+
+    logger.info(f"Retrieved {len(messages)} messages.")
     return messages
 
 def save_data_to_file(data, folder, file_name):
     """
     Saves data to a file.   
+    #TODO Add logging to this function.
     """
     file_path = os.path.join(folder, file_name)  # data/file
     try:
         with open(file_path, 'wb') as file:
             file.write(data)
-        print(f"Data saved to {file_path}")      
+        #print(f"Data saved to {file_path}")      
         # Convert HTML to text
         text = convert_html_to_text(data)   
 
@@ -180,13 +259,14 @@ def save_data_to_file(data, folder, file_name):
         text_file_path = os.path.join(folder, file_name_text)
         with open(text_file_path, 'w', encoding='utf-8') as text_file:
             text_file.write(text)
-        print(f"Text data saved to {text_file_path}")      
+        #print(f"Text data saved to {text_file_path}")      
     except Exception as e:
         print(f"Failed to save data to {file_path}: {e}")
 
 def convert_html_to_text(html_data):
     """
     Converts HTML data to plain text, removing images and HTML formatting.
+    TODO: add logging to this function
     """
     soup = BeautifulSoup(html_data, 'html.parser')
     
@@ -211,10 +291,26 @@ def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
     """
-    log_message(f"Processing message {message['id']}...")
+    logger.info(f"Processing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
+
+    # Initialize variables to store subject, thread ID, and date/time
+    subject = ""
+    thread_id = ""
+    date_time = ""
+
+    # Extract subject, thread ID, and date/time from headers
+    for header in headers:
+        if header['name'] == 'Subject':
+            subject = header['value']
+        elif header['name'] == 'Date':
+            date_time = header['value']
+
+    # Log the extracted subject, thread ID, and date/time
+    print(f"Subject: {subject}")
+    print(f"Date/Time: {date_time}")
 
     if parts:
         for part in parts:
@@ -238,17 +334,17 @@ def process_message(service, message):
                         save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
                     elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
-                        print(f"Decoded attachment for message {message['id']}")
+                        #print(f"Decoded attachment for message {message['id']}")
                         file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
                         save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
                 except Exception as e:
-                    log_message(f"An error occurred while decoding data for message {message['id']}: {e}")
+                    logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
                     print(f"Error decoding data for message {message['id']}: {e}")
             else:
-                log_message(f"No body data found for part in message {message['id']}")
+                logger.info(f"No body data found for part in message {message['id']}")
                 print(f"No body data found for part in message {message['id']}")
     else:
-        log_message(f"No parts found in message {message['id']}")
+        logger.info(f"No parts found in message {message['id']}")
         print(f"No parts found in message {message['id']}")
 
 # def read_message(service, message):
@@ -316,13 +412,15 @@ def main():
     service = gmail_authenticate()
     print(f"Authentication completed successfully.  The service object is now available for use.")
 
-    # Step 4: Read Gmail Inbox, get all new messages to a local folder
+    # Step 4: Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
+
     query = "is:unread" # Example query to search for unread messages
+    max_messages=5  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
 
     # Retrieve messages based on the query
-    messages = get_messages(service, query)
-    log_message(f"Number of unread messages: {len(messages)}")
+    messages = get_messages(service, query, max_messages=5)
+    logger.info(f"Number of unread messages: {len(messages)}")
 
     # Process each message
     for message in messages:
@@ -390,7 +488,12 @@ def main():
     # for msg in messages_reply_list:
     #     service.users().messages().modify(userId='me', id=msg['id'], body={'removeLabelIds': ['UNREAD']}).execute()
 
+# Call the setup_log_file function during application initialization
 if __name__ == '__main__':
+    log_file_path = setup_log_file()
+    logger = configure_logging(log_file_path)
+    print(f"Current logs directory set to: {log_file_path}")
+
     main()
 
 # TODO REVIEW
