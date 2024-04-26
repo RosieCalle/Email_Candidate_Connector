@@ -31,7 +31,8 @@ Access blocked: This app’s request is invalid
 your-email@gmail.com
 
 ---> enable api in the googlecloud project
-https://console.cloud.google.com/flows/enableapi?apiid=gmail.googleapis.com
+https://cloud.google.com/apis/docs/getting-started?&_gl=1*4i3leb*_ga*ODQzMTE2MjE4LjE3MTA1MjgzMzA.*_ga_WH2QY8WWF5*MTcxNDA4MDMzNi43LjEuMTcxNDA4ODUzMC4wLjAuMA..&_ga=2.53326113.-843116218.1710528330#enabling_apis
+
 
 At the end it needs in the google app, make the publish step, even it is nothing on the app. 
 In this way not only 'tester' can execute it.
@@ -62,3 +63,9 @@ google.auth.exceptions.RefreshError: ('invalid_grant: Token has been expired or 
 (candidate_connect) C:\Users\Staff\OneDrive\Documents\GitHub\Email_Candidate_Connector>LL
 'LL' is not recognized as an internal or external command,
 operable program or batch file.
+
+
+# TODO
+<!-- pip uninstall requests chardet charset_normalizer
+pip install requests
+pip install chardet -->

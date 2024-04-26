@@ -60,22 +60,24 @@ from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 
 
+MAX_EMAILS = 1
 # Check the operating system
 if os.name == 'nt': # 'nt' stands for Windows
     DATA_FOLDER = "..\\data\\"
     TOKEN_PATH = 'C:\\webservices\\gmail_credentials\\token.pickle'
     CREDENTIALS_PATH = 'C:\\webservices\\gmail_credentials\\credentials.json'
-    LOG_FILE = 'logs\\app.log'
+    #LOG_FILE = '..\\logs\\app.log'
+    LOG_FILE = 'app.log'
 elif os.name == 'posix': # 'posix' stands for Linux/Unix
     DATA_FOLDER = "../data/"
     TOKEN_PATH = '../token.pickle'
     CREDENTIALS_PATH ='../../client_secret_desktop-app.json'
-    LOG_FILE = 'logs/app.log'
+    LOG_FILE = '../logs/app.log'
 else:
     raise OSError("Unsupported operating system")
  
 # Configure logging
-logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
+logging.basicConfig(filename='app.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -97,6 +99,14 @@ def gmail_authenticate():
     """
     creds = None
 
+    # # Read the configuration from config.json
+    # with open(CREDENTIALS_PATH, 'r') as config_file:
+    #     config = json.load(config_file)
+
+    # # Save the credentials for the next run
+    # with open(TOKEN_PATH, 'wb') as token:
+    #     pickle.dump(creds, token)
+
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH, 'rb') as token:
             creds = pickle.load(token)
@@ -108,8 +118,8 @@ def gmail_authenticate():
         else:
             # Update the path to the credentials.json file
             flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
-
             creds = flow.run_local_server(port=0)
+
         # Save the credentials for the next run
         with open(TOKEN_PATH, 'wb') as token:
             pickle.dump(creds, token)
@@ -146,7 +156,8 @@ def get_messages(service, query):
     log_message("Retrieving messages...")
     messages = []
     page_token = None
-    while True:
+    cont = True
+    while cont:
         try:
             if page_token:
                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
@@ -156,10 +167,18 @@ def get_messages(service, query):
                 messages.extend(result['messages'])
             page_token = result.get('nextPageToken', None)
             if not page_token:
-                break
+                cont = False
+
+            
+            print (f"Page {count} retrieved")
+            if count >= MAX_EMAILS:
+                cont = False
+            count = count + 1
+
         except Exception as e:
             log_message(f"An error occurred while retrieving messages: {e}")
             break
+
     log_message(f"Retrieved {len(messages)} messages.")
     return messages
 
@@ -171,7 +190,7 @@ def save_data_to_file(data, folder, file_name):
     try:
         with open(file_path, 'wb') as file:
             file.write(data)
-        print(f"Data saved to {file_path}")      
+        #print(f"Data saved to {file_path}")      
         # Convert HTML to text
         text = convert_html_to_text(data)   
 
@@ -180,7 +199,7 @@ def save_data_to_file(data, folder, file_name):
         text_file_path = os.path.join(folder, file_name_text)
         with open(text_file_path, 'w', encoding='utf-8') as text_file:
             text_file.write(text)
-        print(f"Text data saved to {text_file_path}")      
+        #print(f"Text data saved to {text_file_path}")      
     except Exception as e:
         print(f"Failed to save data to {file_path}: {e}")
 
@@ -216,6 +235,22 @@ def process_message(service, message):
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
 
+    # Initialize variables to store subject, thread ID, and date/time
+    subject = ""
+    thread_id = ""
+    date_time = ""
+
+    # Extract subject, thread ID, and date/time from headers
+    for header in headers:
+        if header['name'] == 'Subject':
+            subject = header['value']
+        elif header['name'] == 'Date':
+            date_time = header['value']
+
+    # Log the extracted subject, thread ID, and date/time
+    print(f"Subject: {subject}")
+    print(f"Date/Time: {date_time}")
+
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
@@ -238,7 +273,7 @@ def process_message(service, message):
                         save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
                     elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
-                        print(f"Decoded attachment for message {message['id']}")
+                        #print(f"Decoded attachment for message {message['id']}")
                         file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
                         save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
                 except Exception as e:
