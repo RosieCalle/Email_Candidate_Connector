@@ -55,7 +55,7 @@ from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 
-print(f"Current working directory: {os.getcwd()}")
+# print(f"Current working directory: {os.getcwd()}")
 
 MAX_EMAILS = 1
 
@@ -85,27 +85,25 @@ def setup_log_file():
     Checks if the logs folder and log file exist. If they don't, it creates them.
     """
     # Define the path to the logs folder
-    logs_folder_path = os.path.join(os.getcwd(), 'logs')
+    logs_folder_path = os.path.join(os.getcwd(), '..\\logs')
     # Define the path to the log file
     log_file_path = os.path.join(logs_folder_path, 'app.log')
 
     # Check if the logs folder exists, if not, create it
     if not os.path.exists(logs_folder_path):
         os.makedirs(logs_folder_path)
-        print(f"Logs folder created at: {logs_folder_path}")
 
     # Check if the log file exists, if not, create it
     if not os.path.exists(log_file_path):
         with open(log_file_path, 'w') as log_file:
             log_file.write("Log file created.\n")
-        print(f"Log file created at: {log_file_path}")
 
     return log_file_path
 
 # Configure logging using the paths provided by setup_log_file() function.
 def configure_logging(log_file_path):
     global logger
-    print(f"global logger object added in the first line of configure_loggin() function.")
+    # print(f"global logger object added in the first line of configure_loggin() function.")
     logging.basicConfig(filename=log_file_path, level=logging.INFO,
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
@@ -124,9 +122,6 @@ def configure_logging(log_file_path):
 
     # Add the handler to the logger
     logger.addHandler(handler)
-
-    # Test logging to ensure it's working
-    logger.info("Test log message")
 
     return logger
 
@@ -198,7 +193,7 @@ def gmail_authenticate():
         print(f"An error occurred: {e}")         # for debugging purposes
         return None
 
-def get_messages(service, query, max_messages=100):
+def get_messages(service, query, max_messages=2):
     """
     Retrieves messages based on the provided query, up to a maximum number of messages.
     The get_messages() function now handles the `pageToken` correctly and includes error handling to catch any exceptions that occur during the API request.
@@ -244,13 +239,12 @@ def get_messages(service, query, max_messages=100):
 def save_data_to_file(data, folder, file_name):
     """
     Saves data to a file.   
-    #TODO Add logging to this function.
     """
     file_path = os.path.join(folder, file_name)  # data/file
     try:
         with open(file_path, 'wb') as file:
             file.write(data)
-        #print(f"Data saved to {file_path}")      
+        # logger.info(f"Data saved to {file_path}")      
         # Convert HTML to text
         text = convert_html_to_text(data)   
 
@@ -259,14 +253,13 @@ def save_data_to_file(data, folder, file_name):
         text_file_path = os.path.join(folder, file_name_text)
         with open(text_file_path, 'w', encoding='utf-8') as text_file:
             text_file.write(text)
-        #print(f"Text data saved to {text_file_path}")      
+        # logger.info(f"Text data saved to {text_file_path}")      
     except Exception as e:
         print(f"Failed to save data to {file_path}: {e}")
 
 def convert_html_to_text(html_data):
     """
     Converts HTML data to plain text, removing images and HTML formatting.
-    TODO: add logging to this function
     """
     soup = BeautifulSoup(html_data, 'html.parser')
     
@@ -291,14 +284,13 @@ def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
     """
-    logger.info(f"Processing message {message['id']}...")
+    # logger.info(f"Processing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
 
     # Initialize variables to store subject, thread ID, and date/time
     subject = ""
-    thread_id = ""
     date_time = ""
 
     # Extract subject, thread ID, and date/time from headers
@@ -308,14 +300,14 @@ def process_message(service, message):
         elif header['name'] == 'Date':
             date_time = header['value']
 
-    # Log the extracted subject, thread ID, and date/time
-    print(f"Subject: {subject}")
-    print(f"Date/Time: {date_time}")
-
     if parts:
+        # Log the extracted subject, thread ID, and date/time
+        print(f"\n\nSubject: {subject}")
+        print(f"Date/Time: {date_time}")
         for part in parts:
             mimeType = part.get("mimeType")
             body = part.get("body")
+            partID = part.get("partId")
             if body and 'data' in body:
                 # Ensure the data is correctly padded
                 padding_needed = 4 - (len(body['data']) % 4)
@@ -331,21 +323,28 @@ def process_message(service, message):
                     if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
                         # print(f"Decoded text part for message {message['id']}")
-                        save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                        if partID == "0":
+                            # print(f"\n\npart: {part} ")
+                            # print(f"partid: {partID}") 
+                            print(f"message ID: {message['id']}")
+                            print(f"threadId: {message['threadId']}")
+                            save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                            print("Body",convert_html_to_text(decoded_data)[:200])
+
                     elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
-                        #print(f"Decoded attachment for message {message['id']}")
+                        print(f"Decoded attachment for message {message['id']}")
                         file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
                         save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
                 except Exception as e:
                     logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
-                    print(f"Error decoding data for message {message['id']}: {e}")
+                    # print(f"Error decoding data for message {message['id']}: {e}")
             else:
                 logger.info(f"No body data found for part in message {message['id']}")
-                print(f"No body data found for part in message {message['id']}")
-    else:
-        logger.info(f"No parts found in message {message['id']}")
-        print(f"No parts found in message {message['id']}")
+                # print(f"No body data found for part in message {message['id']}")
+    # else:
+        # logger.info(f"No parts found in message {message['id']}")
+        # print(f"No parts found in message {message['id']}")
 
 # def read_message(service, message):
 #     """
@@ -416,10 +415,10 @@ def main():
     # Define the query to search for messages
 
     query = "is:unread" # Example query to search for unread messages
-    max_messages=5  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
+    max_messages=1  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
 
     # Retrieve messages based on the query
-    messages = get_messages(service, query, max_messages=5)
+    messages = get_messages(service, query, max_messages)
     logger.info(f"Number of unread messages: {len(messages)}")
 
     # Process each message
@@ -448,7 +447,7 @@ def main():
     show(messages_df)
 
     print(f"Number of unread messages: {len(messages)}")
-    print("Messages: ", messages)
+    # print("Messages: ", messages)
 
     # Step 4d: The user uses check boxes in the itables widget to select individual messages to respond to.  
     
@@ -492,7 +491,6 @@ def main():
 if __name__ == '__main__':
     log_file_path = setup_log_file()
     logger = configure_logging(log_file_path)
-    print(f"Current logs directory set to: {log_file_path}")
 
     main()
 
