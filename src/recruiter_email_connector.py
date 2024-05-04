@@ -85,7 +85,7 @@ def setup_log_file():
     Checks if the logs folder and log file exist. If they don't, it creates them.
     """
     # Define the path to the logs folder
-    logs_folder_path = os.path.join(os.getcwd(), '..\\logs')
+    logs_folder_path = os.path.join(os.getcwd(), '../logs')
     # Define the path to the log file
     log_file_path = os.path.join(logs_folder_path, 'app.log')
 
@@ -297,8 +297,12 @@ def process_message(service, message):
     for header in headers:
         if header['name'] == 'Subject':
             subject = header['value']
-        elif header['name'] == 'Date':
+
+        if header['name'] == 'Date':
             date_time = header['value']
+
+        if header['name'] == 'From':
+                sender_id = header['value']
 
     if parts:
         # Log the extracted subject, thread ID, and date/time
@@ -323,14 +327,17 @@ def process_message(service, message):
                     if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
                         # print(f"Decoded text part for message {message['id']}")
+
+                        #TODO insert these values into the database table 'emails'
                         if partID == "0":
-                            # print(f"\n\npart: {part} ")
+                            print (f"senderID: {sender_id}")
+                            # attachment count -- vcard -- pdf -- word
+                            # print(f"\n\npart: {part} ") 
                             # print(f"partid: {partID}") 
-                            print(f"message ID: {message['id']}")
-                            print(f"threadId: {message['threadId']}")
+                            print(f"messageID: {message['id']}")
+                            print(f"threadID: {message['threadId']}")
                             save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
                             print("Body",convert_html_to_text(decoded_data)[:200])
-
                     elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
                         print(f"Decoded attachment for message {message['id']}")
