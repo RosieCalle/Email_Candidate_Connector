@@ -73,6 +73,9 @@ def create_emails_table(db_conn):
 #TODO create fucntion to insert email record
 
 
+
+
+
 # Example usage
 # create_user(db_conn, db_user, db_password)
 # update_user_password(db_conn, db_user, db_password)
