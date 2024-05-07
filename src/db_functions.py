@@ -3,7 +3,7 @@ import json
 # TODO add parameters for create or update users
 
 # Load database parameters from JSON file
-with open('db_config.json', 'r') as file:
+with open('conf/config.json', 'r') as file:
     db_config = json.load(file)
 
 # Extract database parameters
@@ -48,29 +48,24 @@ def update_user_password(db_conn, username, new_password):
     except Exception as e:
         print(f"Failed to update password for user '{username}': {e}")
 
-def create_emails_table(db_conn):
+def create_table(db_conn, table_name):
     """
-    Create the Emails table if it does not already exist.
+    Create the table_name table if it does not already exist.
+
     """
+    print(f"test: {table_name}")
     try:
         cursor = db_conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS Emails (
-                subject VARCHAR(255),
-                timestamp TIMESTAMP,
-                messageid VARCHAR(16) PRIMARY KEY,
-                threadid VARCHAR(16),
-                body TEXT,
-                senderid INT
-            );
-        """)
+        sqlcmd = "CREATE TABLE IF NOT EXISTS " + table_name + " (subject VARCHAR(255),timestamp TIMESTAMP, messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid INT) ;"
+        
+        cursor.execute(sqlcmd)
         db_conn.commit()
-        print("Emails table created successfully.")
+        print(f"table created successfull: {table_name} ") 
     except Exception as e:
-        print(f"Failed to create Emails table: {e}")
+        print(f"Failed to create table: {e}")
 
 
-#TODO create fucntion to insert email record
+#TODO create function to insert email record
 
 
 
@@ -80,6 +75,10 @@ def create_emails_table(db_conn):
 # create_user(db_conn, db_user, db_password)
 # update_user_password(db_conn, db_user, db_password)
 
+create_table(db_conn, "emails")
+
+
 # Close the connection
 db_conn.close()
+
 

@@ -353,28 +353,6 @@ def process_message(service, message):
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
 
-# def read_message(service, message):
-#     """
-#     This function takes Gmail API `service` and the `id` of a Gmail email
-#     and returns a dictionary with all the parts of the email.
-#     """
-#     print("Entering read_message() function ... ")       # replace this with formal logging to a time-stamped file
-    
-#     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-    
-#     # parts can be the message body, or attachments
-#     payload = msg['payload']
-#     headers = payload.get("headers")
-#     parts = payload.get("parts")
-#     data = {}
-#     if parts:
-#         for part in parts:
-#             mimeType = part.get("mimeType")
-#             body = part.get("body")
-#             data = parse_parts(service, part)
-#     return data
-
-
 def create_response(template, first_name):
     output = template.render(first_name=first_name)
     return output

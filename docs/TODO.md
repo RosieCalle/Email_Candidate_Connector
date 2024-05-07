@@ -7,7 +7,7 @@ email samples
 - empty body
 - 1 attachment
 - 3 attachments
-- attachments : word.docx, .pdf, vcard, excel
+- attachments : word.docx, .pdf, vcard
 - attachment: image (we will discard it)
 - email with threads
 - email with signature, different variations
@@ -16,7 +16,7 @@ email samples
     phone number
     address ?
     email == sender
-    
+ 
 
 * DATABASE
 
@@ -50,20 +50,24 @@ table contacts
     clearance
     salaryreq
 
+# TODO Analyze case for email from another recruiter(jobseeker or company) or company looking for employees
 
+
+
+# Review and improve the documentation 
 
 ### Textual Representation:
 
-```
+```                                               JobSeeker
 +----------------+     +----------------+     +----------------+
-|     Emails     |     | Attachments   |     |   Contacts    |
+|     Emails     |     | Attachments    |     |   Contacts     |
 +----------------+     +----------------+     +----------------+
 | MessageID (PK) |---> | MessageID (PK) |     | ContactID (PK) |
 | Subject        |     | Attachment1    |     | Name           |
 | Timestamp      |     | Attachment2    |     | Phone          |
 | ThreadID       |     | Attachment3    |     | Country        |
 | Body           |     +----------------+     | City           |
-| SenderID       | -------------------------> | SenderID       |
+| SenderID       | -------------------------> | SenderID (SK)  |
 +----------------+                            | Zipcode        |
                                               | Sponsorship    |
                                               | Hybrid         |
@@ -75,6 +79,18 @@ table contacts
                                               | SalaryReq      |
                                               +----------------+
 ```
+
+
+           CREATE TABLE IF NOT EXISTS Emails (
+                subject VARCHAR(255),
+                timestamp TIMESTAMP,
+                messageid VARCHAR(16) PRIMARY KEY,
+                threadid VARCHAR(16),
+                body TEXT,
+                senderid INT
+
+
+
 
 -- investigate how to use this
 Introducing the Spam Detection Model with Pre-Trained LLM | by Varun Tyagi | Mar, 2024 | Medium
