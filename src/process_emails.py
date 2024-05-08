@@ -46,6 +46,13 @@
 #             message_count += 1
 #         print(f'Processed {message_count} messages.')
 
+
+
+from datetime import datetime
+import pandas as pd
+
+
+
 def mark_as_processed(service, message_id):
     # Here you would apply a label to mark the message as processed
     # This is a placeholder function
@@ -58,19 +65,36 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
         thread_analysis: .... 
 
     """
+    
+    # Convert the string to a datetime object
+    date_time_obj = datetime.strptime(date_time, "%Y-%m-%d %H:%M:%S")
+    # Convert the datetime object to a timestamp
+    timestamp = date_time_obj.timestamp()
+
+    df = pd.DataFrame(columns=['subject', 'timestamp', 'messageid', 'threadid', 'body', 'senderid'])
 
     print(f"\n\nSubject: {subject}")
-    print(f"Date/Time: {date_time}")
+    print(f"Date/Time: {timestamp}")
     print(f"Sender ID: {sender_id}")
     print(f"Message ID: {message_id}")
     print(f"Thread ID: {thread_id}")
     print(f"Message Body: {message_body}")
 
-    if sender_id "not existe on the database"
-        if sender_id "is not in the black_list"
+
+    if exist_in_database(sender_id, "emails"): 
+        if is_in_black_list(sender_id):
             # how to use subject to determine if the email go or not to the DB ?
-            # how to use the body to determine if the email go or not to the DB ?
-            
+            if isgood(subject):
+                # how to use the body to determine if the email go or not to the DB ?
+                if isgood(message_body):
+                    df = df.append({'subject': subject, 'timestamp': timestamp, \
+                                    'messageid': messageid, 'threadid': threadid, \
+                                    'body': body, 'senderid': senderid}, ignore_index=True)
+                else:   
+                    logger.info(f"message_body is not good. message_id: {message_id}")
+            else:   
+                logger.info(f"subject is not good. message_id: {message_id}")
+
 
 
 

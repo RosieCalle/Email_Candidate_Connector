@@ -23,7 +23,6 @@ relevant laws and regulations.
 
     TODO: Implement the above steps in Python code. 
     TODO: Add drawio diagram packges to the project.
-    TODO: ADD LOGGING THROUGHOUT THIS PROJECT.  SUPER IMPORTANT !!! 
 """
 
 import os
@@ -61,6 +60,7 @@ MAX_EMAILS = 1
 
 # check for the correct folder paths for Windows and Linux
 # Check the operating system
+# TODO move this to config.json file and read apropiatly 
 if os.name == 'nt': # 'nt' stands for Windows
     DATA_FOLDER = "..\\data\\"
     TOKEN_PATH = 'C:\\webservices\\gmail_credentials\\token.pickle'
@@ -74,10 +74,9 @@ elif os.name == 'posix': # 'posix' stands for Linux/Unix
     LOG_FILE = '../logs/app.log'
 else:
     raise OSError("Unsupported operating system")
- 
-##############################################################
+
+# TODO move this code to a logger module
 # Create and configure logging
-##############################################################
 import logging
 
 def setup_log_file():
@@ -384,9 +383,6 @@ def send_email(subject, body, to_email, from_email, password):
 
 # TODO MVP v2.x --> add Gmail Folder Batch processing to the code.  This will allow the user to select a folder and process all the emails in that folder
 
-# TODO URGENT Collect all messages into the "email_download_batch" folder, so that 1000s of messages don't stack up in the root folder.  This will make the code more efficient and easier to manage.
-
-# TODO URGENT Make sure the LOG file is properly created and populated with messages. 
 # TODO Add "Success" and "Failure" messages at the end of get-message() and process-message() functions. .  
 # TODO Uupdate the Mmermaid diagram to include the new functions and the new logging feature.
 # TODO Create a Mmermaid diagram to show the function call order of the code, to visualize the code and make it easier to understand.
@@ -482,6 +478,7 @@ if __name__ == '__main__':
 # TODO REVIEW
 # TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
 # TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
+
 # See the data structure HERE --> https://developers.google.com/gmail/api/reference/rest/v1/users.messages#Message 
 #                         messages.append({
 #                         'id': message['id'],
