@@ -11,11 +11,10 @@ if not "%ENV_ACTIVE%"=="candidate_connect" (
     echo 'candidate_connect' environment is already active.
 )
 
-
 echo Logs cleaned up.
 del /Q /F logs\*.log
 
 echo Starting the program...
 cd src
-python recruiter_email_connector.py
+python retrieve_emails.py
 cd ..

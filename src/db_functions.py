@@ -3,7 +3,7 @@ import json
 # TODO add parameters for create or update users
 
 # Load database parameters from JSON file
-with open('conf/config.json', 'r') as file:
+with open('../conf/config.json', 'r') as file:
     db_config = json.load(file)
 
 # Extract database parameters
@@ -24,6 +24,7 @@ db_conn = psycopg2.connect(
     port=db_port
 )
 
+# TODO move to utils
 def create_user(db_conn, username, password):
     """
     Create a new user with the specified username and password.
@@ -36,6 +37,7 @@ def create_user(db_conn, username, password):
     except Exception as e:
         print(f"Failed to create user '{username}': {e}")
 
+# TODO move to utils
 def update_user_password(db_conn, username, new_password):
     """
     Update the password for the specified user.
@@ -48,37 +50,135 @@ def update_user_password(db_conn, username, new_password):
     except Exception as e:
         print(f"Failed to update password for user '{username}': {e}")
 
-def create_table(db_conn, table_name):
+def execute_sql(sqlcmd):
     """
-    Create the table_name table if it does not already exist.
-
+    Execute the sqlcmd
     """
-    print(f"test: {table_name}")
     try:
-        cursor = db_conn.cursor()
-        sqlcmd = "CREATE TABLE IF NOT EXISTS " + table_name + " (subject VARCHAR(255),timestamp TIMESTAMP, messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid INT) ;"
-        
+        cursor = db_conn.cursor()    
         cursor.execute(sqlcmd)
         db_conn.commit()
-        print(f"table created successfull: {table_name} ") 
+        print(f"Executed {sqlcmd} ") 
     except Exception as e:
         print(f"Failed to create table: {e}")
+
+def value_exists_in_column(table_name, column_name, value):
+    """
+    Check if a value exists in a specific column of a table.
+
+    Parameters:
+    db_conn (psycopg2.extensions.connection): The database connection.
+    table_name (str): The name of the table to search in.
+    column_name (str): The name of the column to search in.
+    value (str): The value to search for.
+
+    Returns:
+    bool: True if the value exists in the column, False otherwise.
+    """
+    try:
+        cursor = db_conn.cursor()
+        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {table_name} WHERE {column_name} = %s);", (value,))
+        result = cursor.fetchone()[0]
+        return result
+    except Exception as e:
+        print(f"Failed to check if value exists in column: {e}")
+        return False
+
+
+# def is_in_blacklist(db_conn, sender_id):
+def is_in_blacklist(sender_id):
+
+    """
+    Check if a sender_id exists in the blacklist table.
+
+    Parameters:
+    db_conn (psycopg2.extensions.connection): The database connection.
+    sender_id (int): The sender_id to check.
+
+    Returns:
+    bool: True if the sender_id exists in the blacklist, False otherwise.
+    """
+    try:
+        cursor = db_conn.cursor()
+        cursor.execute("SELECT EXISTS(SELECT 1 FROM blacklist WHERE senderemail = %s);", (sender_id,))
+        result = cursor.fetchone()[0]
+        return result
+    except Exception as e:
+        print(f"Failed to check if sender_id exists in blacklist: {e}")
+        return False
+
+
+def add_to_blacklist(sender_id):
+    """
+    Insert a sender_id into the blacklist table.
+
+    Parameters:
+    db_conn (psycopg2.extensions.connection): The database connection.
+    sender_id (int): The sender_id to insert into the blacklist.
+    """
+    try:
+        cursor = db_conn.cursor()
+        cursor.execute("INSERT INTO blacklist (senderemail) VALUES (%s);", (sender_id,))
+        db_conn.commit()
+        print(f"Sender_id '{sender_id}' added to blacklist successfully.")
+    except Exception as e:
+        print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
+    # finally:
+    #     # Close the cursor and connection
+    #     cursor.close()
+    #     db_conn.close()
+
+def save_to_database(df, table_name):
+    """
+    Append a pandas DataFrame to a PostgreSQL table.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame to append.
+    table_name (str): The name of the table to append to.
+    """
+ # Get the list of columns from the DataFrame
+    columns = ', '.join(df.columns)
+    
+    # Prepare the INSERT statement
+    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES %s;"
+    
+    # Prepare the data for insertion
+    data = [tuple(x) for x in df.to_numpy()]
+    
+    try:
+        # Create a cursor object
+        cursor = db_conn.cursor()
+        
+        # Execute the INSERT statement for each row in the DataFrame
+        for row in data:
+            cursor.execute(insert_statement, (row,))
+        
+        # Commit the transaction
+        db_conn.commit()
+        print(f"Successfully appended {len(df)} rows to table {table_name}.")
+    except Exception as e:
+        print(f"Failed to append rows to table {table_name}: {e}")
+    # finally:
+    #     # Close the cursor and connection
+    #     cursor.close()
+    #     db_conn.close()
 
 
 #TODO create function to insert email record
 
+# email table
+#sqlcmd = "CREATE TABLE IF NOT EXISTS  email (subject VARCHAR(255),timestamp TIMESTAMP, messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid INT) ;"
+# execute_sql(sqlcmd)
 
-
-
+# blacklist table
+# sqlcmd = "CREATE TABLE IF NOT EXISTS blacklist (senderemail VARCHAR(70)) ;"
+# execute_sql(sqlcmd)
 
 # Example usage
 # create_user(db_conn, db_user, db_password)
 # update_user_password(db_conn, db_user, db_password)
 
-create_table(db_conn, "emails")
-
-
 # Close the connection
-db_conn.close()
+# db_conn.close()
 
 

@@ -50,35 +50,16 @@ table contacts
     clearance
     salaryreq
 
+# TODO move logger to a module
+
+
 # TODO Analyze case for email from another recruiter(jobseeker or company) or company looking for employees
 
 
 
 # Review and improve the documentation 
 
-### Textual Representation:
 
-```                                               JobSeeker
-+----------------+     +----------------+     +----------------+
-|     Emails     |     | Attachments    |     |   Contacts     |
-+----------------+     +----------------+     +----------------+
-| MessageID (PK) |---> | MessageID (PK) |     | ContactID (PK) |
-| Subject        |     | Attachment1    |     | Name           |
-| Timestamp      |     | Attachment2    |     | Phone          |
-| ThreadID       |     | Attachment3    |     | Country        |
-| Body           |     +----------------+     | City           |
-| SenderID       | -------------------------> | SenderID (SK)  |
-+----------------+                            | Zipcode        |
-                                              | Sponsorship    |
-                                              | Hybrid         |
-                                              | Remote         |
-                                              | InPerson       |
-                                              | Education      |
-                                              | License        |
-                                              | Clearance      |
-                                              | SalaryReq      |
-                                              +----------------+
-```
 
 
            CREATE TABLE IF NOT EXISTS Emails (
