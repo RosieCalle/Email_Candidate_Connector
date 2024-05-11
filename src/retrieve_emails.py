@@ -55,24 +55,27 @@ from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 from process_emails import process_email_data
 
-# print(f"Current working directory: {os.getcwd()}")
-
+# TODO check why is not working
 MAX_EMAILS = 1
 
 # check for the correct folder paths for Windows and Linux
-# Check the operating system
-# TODO move this to config.json file and read apropiatly 
+# Read configuration file
+script_dir = os.path.dirname(os.path.realpath(__file__))
+relative_config_path = os.path.join(script_dir, '..', 'conf', 'config.json')
+config_path = os.path.abspath(relative_config_path)
+with open(config_path, 'r') as file:
+    config = json.load(file)
+
 if os.name == 'nt': # 'nt' stands for Windows
-    DATA_FOLDER = "..\\data\\"
-    TOKEN_PATH = 'C:\\webservices\\gmail_credentials\\token.pickle'
-    CREDENTIALS_PATH = 'C:\\webservices\\gmail_credentials\\credentials.json'
-    #LOG_FILE = '..\\logs\\app.log'
-    LOG_FILE = 'app.log'
+    DATA_FOLDER = config['win_data_folder']
+    TOKEN_PATH = config['win_token_path']
+    CREDENTIALS_PATH = config['win_credentials_path']
+    LOG_FILE = config['win_log_file']
 elif os.name == 'posix': # 'posix' stands for Linux/Unix
-    DATA_FOLDER = "../data/"
-    TOKEN_PATH = '../token.pickle'
-    CREDENTIALS_PATH ='../../client_secret_desktop-app.json'
-    LOG_FILE = '../logs/app.log'
+    DATA_FOLDER = config['lin_data_folder']
+    TOKEN_PATH = config['lin_token_path']
+    CREDENTIALS_PATH = config['lin_credentials_path']
+    LOG_FILE = config['lin_log_file']
 else:
     raise OSError("Unsupported operating system")
 
@@ -339,23 +342,21 @@ def process_message(service, message):
                         #     # print(f"\n\npart: {part} ") 
                         #     # print(f"partid: {partID}") 
                             
-                            print("======= retrieve_emails ======")
-                            save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                            # print("======= retrieve_emails ======")
+                            # save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
                             message_id = message['id']
                             thread_id = message['threadId']
                             msg_body = convert_html_to_text(decoded_data)
-                            # Log the extracted subject, thread ID, and date/time
-                            print(f"\n\nSubject: {subject}")
-                            print(f"Date/Time: {date_time}")
-                            print (f"senderID: {sender_id}")
-                            print(f"messageID: {message_id}")
-                            print(f"threadID: {thread_id}")
-                            print("Body",msg_body[:200])
+                            # # Log the extracted subject, thread ID, and date/time
+                            # print(f"\n\nSubject: {subject}")
+                            # print(f"Date/Time: {date_time}")
+                            # print (f"senderID: {sender_id}")
+                            # print(f"messageID: {message_id}")
+                            # print(f"threadID: {thread_id}")
+                            # print("Body",msg_body[:200])
 
                             process_email_data(subject, date_time, sender_id, \
                                             message_id, thread_id, msg_body )
-
-
 
                     elif mimeType and mimeType.startswith('application/'):                  
                         # This is an attachment
@@ -437,58 +438,13 @@ def main():
     # # Step 4b: Create a dataframe to store the messages
     # Convert messages to DataFrame and save to JSON and CSV
     messages_df = pd.DataFrame(messages)
-    messages_df.to_json(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.json"))
-    messages_df.to_csv(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.csv"), index=False)
-
-
-    # TODO: Save all message bodies and attachments to a timestamped folder
-    # This part requires additional logic to handle attachments and save them correctly
-
-    # Step 4c: Display the messages in the itables widget so that the user can page through them and filter them. 
+    # messages_df.to_json(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.json"))
+    # messages_df.to_csv(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.csv"), index=False)
+ 
     show(messages_df)
 
     print(f"Number of unread messages: {len(messages)}")
-    # print("Messages: ", messages)
 
-    # Step 4d: The user uses check boxes in the itables widget to select individual messages to respond to.  
-    
-    # Step 4e: From a dropdown list of all available message template types, let the user assign the specific response template to use for each  message selected in STEP 4d.  The code below is missing for the actual implementation of the above steps.  
-
-    # Step 5: For all messages selected in Step 4c, create a list of messages for responses that contain the email_id and email_response_template selected by the user.  There is code below for the actual implementation of the above steps.  This could be implemented in the next version of the code.
-
-    # Conceptual step: User selects messages and chooses a template
-    # This step involves user interaction and would require an interactive environment to implement fully
-
-    # messages_reply_list = itables.interactive.show(messages, paging=True, search=True, select='checkbox', select_all='none', showRowNames=True)
-
-    # Step 6: Load Mail Merge Templates corresponding to the email_response_template selected by the user for each message.   The example code immediatley below does not include the functionality to load the specific response templates for each message selected in the previous step.  The code below is a placeholder for the actual implementation of the this feature.  This could be implemented in the next version of the code.
-
-    # Conceptual step (6?): Load and select response templates
-    # This step involves user interaction and would require an interactive environment to implement fully
-    # template = load_template('template.txt')
-
-    # Step 7: Create Response Using the specific Mail Merge template selected for each message.
-    # Conceptual step (7?): Create TEMPLATED responses and review them
-    # This step involves user interaction and would require an interactive environment to implement fully
-
-    # Step 8: Review the draft templated responses in the itables widget and before sending them to the Gmail API let the user approve the responses.  If the user approves the responses, then prepare the Gmail API and send the responses to the selected messages.
-
-    # Step 9: Update the messages in the Gmail inbox to mark them as read.  The code below is a placeholder for the actual implementation of the above steps.  It does not include the functionality to mark the messages as read.  This could be implemented in the next version of the code.
-
-    # 10. Analize attached document and determine if the jobseeker resume is a good match for the job availables in the job database
-
-    # for msg in messages_reply_list:
-    #     data = read_message(service, msg)
-    #     first_name = data.split(' ')[0]
-    #     response = render_template('template.txt', first_name=first_name)
-    #     # Here you would display the response for review and approval
-    #     # If approved, send the email
-    #     send_email("Subject", response, "recipient@example.com", "your_email@example.com", "your_password")
-
-    # Conceptual step: Mark DRAFT REPLY TEMPLATED messages as read
-    # This step involves interacting with the Gmail API and would require the message IDs
-    # for msg in messages_reply_list:
-    #     service.users().messages().modify(userId='me', id=msg['id'], body={'removeLabelIds': ['UNREAD']}).execute()
 
 # Call the setup_log_file function during application initialization
 if __name__ == '__main__':
@@ -497,16 +453,3 @@ if __name__ == '__main__':
 
     main()
 
-# TODO REVIEW
-# TODO # URGENT STEP 2 --> get message saved into a dataframe once they are successfully parsed. 
-# TODO # URGENT STEP 3 --> Add a function to save the message metadata to a dataframe.  This will allow the user to see the message metadata in the itables widget.
-
-# See the data structure HERE --> https://developers.google.com/gmail/api/reference/rest/v1/users.messages#Message 
-#                         messages.append({
-#                         'id': message['id'],
-#                         'threadId': message['threadId'],
-#                         'messageTitle': '', # Assuming you have a way to extract this
-#                         'senderName': '', # Assuming you have a way to extract this
-#                         'messageDateTime': '', # Assuming you have a way to extract this
-#                         'body': data
-#                     })

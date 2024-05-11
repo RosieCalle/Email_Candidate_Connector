@@ -11,7 +11,8 @@ if [[ "$CONDA_DEFAULT_ENV" == "$enviro" ]]; then
 else
   echo "Activating the conda environment $enviro..."
 #   conda activate $enviro
-    conda activate emailagent
+    # conda activate emailagent
+    source activate emailagent
 fi
 
 echo "Logs cleaned up."

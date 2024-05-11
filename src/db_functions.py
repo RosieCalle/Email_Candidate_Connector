@@ -1,9 +1,20 @@
 import psycopg2
 import json
+import os
+import pandas as pd
+
 # TODO add parameters for create or update users
 
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
+# Define the relative path to the config.json file
+relative_config_path = os.path.join(script_dir, '..', 'conf', 'config.json')
+
+config_path = os.path.abspath(relative_config_path)
+
 # Load database parameters from JSON file
-with open('../conf/config.json', 'r') as file:
+with open(config_path, 'r') as file:
     db_config = json.load(file)
 
 # Extract database parameters
@@ -128,7 +139,7 @@ def add_to_blacklist(sender_id):
     #     cursor.close()
     #     db_conn.close()
 
-def save_to_database(df, table_name):
+def save_to_database(df: pd.DataFrame, table_name: str):
     """
     Append a pandas DataFrame to a PostgreSQL table.
 
@@ -164,21 +175,6 @@ def save_to_database(df, table_name):
     #     db_conn.close()
 
 
-#TODO create function to insert email record
 
-# email table
-#sqlcmd = "CREATE TABLE IF NOT EXISTS  email (subject VARCHAR(255),timestamp TIMESTAMP, messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid INT) ;"
-# execute_sql(sqlcmd)
-
-# blacklist table
-# sqlcmd = "CREATE TABLE IF NOT EXISTS blacklist (senderemail VARCHAR(70)) ;"
-# execute_sql(sqlcmd)
-
-# Example usage
-# create_user(db_conn, db_user, db_password)
-# update_user_password(db_conn, db_user, db_password)
-
-# Close the connection
-# db_conn.close()
 
 
