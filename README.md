@@ -16,8 +16,18 @@ Automated Email Agent to Help Recruiter and Candidate Connect.
     "db_host": "localhost",
     "db_port": "5432",
     "pg_user": "postgres",
-    "pg_pass": "abc"
-}
+    "pg_pass": "abc",
+    "win_data_folder": "..\\data\\",
+    "win_token_path": "C:\\webservices\\gmail_credentials\\token.pickle",
+    "win_credentials_path": "C:\\webservices\\gmail_credentials\\credentials.json",
+    "win_log_file": "..\\app.log",
+    "lin_data_folder": "/home/rafael/dev/projects/email-candidate-connector/data/",
+    "lin_token_path": "/home/rafael/dev/projects/token.pickle",
+    "lin_credentials_path": "/home/rafael/dev/projects/client_secret_desktop-app.json",
+    "lin_log_file": "/home/rafael/dev/projects/email-candidate-connector/logs/app.log"
+} 
+
+
 
 # TODO how to run the app
 ...

@@ -1,6 +1,6 @@
 """
 Updated By: Rosie Calle
-Updated on: 2024.04.26 1555h
+Updated on: 2024.05.14 1555h
 
 This module contains functions to automate the process of reading emails from a Gmail account, 
 selecting the first 5 unread messages, and sending personalized responses using a mail merge template.
@@ -16,13 +16,7 @@ Functions:
 
 This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
 
-Please replace 'credentials.json' with the path to your actual credentials.json file. Also, please note that you need to allow less secure apps on your Google account to send emails using smtplib. You can do this by going to your Google account settings.
 
-Remember to handle sensitive data, like email addresses and names, securely and in compliance with all 
-relevant laws and regulations.
-
-    TODO: Implement the above steps in Python code. 
-    TODO: Add drawio diagram packges to the project.
 """
 
 import os
@@ -373,40 +367,6 @@ def process_message(service, message):
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
 
-def create_response(template, first_name):
-    output = template.render(first_name=first_name)
-    return output
-
-def load_template(template_name):
-    file_loader = FileSystemLoader('templates')
-    env = Environment(loader=file_loader)
-    template = env.get_template(template_name)
-    return template
-
-def render_template(template_name, **kwargs):
-    template = load_template(template_name)
-    output = template.render(**kwargs)
-    return output
-
-def send_email(subject, body, to_email, from_email, password):
-    msg = MIMEMultipart()
-    msg['From'] = from_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(from_email, password)
-    text = msg.as_string()
-    server.sendmail(from_email, to_email, text)
-    server.quit()
-
-# TODO MVP v2.x --> add Gmail Folder Batch processing to the code.  This will allow the user to select a folder and process all the emails in that folder
-
-# TODO Add "Success" and "Failure" messages at the end of get-message() and process-message() functions. .  
-# TODO Uupdate the Mmermaid diagram to include the new functions and the new logging feature.
-# TODO Create a Mmermaid diagram to show the function call order of the code, to visualize the code and make it easier to understand.
 
 def main():
     # Step 3: Authenticate and Initialize Gmail API Service

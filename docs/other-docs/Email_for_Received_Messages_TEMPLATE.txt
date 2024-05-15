@@ -1,4 +1,0 @@
-From: {{ sender_name }}
-Subject: {{ subject }}
-
-{{ message_content }}

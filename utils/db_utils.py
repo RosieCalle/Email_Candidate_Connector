@@ -82,21 +82,25 @@ def execute_sql(sqlcmd):
     except Exception as e:
         print(f"Failed to create table: {e}")
 
-# email table
-#sqlcmd = "CREATE TABLE IF NOT EXISTS  email (subject VARCHAR(255),timestamp VARCHAR(100), messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid VARCHAR(100)) ;"
-# execute_sql(sqlcmd)
+# emails table
+#sqlcmd = "CREATE TABLE IF NOT EXISTS  emails (subject VARCHAR(255),timestamp VARCHAR(100), messageid VARCHAR(16) PRIMARY KEY, threadid VARCHAR(16), body TEXT, senderid VARCHAR(100),topic VARCHAR(100) ) ;"
+#execute_sql(sqlcmd)
 
 # blacklist table
-# sqlcmd = "CREATE TABLE IF NOT EXISTS blacklist (senderemail VARCHAR(70)) ;"
-# execute_sql(sqlcmd)
+#sqlcmd = "CREATE TABLE IF NOT EXISTS blacklist (senderemail VARCHAR(70)) ;"
+#execute_sql(sqlcmd)
 
 # bademail table
-sqlcmd = "CREATE TABLE IF NOT EXISTS  bademails (subject VARCHAR(255),timestamp VARCHAR(100), messageid VARCHAR(20) PRIMARY KEY, threadid VARCHAR(20), body TEXT, senderid VARCHAR(100)) ;"
-execute_sql(sqlcmd)
+#sqlcmd = "CREATE TABLE IF NOT EXISTS  bademails (subject VARCHAR(255),timestamp VARCHAR(100), messageid VARCHAR(20) PRIMARY KEY, threadid VARCHAR(20), body TEXT, senderid VARCHAR(100),topic VARCHAR(100)) ;"
+#execute_sql(sqlcmd)
 
 # Example usage
 # create_user(db_conn, db_user, db_password)
 # update_user_password(db_conn, db_user, db_password)
 
+#check_and_create_database(db_conn, db_name)
+
+
 # Close the connection to the default database
+
 db_conn.close()
