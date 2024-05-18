@@ -22,4 +22,11 @@
                                               +----------------+
 ```
 
+
 mark email as answered
+
+
+copilot ---> dot file from .py
+dot file to svg
+dot -Tsvg email_flowchart.dot -o email_flowchart.svg
+---> svg editor ?

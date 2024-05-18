@@ -20,5 +20,4 @@ rm logs\*.log
 
 echo "Starting the program..."
 cd src
-python retrieve_emails.py
-cd ..
+python main.py

@@ -166,7 +166,7 @@ def save_to_database(df: pd.DataFrame, table_name: str):
         
         # Commit the transaction
         db_conn.commit()
-        print(f"Successfully appended {len(df)} rows to table {table_name}.")
+        print(f"Successfully appended {len(df)} rows to table {table_name}.\n\n")
     except Exception as e:
         print(f"Failed to append rows to table {table_name}: {e}")
     # finally:
