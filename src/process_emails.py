@@ -51,27 +51,29 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
     new_row = {'subject': subject, 'timestamp': date_time, 'messageid': message_id, 'threadid': thread_id, 'body': message_body[:200], 'senderid': sender_id, 'topic': topic}
 
     if not value_exists_in_column("emails", "senderid", sender_id): # sender_id is not in the table "emails"
-        if not is_in_blacklist(sender_id):           
-            topic = determine_topic(message_body)
-            print("\n - determine_topic -", topic)
-            if topic is not None:
-                try:
-                    new_row['topic'] = topic
-                    df_email = df_email._append(new_row, ignore_index=True)
-                    save_to_database(df_email, "emails")
-                except Exception as e:
-                    print(f"Error processing email data: {e}")
-            else:   
-                # logger.info(f"message_body is not good. message_id: {message_id}")
-                print(f"message_body is not good. message_id: {message_id}")
-                add_to_blacklist(sender_id)
-                save_to_database(df_email, "bademails")
-        else:
+        # if not is_in_blacklist(sender_id):           
+        topic = determine_topic(message_body)
+        print("\n - determine_topic -", topic)
+        if topic is not None:
+            try:
+                new_row['topic'] = topic
+                df_email = df_email._append(new_row, ignore_index=True)
+                save_to_database(df_email, "emails")
+            except Exception as e:
+                print(f"Error processing email data: {e}")
+        else:   
             # logger.info(f"message_body is not good. message_id: {message_id}")
-            print(f"sender in the blacklist: message_id: {message_id}")
-            new_row['topic'] = "blacklist"
+            print(f"message_body is not good. message_id: {message_id}")
+            # add_to_blacklist(sender_id)
+            new_row['topic'] = topic
             df_email = df_email._append(new_row, ignore_index=True)
             save_to_database(df_email, "bademails")
+        # else:
+        #     # logger.info(f"message_body is not good. message_id: {message_id}")
+        #     print(f"sender in the blacklist: message_id: {message_id}")
+        #     new_row['topic'] = "blacklist"
+        #     df_email = df_email._append(new_row, ignore_index=True)
+        #     save_to_database(df_email, "bademails")
     else: # it is a new message from a known sender_id
         if message_id == thread_id: # new email from same sender_id, with meesage_id == thread_id
             if not value_exists_in_column("emails", "messageid", message_id): # avoid duplication
@@ -87,8 +89,12 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
                 else:   
                     # logger.info(f"message_body is not good. message_id: {message_id}")
                     print(f"message_body is not good. message_id: {message_id}")
-                    add_to_blacklist(sender_id)
+                    new_row['topic'] = topic
+                    df_email = df_email._append(new_row, ignore_index=True)
+                    # add_to_blacklist(sender_id)
                     save_to_database(df_email, "bademails")
+            else:
+                print(f"Email already processed: {message_id}") 
         else: #the email is a thread
             if not value_exists_in_column("emails", "messageid", message_id):
                 try:

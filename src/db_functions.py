@@ -70,6 +70,7 @@ def execute_sql(sqlcmd):
         cursor.execute(sqlcmd)
         db_conn.commit()
         print(f"Executed {sqlcmd} ") 
+        # cursor.close()
     except Exception as e:
         print(f"Failed to create table: {e}")
 
@@ -93,7 +94,14 @@ def value_exists_in_column(table_name, column_name, value):
         return result
     except Exception as e:
         print(f"Failed to check if value exists in column: {e}")
-        return False
+        db_conn.rollback()
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if  db_conn is not None:
+             db_conn.close()
+    return False
+
 
 
 # def is_in_blacklist(db_conn, sender_id):
@@ -134,10 +142,13 @@ def add_to_blacklist(sender_id):
         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
     except Exception as e:
         print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
-    # finally:
-    #     # Close the cursor and connection
-    #     cursor.close()
-    #     db_conn.close()
+        db_conn.rollback()
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if  db_conn is not None:
+             db_conn.close()
+    return False
 
 def save_to_database(df: pd.DataFrame, table_name: str):
     """
@@ -169,10 +180,15 @@ def save_to_database(df: pd.DataFrame, table_name: str):
         print(f"Successfully appended {len(df)} rows to table {table_name}.\n\n")
     except Exception as e:
         print(f"Failed to append rows to table {table_name}: {e}")
-    # finally:
-    #     # Close the cursor and connection
-    #     cursor.close()
-    #     db_conn.close()
+        db_conn.rollback()
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if  db_conn is not None:
+             db_conn.close()
+    return False
+    
+    # db_conn.close()
 
 
 
