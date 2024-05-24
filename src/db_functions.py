@@ -139,40 +139,44 @@ def add_to_blacklist(sender_id):
     #     cursor.close()
     #     db_conn.close()
 
-def save_to_database(df: pd.DataFrame, table_name: str):
+def save_to_database(data_row: dict, table_name: str):
     """
-    Append a pandas DataFrame to a PostgreSQL table.
+    Insert data_row to a PostgreSQL table.
 
     Parameters:
-    df (pd.DataFrame): The DataFrame to append.
-    table_name (str): The name of the table to append to.
+    data_row: dict
+    table_name (str): The name of the table to insert to.
     """
- # Get the list of columns from the DataFrame
-    columns = ', '.join(df.columns)
+
+    # Get the list of columns from the data_row
+    columns = ', '.join(data_row.keys())
+    
+    # Prepare the placeholders for the INSERT statement
+    placeholders = ', '.join(['%s'] * len(data_row))
     
     # Prepare the INSERT statement
-    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES %s;"
+    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders});"
     
     # Prepare the data for insertion
-    data = [tuple(x) for x in df.to_numpy()]
+    data = tuple(data_row.values())
+    
+    print(f"Inserting data into table {table_name}...")
+    print(f"Data: {data}")
     
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
         
-        # Execute the INSERT statement for each row in the DataFrame
-        for row in data:
-            cursor.execute(insert_statement, (row,))
+        # Execute the INSERT statement
+        cursor.execute(insert_statement, data)
         
         # Commit the transaction
         db_conn.commit()
-        print(f"Successfully appended {len(df)} rows to table {table_name}.\n\n")
+        cursor.close()
+        print(f"Successfully insert {len(df)} rows to table {table_name}.\n\n")
     except Exception as e:
-        print(f"Failed to append rows to table {table_name}: {e}")
-    # finally:
-    #     # Close the cursor and connection
-    #     cursor.close()
-    #     db_conn.close()
+        print(f"Failed to insert row into {table_name}: {e}")
+        
 
 
 
