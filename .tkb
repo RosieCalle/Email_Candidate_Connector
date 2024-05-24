@@ -1,0 +1,67 @@
+{
+  "scope": "Workspace",
+  "tasks": {
+    "task-4Rwese6lfe4N68wX7-Etk": {
+      "id": "task-4Rwese6lfe4N68wX7-Etk",
+      "description": "Create new tasks\n\nTask can also contain lists\n\n- list item 1\n\n- list item 2",
+      "columnId": "column-todo"
+    },
+    "G3gIgrzkpm2TMNj2ci2qD": {
+      "id": "G3gIgrzkpm2TMNj2ci2qD",
+      "description": "",
+      "columnId": "column-todo"
+    },
+    "6jbSKOho0U5pOp2j8G_KT": {
+      "id": "6jbSKOho0U5pOp2j8G_KT",
+      "description": "- [x] EMAIL TABLE  \n- subject  \n- timestamp  \n- messageid  \n- threadid  \n- body  \n- senderid ",
+      "columnId": "column-done"
+    },
+    "kmb70scPbsjbgd6vtDUiY": {
+      "id": "kmb70scPbsjbgd6vtDUiY",
+      "description": "",
+      "columnId": "column-done"
+    },
+    "xFW4rVybBRTMmm51uhZoG": {
+      "id": "xFW4rVybBRTMmm51uhZoG",
+      "description": "Review and improve the documentation - ALWAYS ",
+      "columnId": "column-doing"
+    },
+    "UDoS9apVp0NXoPLDYbm2C": {
+      "id": "UDoS9apVp0NXoPLDYbm2C",
+      "description": "EMAIL samples: email-chains, attachements (PDF)  ",
+      "columnId": "column-doing"
+    },
+    "NqYChs7c9Q5uSSbGhWGNk": {
+      "id": "NqYChs7c9Q5uSSbGhWGNk",
+      "description": "EMAIL samples we want to collet for study cases:\n- empty subject  \n- empty body  \n- 1 attachment  \n- 3 attachments  \n- attachments : word.docx, .pdf, vcard  \n- attachment: image (we will discard it)  \n- email with threads  \n- email with signature, different variations  ",
+      "columnId": "column-doing"
+    }
+  },
+  "columns": [
+    {
+      "id": "column-todo",
+      "title": "To do",
+      "tasksIds": [
+        "task-4Rwese6lfe4N68wX7-Etk",
+        "G3gIgrzkpm2TMNj2ci2qD"
+      ]
+    },
+    {
+      "id": "column-doing",
+      "title": "Doing",
+      "tasksIds": [
+        "xFW4rVybBRTMmm51uhZoG",
+        "UDoS9apVp0NXoPLDYbm2C",
+        "NqYChs7c9Q5uSSbGhWGNk"
+      ]
+    },
+    {
+      "id": "column-done",
+      "title": "Done",
+      "tasksIds": [
+        "6jbSKOho0U5pOp2j8G_KT",
+        "kmb70scPbsjbgd6vtDUiY"
+      ]
+    }
+  ]
+}
