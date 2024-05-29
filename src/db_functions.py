@@ -91,16 +91,11 @@ def value_exists_in_column(table_name, column_name, value):
         cursor = db_conn.cursor()
         cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {table_name} WHERE {column_name} = %s);", (value,))
         result = cursor.fetchone()[0]
+        print(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
-        print(f"Failed to check if value exists in column: {e}")
-        db_conn.rollback()
-    finally:
-        if cursor is not None:
-            cursor.close()
-        if  db_conn is not None:
-             db_conn.close()
-    return False
+        print(f"Failed to check if {value} exists in {column_name}: {e}")
+        return False
 
 
 
@@ -142,23 +137,15 @@ def add_to_blacklist(sender_id):
         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
     except Exception as e:
         print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
-        db_conn.rollback()
-    finally:
-        if cursor is not None:
-            cursor.close()
-        if  db_conn is not None:
-             db_conn.close()
-    return False
 
 def save_to_database(data_row: dict, table_name: str):
     """
     Insert data_row to a PostgreSQL table.
-
     Parameters:
     data_row: dict
     table_name (str): The name of the table to insert to.
     """
-
+    
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
     
@@ -171,9 +158,6 @@ def save_to_database(data_row: dict, table_name: str):
     # Prepare the data for insertion
     data = tuple(data_row.values())
     
-    print(f"Inserting data into table {table_name}...")
-    print(f"Data: {data}")
-    
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
@@ -183,13 +167,13 @@ def save_to_database(data_row: dict, table_name: str):
         
         # Commit the transaction
         db_conn.commit()
-        cursor.close()
-        print(f"Successfully insert {len(df)} rows to table {table_name}.\n\n")
+                
     except Exception as e:
         print(f"Failed to insert row into {table_name}: {e}")
-        
+        # An error occurred, roll back the transaction
+        db_conn.rollback()
 
-
-
+        # Re-raise the exception
+        raise
 
 
