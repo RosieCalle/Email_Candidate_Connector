@@ -18,3 +18,4 @@ dependencies:
     - google-api-python-client
     - itables
     - request
+    - nltk

@@ -1,5 +1,4 @@
-#!/bin/bash -x
-
+#!/bin/bash
 
 # get enviroment name from the conda_config.yaml file
 yaml_file_path="conf/conda_config.yaml"
@@ -7,18 +6,18 @@ yaml_file_path="conf/conda_config.yaml"
 enviro="emailagent"
 
 if [[ "$CONDA_DEFAULT_ENV" == "$enviro" ]]; then
-  echo "The conda environment $enviro is already activated."
+    echo "The conda environment $enviro is already activated."
 else
-  echo "Activating the conda environment $enviro..."
-#   conda activate $enviro
-    # conda activate emailagent
-    source activate emailagent
+    echo "#### please change the conda enviroment to $enviro ####"
+    echo ""
+    echo "conda activate "$enviro
+    echo ""
+    exit 1
 fi
 
 echo "Logs cleaned up."
-rm logs\*.log
+rm logs/*.log
 
 echo "Starting the program..."
 cd src
-python retrieve_emails.py
-cd ..
+python main.py

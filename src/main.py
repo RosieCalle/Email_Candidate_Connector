@@ -176,9 +176,6 @@ def gmail_authenticate():
     if creds:
         logger.info(f"Bearer token expires in: {creds.expiry}")
         print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
-        
-        logger.info(f"Refresh token: {creds.refresh_token}")
-        print(f"Refresh token: {creds.refresh_token}")  # for debugging purposes
 
     try:
         service = build('gmail', 'v1', credentials=creds)
@@ -285,10 +282,7 @@ def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
     """
-
-    # check if email is new
-
-    # logger.info(f"Processing message {message['id']}...")
+    logger.info(f"Processing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
@@ -341,13 +335,6 @@ def process_message(service, message):
                             message_id = message['id']
                             thread_id = message['threadId']
                             msg_body = convert_html_to_text(decoded_data)
-                            # # Log the extracted subject, thread ID, and date/time
-                            # print(f"\n\nSubject: {subject}")
-                            # print(f"Date/Time: {date_time}")
-                            # print (f"senderID: {sender_id}")
-                            # print(f"messageID: {message_id}")
-                            # print(f"threadID: {thread_id}")
-                            # print("Body",msg_body[:200])
 
                             process_email_data(subject, date_time, sender_id, \
                                             message_id, thread_id, msg_body )
@@ -361,7 +348,7 @@ def process_message(service, message):
                     logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
                     # print(f"Error decoding data for message {message['id']}: {e}")
             else:
-                logger.info(f"No body data found for part in message {message['id']}")
+                logger.info(f"\nNo body data found for part in message {message['id']}")
                 # print(f"No body data found for part in message {message['id']}")
     # else:
         # logger.info(f"No parts found in message {message['id']}")
@@ -369,42 +356,21 @@ def process_message(service, message):
 
 
 def main():
-    # Step 3: Authenticate and Initialize Gmail API Service
+    # Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
     print(f"Authentication completed successfully.  The service object is now available for use.")
 
-    # Step 4: Read Gmail Inbox, get all new (unread) messages to a local folder
+    # Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
-
     query = "is:unread" # Example query to search for unread messages
     max_messages=1  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
-
     # Retrieve messages based on the query
     messages = get_messages(service, query, max_messages)
-    logger.info(f"Number of unread messages: {len(messages)}")
+    logger.info(f"Number of retrieved messages: {len(messages)}")
 
     # Process each message
     for message in messages:
         process_message(service, message)
-
-    # TODO: move to a function
-    # Save the stream of all email message IDs to a timestamped file
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    file_name = f"message_ids_{timestamp}.json"
-    file_path = os.path.join(DATA_FOLDER, file_name)
-    with open(file_path, "w", encoding="utf-8") as file:
-        json.dump(messages, file)
-
-    # # Step 4b: Create a dataframe to store the messages
-    # Convert messages to DataFrame and save to JSON and CSV
-    messages_df = pd.DataFrame(messages)
-    # messages_df.to_json(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.json"))
-    # messages_df.to_csv(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.csv"), index=False)
- 
-    show(messages_df)
-
-    print(f"Number of unread messages: {len(messages)}")
-
 
 # Call the setup_log_file function during application initialization
 if __name__ == '__main__':

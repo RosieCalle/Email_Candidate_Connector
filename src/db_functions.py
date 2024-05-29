@@ -70,6 +70,7 @@ def execute_sql(sqlcmd):
         cursor.execute(sqlcmd)
         db_conn.commit()
         print(f"Executed {sqlcmd} ") 
+        # cursor.close()
     except Exception as e:
         print(f"Failed to create table: {e}")
 
@@ -90,10 +91,12 @@ def value_exists_in_column(table_name, column_name, value):
         cursor = db_conn.cursor()
         cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {table_name} WHERE {column_name} = %s);", (value,))
         result = cursor.fetchone()[0]
+        print(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
-        print(f"Failed to check if value exists in column: {e}")
+        print(f"Failed to check if {value} exists in {column_name}: {e}")
         return False
+
 
 
 # def is_in_blacklist(db_conn, sender_id):
@@ -134,47 +137,43 @@ def add_to_blacklist(sender_id):
         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
     except Exception as e:
         print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
-    # finally:
-    #     # Close the cursor and connection
-    #     cursor.close()
-    #     db_conn.close()
 
-def save_to_database(df: pd.DataFrame, table_name: str):
+def save_to_database(data_row: dict, table_name: str):
     """
-    Append a pandas DataFrame to a PostgreSQL table.
-
+    Insert data_row to a PostgreSQL table.
     Parameters:
-    df (pd.DataFrame): The DataFrame to append.
-    table_name (str): The name of the table to append to.
+    data_row: dict
+    table_name (str): The name of the table to insert to.
     """
- # Get the list of columns from the DataFrame
-    columns = ', '.join(df.columns)
+    
+    # Get the list of columns from the data_row
+    columns = ', '.join(data_row.keys())
+    
+    # Prepare the placeholders for the INSERT statement
+    placeholders = ', '.join(['%s'] * len(data_row))
     
     # Prepare the INSERT statement
-    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES %s;"
+    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders});"
     
     # Prepare the data for insertion
-    data = [tuple(x) for x in df.to_numpy()]
+    data = tuple(data_row.values())
     
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
         
-        # Execute the INSERT statement for each row in the DataFrame
-        for row in data:
-            cursor.execute(insert_statement, (row,))
+        # Execute the INSERT statement
+        cursor.execute(insert_statement, data)
         
         # Commit the transaction
         db_conn.commit()
-        print(f"Successfully appended {len(df)} rows to table {table_name}.")
+                
     except Exception as e:
-        print(f"Failed to append rows to table {table_name}: {e}")
-    # finally:
-    #     # Close the cursor and connection
-    #     cursor.close()
-    #     db_conn.close()
+        print(f"Failed to insert row into {table_name}: {e}")
+        # An error occurred, roll back the transaction
+        db_conn.rollback()
 
-
-
+        # Re-raise the exception
+        raise
 
 

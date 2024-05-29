@@ -22,4 +22,17 @@
                                               +----------------+
 ```
 
-mark email as answered
+
+CREATE TABLE contacts (name,  phone
+    email
+    city
+    country
+    zipcode
+    sponsorship
+    hibryd
+    remote
+    inperson
+    education
+    license
+    clearance
+    salaryreq 
