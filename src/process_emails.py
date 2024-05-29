@@ -27,7 +27,7 @@ def filter_email(new_data_row):
 
     else:
         topic = determine_topic(new_data_row['body'])
-        print(" determine_topic --------", topic)
+        # print(" determine_topic --------", topic)
         new_data_row['topic'] = topic
         if topic != "Uncategorized" and topic != "Spam":
             try:
@@ -40,7 +40,7 @@ def filter_email(new_data_row):
             except Exception as e:
                 print(f"Error processing email data: {e}") 
 
-    print("end categorization\n\n")
+    # print("end categorization\n\n")
 
 
 def process_email_data(subject: str, date_time: str, sender_id: str, message_id: str, thread_id: str, message_body: str ):
@@ -50,8 +50,7 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
         thread_analysis: .... 
 
     """
-    # df_email = pd.DataFrame(columns=['subject', 'timestamp', 'messageid', 'threadid', 'body', 'senderid', 'topic'])
-
+ 
     try:
         # Remove timezone name if present
         timestamp = date_time.split('(')[0].strip()
@@ -78,16 +77,17 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
                 return
             else:
                 # new thread from same email address
-                print("new thread from same email address")
+                # print("new thread from same email address")
                 filter_email(new_row) # categorize the email, and save it to the database  
 
         else:  
             # new subject from same email address
-            print("new subject from same email address")
+            # print("new subject from same email address")
             filter_email(new_row)
     else:
         # new email address
-        print("new email address")
+        # print("new email address")
         filter_email(new_row)
 
+        # TODO
         mark_as_processed(message_id)
