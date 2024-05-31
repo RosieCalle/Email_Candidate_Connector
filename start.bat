@@ -3,6 +3,8 @@
 :: Check if the current environment is 'candidate_connect'
 for /f "delims=" %%i in ('conda info --envs ^| findstr /R /C:"candidate_connect"') do set "ENV_ACTIVE=%%i"
 
+call conda activate base
+
 :: If 'candidate_connect' is not active, activate it
 if not "%ENV_ACTIVE%"=="candidate_connect" (
     echo Activating 'candidate_connect' environment...
@@ -15,6 +17,6 @@ echo Logs cleaned up.
 del /Q /F logs\*.log
 
 echo Starting the program...
-cd src
-python main.py
+:: cd src
+python src/main.py
 

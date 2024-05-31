@@ -257,193 +257,106 @@ def convert_html_to_text(html_data):
     
     return text
 
-# TODO: make sure that html attachments are saved as html files
-# TODO: return value should be value (a boolean) indicating success
-# def save_data_to_file(data, folder, file_name):
-#     """
-#     Saves data to a file.   # NOT USED ANYMORE !!
-#     """
-#     file_path = os.path.join(folder, file_name)  # data/file
-#     try:
-#         # dont save the HTML
-#         # with open(file_path, 'wb') as file:
-#         #     file.write(data)
-#         # logger.info(f"Data saved to {file_path}")     
-         
-#         # Convert HTML to text
-#         text = convert_html_to_text(data)   
 
-#         # Save text to a separate file
-#         file_name_text = file_name + ".txt"
-#         text_file_path = os.path.join(folder, file_name_text)
-#         with open(text_file_path, 'w', encoding='utf-8') as text_file:
-#             text_file.write(text)
-#         # logger.info(f"Text data saved to {text_file_path}")      
-#     except Exception as e:
-#         print(f"Failed to save data to {file_path}: {e}")
-
-
-def save_data_to_file(data, folder, filename):
+def save_data_to_file(data, folder, file_name):
     """
-    Saves the given data to a file in the specified folder.
+    Saves data to a file.   # NOT USED ANYMORE !!
     """
+    file_path = os.path.join(folder, file_name)  # data/file
     try:
-        # Create the directory if it doesn't exist
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        # dont save the HTML
+        # with open(file_path, 'wb') as file:
+        #     file.write(data)
+        # logger.info(f"Data saved to {file_path}")     
+         
+        # Convert HTML to text
+        text = convert_html_to_text(data)   
 
-        # Save the data to the file
-        with open(os.path.join(folder, filename), 'wb') as f:
-            f.write(data)
+        # Save text to a separate file
+        file_name_text = file_name + ".txt"
+        text_file_path = os.path.join(folder, file_name_text)
+        with open(text_file_path, 'w', encoding='utf-8') as text_file:
+            text_file.write(text)
+        # logger.info(f"Text data saved to {text_file_path}")      
     except Exception as e:
-        logger.error(f"Failed to save data to {folder}/{filename}: {str(e)}")
+        print(f"Failed to save data to {file_path}: {e}")
 
-
-
-# def process_message(service, message):
-#     """
-#     Processes a single message, extracting its parts and saving them as needed.
-#     """
-#     logger.info(f"Processing message {message['id']}...")
-#     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-#     headers = msg['payload']['headers']
-#     parts = msg['payload'].get("parts")
-
-#     # Initialize variables to store subject, thread ID, and date/time
-#     subject = ""
-#     date_time = ""
-
-#     # Extract subject, thread ID, and date/time from headers
-#     for header in headers:
-#         if header['name'] == 'Subject':
-#             subject = header['value']
-
-#         if header['name'] == 'Date':
-#             date_time = header['value']
-
-#         if header['name'] == 'From':
-#             sender_id = header['value']
-
-#     if parts:
-#         for part in parts:
-#             mimeType = part.get("mimeType")
-#             body = part.get("body")
-#             partID = part.get("partId")
-#             if body and 'data' in body:
-#                 # Ensure the data is correctly padded
-#                 padding_needed = 4 - (len(body['data']) % 4)
-#                 if padding_needed:
-#                     padding = '=' * padding_needed
-#                     padded_data = body['data'] + padding
-#                 else:
-#                     padded_data = body['data']
-#                 try:
-#                     padded_data = padded_data.replace("-","+").replace("_","/")
-#                     decoded_data = base64.b64decode(padded_data)
-
-#                     if mimeType == 'text/plain':
-#                         # Handle plain text
-#                         file_name = f"message_{message['id']}_text.txt"
-#                         save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-#                     elif mimeType in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf']:
-#                         # Handle Word documents
-#                         file_name = f"message_{message['id']}_word.docx"
-#                         save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-#                     elif mimeType == 'application/pdf':
-#                         # Handle PDFs
-#                         file_name = f"message_{message['id']}_pdf.pdf"
-#                         save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-#                     elif mimeType in ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']:
-#                         # Handle images
-#                         file_name = f"message_{message['id']}_image.{mimeType.split('/')[-1]}"
-#                         save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-#                     else:
-#                         logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
-#                 except Exception as e:
-#                     logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
-#             else:
-#                 logger.info(f"\nNo body data found for part in message {message['id']}")
-#     else:
-#         logger.info(f"No parts found in message {message['id']}")
-
-#     # TODO: add a return value that indicates the success of the process
-#     # return subject, date_time, sender_id
 
 def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
-
-    TEST THIS NEW CODE FROM COPILOT:  9:13PM 2024.05.30
-    In this updated code, I've added a try/except block around the entire process_message function
-    to catch any exceptions that occur while processing a message. If an exception occurs, 
-    a log message is printed with the message ID and the exception message.
-
     """
-    try:
-        logger.info(f"Processing message {message['id']}...")
-        msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-        headers = msg['payload']['headers']
-        parts = msg['payload'].get("parts")
+    logger.info(f"Processing message {message['id']}...")
+    msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+    headers = msg['payload']['headers']
+    parts = msg['payload'].get("parts")
 
-        # Initialize variables to store subject, thread ID, and date/time
-        subject = ""
-        date_time = ""
+    # Initialize variables to store subject, thread ID, and date/time
+    subject = ""
+    date_time = ""
 
-        # Extract subject, thread ID, and date/time from headers
-        for header in headers:
-            if header['name'] == 'Subject':
-                subject = header['value']
+    # Extract subject, thread ID, and date/time from headers
+    for header in headers:
+        if header['name'] == 'Subject':
+            subject = header['value']
 
-            if header['name'] == 'Date':
-                date_time = header['value']
+        if header['name'] == 'Date':
+            date_time = header['value']
 
-            if header['name'] == 'From':
-                sender_id = header['value']
+        if header['name'] == 'From':
+            sender_id = header['value']
 
-        if parts:
-            for part in parts:
-                mimeType = part.get("mimeType")
-                body = part.get("body")
-                partID = part.get("partId")
-                if body and 'data' in body:
-                    # Ensure the data is correctly padded
-                    padding_needed = 4 - (len(body['data']) % 4)
-                    if padding_needed:
-                        padding = '=' * padding_needed
-                        padded_data = body['data'] + padding
-                    else:
-                        padded_data = body['data']
-                    try:
-                        padded_data = padded_data.replace("-","+").replace("_","/")
-                        decoded_data = base64.b64decode(padded_data)
-
-                        if mimeType == 'text/plain':
-                            # Handle plain text
-                            file_name = f"message_{message['id']}_text.txt"
-                            save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-                        elif mimeType in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf']:
-                            # Handle Word documents
-                            file_name = f"message_{message['id']}_word.docx"
-                            save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-                        elif mimeType == 'application/pdf':
-                            # Handle PDFs
-                            file_name = f"message_{message['id']}_pdf.pdf"
-                            save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-                        elif mimeType in ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']:
-                            # Handle images
-                            file_name = f"message_{message['id']}_image.{mimeType.split('/')[-1]}"
-                            save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-                        else:
-                            logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
-                    except Exception as e:
-                        logger.error(f"An error occurred while decoding data for message {message['id']}: {str(e)}")
+    if parts:
+        for part in parts:
+            mimeType = part.get("mimeType")
+            body = part.get("body")
+            partID = part.get("partId")
+            if body and 'data' in body:
+                # Ensure the data is correctly padded
+                padding_needed = 4 - (len(body['data']) % 4)
+                if padding_needed:
+                    padding = '=' * padding_needed
+                    padded_data = body['data'] + padding
                 else:
-                    logger.info(f"\nNo body data found for part in message {message['id']}")
-        else:
-            logger.info(f"No parts found in message {message['id']}")
-    except Exception as e:
-        logger.error(f"An error occurred while processing message {message['id']}: {str(e)}")
+                    padded_data = body['data']
+                try:
+                    padded_data = padded_data.replace("-","+").replace("_","/")
+                    decoded_data = base64.b64decode(padded_data)
 
+                    if mimeType and mimeType.startswith('text/'):
+                        # This is a text part, likely the message body
+                        # print(f"Decoded text part for message {message['id']}")
+
+                        #TODO insert these values into the database table 'emails'
+                        if partID == "0":
+                        #     
+                        #     # attachment count -- vcard -- pdf -- word
+                        #     # print(f"\n\npart: {part} ") 
+                        #     # print(f"partid: {partID}") 
+                            
+                            # print("======= retrieve_emails ======")
+                            # save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                            message_id = message['id']
+                            thread_id = message['threadId']
+                            msg_body = convert_html_to_text(decoded_data)
+
+                            process_email_data(subject, date_time, sender_id, \
+                                            message_id, thread_id, msg_body )
+
+                    elif mimeType and mimeType.startswith('application/'):                  
+                        # This is an attachment
+                        print(f"Decoded attachment for message {message['id']}")
+                        file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
+                        save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
+                except Exception as e:
+                    logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
+                    # print(f"Error decoding data for message {message['id']}: {e}")
+            else:
+                logger.info(f"\nNo body data found for part in message {message['id']}")
+                # print(f"No body data found for part in message {message['id']}")
+    # else:
+        # logger.info(f"No parts found in message {message['id']}")
+        # print(f"No parts found in message {message['id']}")
 
 
 def main():
@@ -462,30 +375,6 @@ def main():
     # Process each message
     for message in messages:
         process_message(service, message)
-    
-    # Print success message to show that it gets to this line in the code. 
-
-    ###### ADDED BACK FOR DEBUGGING PURPOSES - REMOVE WHEN DEVELOPMENT IS DONE  ##########
-
-    # TODO: move to a function
-    # Save the stream of all email message IDs to a timestamped file
-    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    file_name = f"message_ids_{timestamp}.json"
-    file_path = os.path.join(DATA_FOLDER, file_name)
-    with open(file_path, "w", encoding="utf-8") as file:
-        json.dump(messages, file)
-
-    # # Step 4b: Create a dataframe to store the messages
-    # Convert messages to DataFrame and save to JSON and CSV
-    messages_df = pd.DataFrame(messages)
-    # messages_df.to_json(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.json"))
-    # messages_df.to_csv(os.path.join(DATA_FOLDER, f"messages_df_{timestamp}.csv"), index=False)
- 
-    show(messages_df)
-
-    print(f"Number of unread messages: {len(messages)}")
-
-##############################################################################
 
 # Call the setup_log_file function during application initialization
 if __name__ == '__main__':

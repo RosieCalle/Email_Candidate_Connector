@@ -1,0 +1,26 @@
+Here are some of the common MIME types supported by both Gmail and Outlook:
+
+text/plain: Plain text
+text/html: HTML
+text/css: Cascading Style Sheets
+text/javascript: JavaScript
+image/jpeg: JPEG images
+image/png: PNG images
+image/gif: GIF images
+image/bmp: BMP images
+image/webp: WebP images
+audio/mpeg: MPEG audio
+audio/ogg: OGG audio
+audio/*: Any audio type
+video/mp4: MP4 video
+application/pdf: PDF
+application/msword: Microsoft Word
+application/vnd.openxmlformats-officedocument.wordprocessingml.document: Microsoft Word (OpenXML)
+application/vnd.ms-excel: Microsoft Excel
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: Microsoft Excel (OpenXML)
+application/vnd.ms-powerpoint: Microsoft PowerPoint
+application/vnd.openxmlformats-officedocument.presentationml.presentation: Microsoft PowerPoint (OpenXML)
+application/xml: XML
+application/json: JSON
+application/zip: ZIP archive files
+application/x-www-form-urlencoded: Form data

@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Gump;Forrest;;Mr.;
+FN:Forrest Gump
+ORG:Bubba Gump Shrimp Co.
+TITLE:Shrimp Man
+TEL;TYPE=WORK,VOICE:(111) 555-1212
+ADR;TYPE=WORK:;;100 Waters Edge;Baytown;LA;30314;United States of America
+EMAIL;TYPE=PREF,INTERNET:forrestgump@example.com
+END:VCARD

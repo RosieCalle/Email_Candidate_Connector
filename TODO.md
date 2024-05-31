@@ -6,20 +6,23 @@ Project Description
 
 ### Todo
 
-- MARK email as answered/read  
-- [ ] Diagram3 - dot2drawio and adjust  
-- [ ] Diagram2 - Make the dot file  
-- [ ] Diagram1 - Write how the program  should work  
-- [ ] MOVE  logger to a common module  
-- [ ] CREATE TABLE contacts  
-- [ ] EMAIL ATTACHMENT  
-- [ ] PARSING email body  
+- [ ] Processing attachments  
+- [ ] Use logger in other modules  
+- [ ] Mark email as opened  
+- [ ] Insert personal data into contacts table  
+- [ ] Paser email for personal data  
+- [ ] Send emails answering with AI 
 
 ### In Progress
 
+- [ ] Diagram3 - dot2drawio and adjust  
 - [ ] Review and improve the documentation - ALWAYS  
 - [ ] EMAIL samples: email-chains, attachements (PDF)  
 
 ### Done ✓
-- [x] EMAIL TABLE subject, timestamp, messageid, threadid, body, senderid 
+
+- [x] Filtering email body  
+- [x] Diagram1 - Write how the program  should work  
+- [x] Diagram2 - Make the dot file  
+- [x] EMAIL TABLE subject, timestamp, messageid, threadid, body, senderid  
 

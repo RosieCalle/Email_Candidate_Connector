@@ -8,7 +8,10 @@ enviro="emailagent"
 if [[ "$CONDA_DEFAULT_ENV" == "$enviro" ]]; then
     echo "The conda environment $enviro is already activated."
 else
+    echo "#### please change the conda enviroment to $enviro ####"
+    echo ""
     echo "conda activate "$enviro
+    echo ""
     exit 1
 fi
 
