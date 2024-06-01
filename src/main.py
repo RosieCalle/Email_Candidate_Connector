@@ -30,16 +30,16 @@ import time
 import pickle
 import json
 
-import datetime
+# import datetime
 import dateutil.parser as parser
 
 import pandas as pd
-from jinja2 import Environment, FileSystemLoader
+# from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import smtplib
+# import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -142,14 +142,6 @@ def gmail_authenticate():
     logger.info("Starting Gmail authentication process...")
 
     creds = None
-
-    # # Read the configuration from config.json
-    # with open(CREDENTIALS_PATH, 'r') as config_file:
-    #     config = json.load(config_file)
-
-    # # Save the credentials for the next run
-    # with open(TOKEN_PATH, 'wb') as token:
-    #     pickle.dump(creds, token)
 
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH, 'rb') as token:
@@ -328,16 +320,20 @@ def process_message(service, message):
     parts2 = payload.get('parts', [])
     for part1 in parts2:
         mimeType = part1.get("mimeType")
-        print(f"==== mimeType: {mimeType}")
+        # print(f"==== mimeType: {mimeType}")
         if 'attachmentId' in part1['body']:
         # print(f"----- body:{part1['body']}") # DONT REMOVE THIS LINE
             if mimeType == 'application/pdf':
+                # print("    found pdf attachment")
                 att_id = part1['body']['attachmentId']
                 att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
                 data = att['data']
+                message_id = message['id']
                 file_data = base64.urlsafe_b64decode(data)
-                save_data_to_file(file_data, DATA_FOLDER,"test1.pdf")   
-
+                timeid = str(int(time.time_ns())) # epoch time in nanoseconds
+                file_name = timeid + "-" + message_id + ".pdf"
+                # print(f"        file_name: {file_name}")    
+                save_data_to_file(file_data, DATA_FOLDER, file_name)   
 
             #     # Handle plain text
             #     file_name = f"message_{message['id']}_text.txt"
@@ -360,7 +356,7 @@ def process_message(service, message):
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
-            print(f"----- mimeType: {mimeType}")
+            # print(f"----- mimeType: {mimeType}")
             body = part.get("body")
             partID = part.get("partId") 
             if body and 'data' in body:
