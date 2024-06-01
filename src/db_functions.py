@@ -10,7 +10,6 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # Define the relative path to the config.json file
 relative_config_path = os.path.join(script_dir, '..', 'conf', 'config.json')
-
 config_path = os.path.abspath(relative_config_path)
 
 # Load database parameters from JSON file

@@ -6,12 +6,13 @@ Project Description
 
 ### Todo
 
+- [ ] Flask Interface  
 - [ ] Porcessing attachments  
 - [ ] Use  logger in other modules  
-- [ ] Mark email as opened  
 - [ ] Insert personal data into contacts table  
-- [ ] Paser email for personal data  
+- [ ] Mark email as opened  
 - [ ] Send emails answering with AI  
+- [ ] Paser email for personal data  
 
 ### In Progress
 

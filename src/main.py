@@ -232,32 +232,11 @@ def get_messages(service, query, max_messages=2):
     logger.info(f"Retrieved {len(messages)} messages.")
     return messages
 
-def save_data_to_file(data, folder, file_name):
-    """
-    Saves data to a file.   
-    """
-    file_path = os.path.join(folder, file_name)  # data/file
-    try:
-        # dont save the HTML
-        # with open(file_path, 'wb') as file:
-        #     file.write(data)
-        # logger.info(f"Data saved to {file_path}")     
-         
-        # Convert HTML to text
-        text = convert_html_to_text(data)   
-
-        # Save text to a separate file
-        file_name_text = file_name + ".txt"
-        text_file_path = os.path.join(folder, file_name_text)
-        with open(text_file_path, 'w', encoding='utf-8') as text_file:
-            text_file.write(text)
-        # logger.info(f"Text data saved to {text_file_path}")      
-    except Exception as e:
-        print(f"Failed to save data to {file_path}: {e}")
 
 def convert_html_to_text(html_data):
     """
     Converts HTML data to plain text, removing images and HTML formatting.
+    NOT USED ANYMORE.  
     """
     soup = BeautifulSoup(html_data, 'html.parser')
     
@@ -278,12 +257,55 @@ def convert_html_to_text(html_data):
     
     return text
 
+# TODO: make sure that html attachments are saved as html files
+# TODO: return value should be value (a boolean) indicating success
+# def save_data_to_file(data, folder, file_name):
+#     """
+#     Saves data to a file.   # NOT USED ANYMORE !!
+#     """
+#     file_path = os.path.join(folder, file_name)  # data/file
+#     try:
+#         # dont save the HTML
+#         # with open(file_path, 'wb') as file:
+#         #     file.write(data)
+#         # logger.info(f"Data saved to {file_path}")     
+         
+#         # Convert HTML to text
+#         text = convert_html_to_text(data)   
+
+#         # Save text to a separate file
+#         file_name_text = file_name + ".txt"
+#         text_file_path = os.path.join(folder, file_name_text)
+#         with open(text_file_path, 'w', encoding='utf-8') as text_file:
+#             text_file.write(text)
+#         # logger.info(f"Text data saved to {text_file_path}")      
+#     except Exception as e:
+#         print(f"Failed to save data to {file_path}: {e}")
+
+
+def save_data_to_file(data, folder, filename):
+    """
+    Saves the given data to a file in the specified folder.
+    """
+    try:
+        # Create the directory if it doesn't exist
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        # Save the data to the file
+        with open(os.path.join(folder, filename), 'wb') as f:
+            f.write(data)
+    except Exception as e:
+        logger.error(f"Failed to save data to {folder}/{filename}: {str(e)}")
+
 def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
     """
     logger.info(f"Processing message {message['id']}...")
+    print(f"\n\nProcessing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+    
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
 
@@ -302,12 +324,47 @@ def process_message(service, message):
         if header['name'] == 'From':
                 sender_id = header['value']
 
+    payload = msg['payload']
+    parts2 = payload.get('parts', [])
+    for part1 in parts2:
+        mimeType = part1.get("mimeType")
+        print(f"==== mimeType: {mimeType}")
+        if 'attachmentId' in part1['body']:
+        # print(f"----- body:{part1['body']}") # DONT REMOVE THIS LINE
+            if mimeType == 'application/pdf':
+                att_id = part1['body']['attachmentId']
+                att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
+                data = att['data']
+                file_data = base64.urlsafe_b64decode(data)
+                save_data_to_file(file_data, DATA_FOLDER,"test1.pdf")   
+
+
+            #     # Handle plain text
+            #     file_name = f"message_{message['id']}_text.txt"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf']:
+            #     # Handle Word documents
+            #     file_name = f"message_{message['id']}_word.docx"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType == 'application/pdf':
+            #     # Handle PDFs
+            #     file_name = f"message_{message['id']}_pdf.pdf"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType in ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']:
+            #     # Handle images
+            #     file_name = f"message_{message['id']}_image.{mimeType.split('/')[-1]}"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # else:
+            #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
+
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
+            print(f"----- mimeType: {mimeType}")
             body = part.get("body")
-            partID = part.get("partId")
+            partID = part.get("partId") 
             if body and 'data' in body:
+                        
                 # Ensure the data is correctly padded
                 padding_needed = 4 - (len(body['data']) % 4)
                 if padding_needed:
@@ -315,6 +372,7 @@ def process_message(service, message):
                     padded_data = body['data'] + padding
                 else:
                     padded_data = body['data']
+                
                 try:
                     padded_data = padded_data.replace("-","+").replace("_","/")
                     decoded_data = base64.b64decode(padded_data)
@@ -323,42 +381,30 @@ def process_message(service, message):
                         # This is a text part, likely the message body
                         # print(f"Decoded text part for message {message['id']}")
 
-                        #TODO insert these values into the database table 'emails'
-                        if partID == "0":
-                        #     
-                        #     # attachment count -- vcard -- pdf -- word
-                        #     # print(f"\n\npart: {part} ") 
-                        #     # print(f"partid: {partID}") 
-                            
-                            # print("======= retrieve_emails ======")
-                            # save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
+                        if partID == "0":                        
                             message_id = message['id']
                             thread_id = message['threadId']
                             msg_body = convert_html_to_text(decoded_data)
 
                             process_email_data(subject, date_time, sender_id, \
                                             message_id, thread_id, msg_body )
-
-                    elif mimeType and mimeType.startswith('application/'):                  
-                        # This is an attachment
-                        print(f"Decoded attachment for message {message['id']}")
-                        file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
-                        save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
+                    # else:
+                    #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
+                    #     print(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                 except Exception as e:
                     logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
-                    # print(f"Error decoding data for message {message['id']}: {e}")
+                    print(f"Error decoding data for message {message['id']}: {e}")
             else:
                 logger.info(f"\nNo body data found for part in message {message['id']}")
-                # print(f"No body data found for part in message {message['id']}")
+                print(f"No body data found for part in message {message['id']}")
     # else:
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
 
-
 def main():
     # Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
-    print(f"Authentication completed successfully.  The service object is now available for use.")
+    logger.info(f"Authentication completed successfully.  The service object is now available for use.")
 
     # Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
@@ -369,10 +415,13 @@ def main():
     logger.info(f"Number of retrieved messages: {len(messages)}")
 
     # Process each message
+    # TODO review why is getting 3 message for 1 message in gmail inbox
     for message in messages:
         process_message(service, message)
+    
+    print(f"Number of unread messages: {len(messages)}")
 
-# Call the setup_log_file function during application initialization
+
 if __name__ == '__main__':
     log_file_path = setup_log_file()
     logger = configure_logging(log_file_path)

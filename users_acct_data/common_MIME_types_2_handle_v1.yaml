@@ -1,0 +1,29 @@
+MVP v1.1 Attachment Handling: 
+  Support only the common MIME types supported by both Gmail and Outlook:
+
+text/plain: Plain text
+application/msword: Microsoft Word
+application/vnd.openxmlformats-officedocument.wordprocessingml.document
+application/rtf: Rich Text Format
+application/pdf: PDF
+image/jpeg: JPEG images
+image/png: PNG images
+image/gif: GIF images
+image/bmp: BMP images
+image/webp: WebP images
+
+
+#########################################################################
+.docx (Microsoft Word Open XML document): 
+application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+.pptx (Microsoft PowerPoint Open XML presentation): 
+application/vnd.openxmlformats-officedocument.presentationml.presentation
+
+#########################################################################
+
+.xlsx (Microsoft Excel Open XML spreadsheet):
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+.zip (ZIP archive):
+application/zip

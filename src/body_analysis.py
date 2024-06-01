@@ -6,8 +6,8 @@ from nltk.tokenize import word_tokenize
 import nltk
 
 # https://www.nltk.org/install.html
-nltk.download('punkt')
-nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('stopwords')
 
 def preprocess_text(text):
     # Convert to lowercase

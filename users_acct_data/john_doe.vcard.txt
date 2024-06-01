@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Doe;John;;Mr.;
+FN:John Doe
+ORG:Example Co.
+TITLE:Manager
+TEL;TYPE=WORK,VOICE:(222) 555-1212
+ADR;TYPE=WORK:;;123 Main St;Anytown;CA;12345;United States of America
+EMAIL;TYPE=PREF,INTERNET:johndoe@example.com
+END:VCARD
