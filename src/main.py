@@ -16,7 +16,6 @@ Functions:
 
 This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
 
-
 """
 
 import os
@@ -316,25 +315,6 @@ def process_message(service, message):
         if header['name'] == 'From':
                 sender_id = header['value']
 
-    payload = msg['payload']
-    parts2 = payload.get('parts', [])
-    for part1 in parts2:
-        mimeType = part1.get("mimeType")
-        # print(f"==== mimeType: {mimeType}")
-        if 'attachmentId' in part1['body']:
-        # print(f"----- body:{part1['body']}") # DONT REMOVE THIS LINE
-            if mimeType == 'application/pdf':
-                # print("    found pdf attachment")
-                att_id = part1['body']['attachmentId']
-                att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
-                data = att['data']
-                message_id = message['id']
-                file_data = base64.urlsafe_b64decode(data)
-                timeid = str(int(time.time_ns())) # epoch time in nanoseconds
-                file_name = timeid + "-" + message_id + ".pdf"
-                # print(f"        file_name: {file_name}")    
-                save_data_to_file(file_data, DATA_FOLDER, file_name)   
-
             #     # Handle plain text
             #     file_name = f"message_{message['id']}_text.txt"
             #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
@@ -357,9 +337,28 @@ def process_message(service, message):
         for part in parts:
             mimeType = part.get("mimeType")
             # print(f"----- mimeType: {mimeType}")
+
+            if 'attachmentId' in part['body']:
+                print(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
+                if mimeType == 'application/pdf':
+                    print("    found pdf attachment")
+                    att_id = part['body']['attachmentId']
+                    att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
+                    data1 = att['data']
+                    message_id = message['id']
+                    file_data = base64.urlsafe_b64decode(data1)
+                    timeid = str(int(time.time_ns())) # epoch time in nanoseconds
+                    file_name = timeid + "-" + message_id + ".pdf"
+                    print(f"        file_name: {file_name}")    
+                    save_data_to_file(file_data, DATA_FOLDER, file_name)   
+
             body = part.get("body")
             partID = part.get("partId") 
-            if body and 'data' in body:
+         
+            print(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
+
+            # if body and 'data' in body:
+            if body.get('data'):
                         
                 # Ensure the data is correctly padded
                 padding_needed = 4 - (len(body['data']) % 4)
@@ -373,17 +372,17 @@ def process_message(service, message):
                     padded_data = padded_data.replace("-","+").replace("_","/")
                     decoded_data = base64.b64decode(padded_data)
 
-                    if mimeType and mimeType.startswith('text/'):
+                    # if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
-                        # print(f"Decoded text part for message {message['id']}")
 
-                        if partID == "0":                        
-                            message_id = message['id']
-                            thread_id = message['threadId']
-                            msg_body = convert_html_to_text(decoded_data)
+                    if partID == "0":                        
+                        message_id = message['id']
+                        thread_id = message['threadId']
+                        msg_body = convert_html_to_text(decoded_data)
 
-                            process_email_data(subject, date_time, sender_id, \
-                                            message_id, thread_id, msg_body )
+                        process_email_data(subject, date_time, sender_id, \
+                                        message_id, thread_id, msg_body )
+                        
                     # else:
                     #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                     #     print(f"Unsupported MIME type for message {message['id']}: {mimeType}")
@@ -396,6 +395,12 @@ def process_message(service, message):
     # else:
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
+
+
+
+
+
+
 
 def main():
     # Authenticate and Initialize Gmail API Service

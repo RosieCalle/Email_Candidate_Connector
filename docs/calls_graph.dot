@@ -1,5 +1,4 @@
 digraph emailconnector {
-    // Main.py
     node [shape=box];
     edge [style=dotted];
 
