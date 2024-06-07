@@ -175,9 +175,6 @@ if __name__ == "__main__":
 
     db_conn.close()
 
-git config --global user.email "racostacuriel@gmail.com"
-git config --global user.name "Rafael"
-
 
 
                 
