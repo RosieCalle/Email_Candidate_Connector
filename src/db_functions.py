@@ -24,6 +24,8 @@ db_host = db_config['db_host']
 db_port = db_config['db_port']
 pg_user = db_config['pg_user']
 pg_pass = db_config['pg_pass']
+schema1 = db_config['schema']
+
 
 # Connect to the PostgreSQL server
 db_conn = psycopg2.connect(
@@ -34,45 +36,6 @@ db_conn = psycopg2.connect(
     port=db_port
 )
 
-# TODO move to utils
-def create_user(db_conn, username, password):
-    """
-    Create a new user with the specified username and password.
-    """
-    try:
-        cursor = db_conn.cursor()
-        cursor.execute(f"CREATE USER {username} WITH PASSWORD '{password}';")
-        db_conn.commit()
-        print(f"User '{username}' created successfully.")
-    except Exception as e:
-        print(f"Failed to create user '{username}': {e}")
-
-# TODO move to utils
-def update_user_password(db_conn, username, new_password):
-    """
-    Update the password for the specified user.
-    """
-    try:
-        cursor = db_conn.cursor()
-        cursor.execute(f"ALTER USER {username} WITH PASSWORD '{new_password}';")
-        db_conn.commit()
-        print(f"Password for user '{username}' updated successfully.")
-    except Exception as e:
-        print(f"Failed to update password for user '{username}': {e}")
-
-def execute_sql(sqlcmd):
-    """
-    Execute the sqlcmd
-    """
-    try:
-        cursor = db_conn.cursor()    
-        cursor.execute(sqlcmd)
-        db_conn.commit()
-        print(f"Executed {sqlcmd} ") 
-        # cursor.close()
-    except Exception as e:
-        print(f"Failed to create table: {e}")
-
 def value_exists_in_column(table_name, column_name, value):
     """
     Check if a value exists in a specific column of a table.
@@ -82,13 +45,12 @@ def value_exists_in_column(table_name, column_name, value):
     table_name (str): The name of the table to search in.
     column_name (str): The name of the column to search in.
     value (str): The value to search for.
-
     Returns:
     bool: True if the value exists in the column, False otherwise.
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {table_name} WHERE {column_name} = %s);", (value,))
+        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {SCHEMA.table_name} WHERE {column_name} = %s);", (value,))
         result = cursor.fetchone()[0]
         print(f"Checking if {value} exists in {column_name}: {result}")
         return result
@@ -113,7 +75,7 @@ def is_in_blacklist(sender_id):
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute("SELECT EXISTS(SELECT 1 FROM blacklist WHERE senderemail = %s);", (sender_id,))
+        cursor.execute("SELECT EXISTS(SELECT 1 FROM {schema1}.blacklist WHERE senderemail = %s);", (sender_id,))
         result = cursor.fetchone()[0]
         return result
     except Exception as e:
@@ -131,7 +93,7 @@ def add_to_blacklist(sender_id):
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute("INSERT INTO blacklist (senderemail) VALUES (%s);", (sender_id,))
+        cursor.execute("INSERT INTO {schema1}.blacklist (senderemail) VALUES (%s);", (sender_id,))
         db_conn.commit()
         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
     except Exception as e:
@@ -152,7 +114,7 @@ def save_to_database(data_row: dict, table_name: str):
     placeholders = ', '.join(['%s'] * len(data_row))
     
     # Prepare the INSERT statement
-    insert_statement = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders});"
+    insert_statement = f"INSERT INTO {schema1.table_name} ({columns}) VALUES ({placeholders});"
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
@@ -168,7 +130,7 @@ def save_to_database(data_row: dict, table_name: str):
         db_conn.commit()
                 
     except Exception as e:
-        print(f"Failed to insert row into {table_name}: {e}")
+        print(f"Failed to insert row into {schema1.table_name}: {e}")
         # An error occurred, roll back the transaction
         db_conn.rollback()
 

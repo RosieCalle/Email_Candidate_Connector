@@ -19,32 +19,9 @@ db_host = config['db_host']
 db_port = config['db_port']
 pg_user = config['pg_user']
 pg_pass = config['pg_pass']
+schema1 = config['schema']
 
-
-
-def create_emails_table(db_conn):
-    """
-    Create the 'emails' table within the 'emailcandidate' schema.
-    """
-    try:
-        cursor = db_conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS emailcandidate.emails (
-                subject VARCHAR(255),
-                timestamp TIMESTAMP,
-                messageid VARCHAR(16) PRIMARY KEY,
-                threadid VARCHAR(16),
-                body TEXT,
-                senderid VARCHAR(100),
-                topic VARCHAR(100)
-            );
-        """)
-        print("Table 'emails' created within 'emailcandidate' schema.")
-        db_conn.commit()
-    except Exception as e:
-        print(f"Failed to create table 'emails' within 'emailcandidate' schema: {e}")
-
-
+print(f"schema = {schema1}")
 
 # Connect to the PostgreSQL server
 db_conn = psycopg2.connect(
@@ -56,36 +33,65 @@ db_conn = psycopg2.connect(
 )
 # db_conn.autocommit = True # Enable autocommit mode
 
-def create_schema_if_not_exists(db_conn):
+def create_schema_if_not_exists(db_conn, schema_name = schema1):
     """
-    Create the 'emailcandidate' schema if it does not already exist.
+    Create the schema if it does not already exist.
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute("""
-            SELECT schema_name
-            FROM information_schema.schemata
-            WHERE schema_name = 'emailcandidate';
-        """)
-        if cursor.fetchone() is None:
-            cursor.execute("""
-                CREATE SCHEMA emailcandidate;
-            """)
-            print("Schema 'emailcandidate' created.")
-        else:
-            print("Schema 'emailcandidate' already exists.")
+        # query = """
+        #     SELECT schema_name
+        #     FROM information_schema.schemata
+        #     WHERE schema_name = %s;
+        # """
+        query = f"CREATE SCHEMA IF NOT EXISTS {schema_name};"
+        cursor.execute(query)
+
+        # if cursor.fetchone() is None:
+        #     query = """
+        #         CREATE SCHEMA %s;
+        #     """
+        #     cursor.execute(query, (schema_name,))
+
+        #     print(f"Schema '{schema_name}' created.")
+        # else:
+        #     print(f"Schema '{schema_name}' already exists.")
+    except Exception as e:
+        print(f"Failed to create schema '{schema_name}': {e}")
+
+
+def create_emails_table(db_conn):
+    """
+    Create the 'emails' table within the schma schema1.
+    """
+    try:
+        cursor = db_conn.cursor()
+        query = """
+            CREATE TABLE IF NOT EXISTS {}.{} (
+                subject VARCHAR(255),
+                timestamp TIMESTAMP,
+                messageid VARCHAR(16) PRIMARY KEY,
+                threadid VARCHAR(16),
+                body TEXT,
+                senderid VARCHAR(100),
+                topic VARCHAR(100)
+            );
+        """.format(schema1, 'emails')
+        cursor.execute(query)
+        print("Table 'emails' created within 'schema' {schema1}")
         db_conn.commit()
     except Exception as e:
-        print(f"Failed to create schema 'emailcandidate': {e}")
+        print(f"Failed to create table 'emails' within 'SCHEMA' {schema1}: {e}")
+
 
 def create_bademails_table(db_conn):
     """
-    Create the 'bademails' table within the 'emailcandidate' schema.
+    Create the 'bademails' table within the 'SCHEMA' schema1.
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS emailcandidate.bademails (
+        query = """
+            CREATE TABLE IF NOT EXISTS {}.{} (
                 subject VARCHAR(255),
                 timestamp VARCHAR(100),
                 messageid VARCHAR(20) PRIMARY KEY,
@@ -94,11 +100,12 @@ def create_bademails_table(db_conn):
                 senderid VARCHAR(100),
                 topic VARCHAR(100)
             );
-        """)
-        print("Table 'bademails' created within 'emailcandidate' schema.")
+        """.format(schema1, 'bademails')
+        cursor.execute(query)
+        print("Table 'bademails' created within 'SCHEMA' {schema1}.")
         db_conn.commit()
     except Exception as e:
-        print(f"Failed to create table 'bademails' within 'emailcandidate' schema: {e}")
+        print(f"Failed to create table 'bademails' within 'SCHEMA' {schema1}: {e}")
 
 
 def create_user(db_conn, username, password):
@@ -140,22 +147,48 @@ def execute_sql(sqlcmd):
 
 def create_attachments_table(db_conn):
     """
-    Create the 'attachments' table within the 'emailcandidate' schema.
+    Create the 'attachments' table within the 'SCHEMA' {schema1}.
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS emailcandidate.attachments (
+        query = """
+            CREATE TABLE IF NOT EXISTS {}.{} (
                 messageid VARCHAR(20) PRIMARY KEY,
                 filename VARCHAR(20),
                 filetype VARCHAR(20),
                 filepath VARCHAR(100)
             );
-        """)
-        print("Table 'attachments' created within 'emailcandidate' schema.")
+        """.format(schema1, 'attachments')
+        cursor.execute(query)
+        print("Table 'attachments' created within 'SCHEMA' {schema1}.")
         db_conn.commit()
     except Exception as e:
-        print(f"Failed to create table 'attachments' within 'emailcandidate' schema: {e}")
+        print(f"Failed to create table 'attachments' within 'SCHEMA' {schema1}: {e}")
+
+
+# def create_table(db_conn, schema_name, table_name):
+#     """
+#     Create a table within the given schema.
+#     """
+#     try:
+#         cursor = db_conn.cursor()
+#         query = """
+#             CREATE TABLE IF NOT EXISTS {}.{} (
+#                 subject VARCHAR(255),
+#                 timestamp TIMESTAMP,
+#                 messageid VARCHAR(16) PRIMARY KEY,
+#                 threadid VARCHAR(16),
+#                 body TEXT,
+#                 senderid VARCHAR(100)
+#             );
+#         """.format(schema_name, table_name)
+#         cursor.execute(query)
+#         db_conn.commit()
+#         print(f"Table '{table_name}' in schema '{schema_name}' created.")
+#     except Exception as e:
+#         print(f"Failed to create table '{table_name}' in schema '{schema_name}': {e}")
+
+
 
 
 if __name__ == "__main__":
