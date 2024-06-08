@@ -25,29 +25,25 @@ import base64
 # not used ?
 import re
 import time
-
 import pickle
 import json
-
-# import datetime
 import dateutil.parser as parser
-
 import pandas as pd
-# from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-# import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 import itables.options as opt
 from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 from process_emails import process_email_data
 from db_functions import save_to_attachment
+import logging
+from logger_config import setup_logger
+
 
 # TODO check why is not working
 MAX_EMAILS = 1
@@ -73,63 +69,24 @@ elif os.name == 'posix': # 'posix' stands for Linux/Unix
 else:
     raise OSError("Unsupported operating system")
 
-# TODO move this code to a logger module
-# Create and configure logging
-import logging
-
-# TODO move to a module
-def setup_log_file():
-    """
-    Checks if the logs folder and log file exist. If they don't, it creates them.
-    """
-    # Define the path to the logs folder
-    logs_folder_path = os.path.join(os.getcwd(), '../logs')
-    # Define the path to the log file
-    log_file_path = os.path.join(logs_folder_path, 'app.log')
-
-    # Check if the logs folder exists, if not, create it
-    if not os.path.exists(logs_folder_path):
-        os.makedirs(logs_folder_path)
-
-    # Check if the log file exists, if not, create it
-    if not os.path.exists(log_file_path):
-        with open(log_file_path, 'w') as log_file:
-            log_file.write("Log file created.\n")
-
-    return log_file_path
-
-# Configure logging using the paths provided by setup_log_file() function.
-def configure_logging(log_file_path):
-    global logger
-    # print(f"global logger object added in the first line of configure_loggin() function.")
-    logging.basicConfig(filename=log_file_path, level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-
-    # Create a logger
-    logger = logging.getLogger('email_candidate_connector')
-    logger.setLevel(logging.INFO)
-
-    # Create a file handler
-    handler = logging.FileHandler(log_file_path)
-    handler.setLevel(logging.INFO)
-
-    # Create a logging format
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-
-    # Add the handler to the logger
-    logger.addHandler(handler)
-
-    return logger
-
-# global logger
-# print(f"global logger object added.")
-
 # Define the SCOPES
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
+
+
+# Setup a logger with a custom name and log level
+logger = setup_logger('my_application', log_level=logging.INFO, log_file='../logs/application.log')
+
+# # Log messages at different levels
+logger.debug('This is a debug message.')
+logger.info('This is an informational message.')
+logger.warning('This is a warning message.')
+logger.error('This is an error message.')
+logger.critical('This is a critical message.')
+
+
+###########################################################################################
 
 def gmail_authenticate():
     """
@@ -189,7 +146,7 @@ def get_messages(service, query, max_messages=2):
     # TODO Add more error handling for the message parsing process.  
     """
 
-    global logger # Ensure logger is accessible
+    # global logger # Ensure logger is accessible
 
     logger.info("Retrieving messages...")
     messages = []
@@ -441,8 +398,8 @@ def main():
 
 
 if __name__ == '__main__':
-    log_file_path = setup_log_file()
-    logger = configure_logging(log_file_path)
+    # log_file_path = setup_log_file()
+    # logger = configure_logging(log_file_path)
 
     main()
 

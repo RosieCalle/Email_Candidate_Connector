@@ -4,6 +4,12 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 import nltk
+import logging
+from logger_config import setup_logger
+
+# Setup a logger with a custom name and log level
+logger = setup_logger('my_application', log_level=logging.INFO, log_file='../logs/application.log')
+
 
 # https://www.nltk.org/install.html
 # nltk.download('punkt')
