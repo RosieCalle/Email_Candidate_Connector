@@ -47,6 +47,7 @@ from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 from process_emails import process_email_data
+from db_functions import save_to_attachment
 
 # TODO check why is not working
 MAX_EMAILS = 1
@@ -274,9 +275,13 @@ def convert_html_to_text(html_data):
 #         print(f"Failed to save data to {file_path}: {e}")
 
 
-def save_data_to_file(data, folder, filename):
+def save_data_to_file(data, folder, filename, message_id, mimeType):
     """
     Saves the given data to a file in the specified folder.
+    # message id is added to the filename to make it unique
+    # filename is the epoch time in nanoseconds + message id + file extension
+    # filetype is determined by the mimeType
+    # filepath is the folder 
     """
     try:
         # Create the directory if it doesn't exist
@@ -286,9 +291,19 @@ def save_data_to_file(data, folder, filename):
         # Save the data to the file
         with open(os.path.join(folder, filename), 'wb') as f:
             f.write(data)
+        logger.info(f"Data saved to {folder}/{filename}")
+
+        # try:
+        save_to_attachment(message_id, folder, filename, mimeType)
+        # except Exception as e:
+        #     logger.error(f"Failed to save data to database: {str(e)}")      
+        #    
     except Exception as e:
         logger.error(f"Failed to save data to {folder}/{filename}: {str(e)}")
 
+
+
+################ BUG ################
 def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
@@ -338,8 +353,9 @@ def process_message(service, message):
             mimeType = part.get("mimeType")
             # print(f"----- mimeType: {mimeType}")
 
+            # TODO where is the attachment name ?
             if 'attachmentId' in part['body']:
-                print(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
+                # print(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
                 if mimeType == 'application/pdf':
                     print("    found pdf attachment")
                     att_id = part['body']['attachmentId']
@@ -350,12 +366,13 @@ def process_message(service, message):
                     timeid = str(int(time.time_ns())) # epoch time in nanoseconds
                     file_name = timeid + "-" + message_id + ".pdf"
                     print(f"        file_name: {file_name}")    
-                    save_data_to_file(file_data, DATA_FOLDER, file_name)   
+                    save_data_to_file(file_data, DATA_FOLDER, file_name, message_id, mimeType)   
 
+            ########### BUG ############
             body = part.get("body")
             partID = part.get("partId") 
          
-            print(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
+            # print(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
 
             # if body and 'data' in body:
             if body.get('data'):

@@ -6,17 +6,19 @@ Project Description
 
 ### Todo
 
-- [ ] Flask Interface  
-- [ ] Porcessing attachments  
+- [ ] Bug: missed body for email with attachment  
+- [ ] Avoid record duplication  
 - [ ] Use  logger in other modules  
-- [ ] Insert personal data into contacts table  
 - [ ] Mark email as opened  
-- [ ] Send emails answering with AI  
+- [ ] Insert personal data into contacts table  
 - [ ] Paser email for personal data  
+- [ ] v2 Flask Interface  
+- [ ] v2 - Send emails answering with AI  
 
 ### In Progress
 
 - [ ] Diagram3 - dot2drawio and adjust  
+- [ ] Porcessing attachments  
 - [ ] Review and improve the documentation - ALWAYS  
 - [ ] EMAIL samples: email-chains, attachements (PDF)  
 

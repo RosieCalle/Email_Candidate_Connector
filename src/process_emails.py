@@ -18,7 +18,7 @@ def extract_email(sender_id):
 
 def filter_email(new_data_row):
 
-    print(" ------- filter_email")
+    # print(" ------- filter_email")
 
     if new_data_row['messageid'] != new_data_row['threadid']:
         # this email is a thread for some message_id        
@@ -33,12 +33,12 @@ def filter_email(new_data_row):
             try:
                 save_to_database(new_data_row, "emails")
             except Exception as e:
-                print(f"Error processing email data: {e}")  
+                print(f"Error processing email data for emails table: {e}")  
         else:
             try:
                 save_to_database(new_data_row, "bademails")
             except Exception as e:
-                print(f"Error processing email data: {e}") 
+                print(f"Error processing email data for bademails table: {e}") 
 
     # print("end categorization\n\n")
 

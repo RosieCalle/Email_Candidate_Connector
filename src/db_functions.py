@@ -50,71 +50,78 @@ def value_exists_in_column(table_name, column_name, value):
     """
     try:
         cursor = db_conn.cursor()
-        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {SCHEMA.table_name} WHERE {column_name} = %s);", (value,))
+        statement = f"SELECT EXISTS(SELECT 1 FROM {schema1}.{table_name} WHERE {column_name} = %s);"
+        cursor.execute(statement, (value,))
         result = cursor.fetchone()[0]
-        print(f"Checking if {value} exists in {column_name}: {result}")
+        # print(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
         print(f"Failed to check if {value} exists in {column_name}: {e}")
-        return False
+        db_conn.rollback()
+        # Re-raise the exception
+        raise
 
-
-
-# def is_in_blacklist(db_conn, sender_id):
-def is_in_blacklist(sender_id):
-
-    """
-    Check if a sender_id exists in the blacklist table.
-
-    Parameters:
-    db_conn (psycopg2.extensions.connection): The database connection.
-    sender_id (int): The sender_id to check.
-
-    Returns:
-    bool: True if the sender_id exists in the blacklist, False otherwise.
-    """
-    try:
-        cursor = db_conn.cursor()
-        cursor.execute("SELECT EXISTS(SELECT 1 FROM {schema1}.blacklist WHERE senderemail = %s);", (sender_id,))
-        result = cursor.fetchone()[0]
-        return result
-    except Exception as e:
-        print(f"Failed to check if sender_id exists in blacklist: {e}")
-        return False
-
-
-def add_to_blacklist(sender_id):
-    """
-    Insert a sender_id into the blacklist table.
-
-    Parameters:
-    db_conn (psycopg2.extensions.connection): The database connection.
-    sender_id (int): The sender_id to insert into the blacklist.
-    """
-    try:
-        cursor = db_conn.cursor()
-        cursor.execute("INSERT INTO {schema1}.blacklist (senderemail) VALUES (%s);", (sender_id,))
-        db_conn.commit()
-        print(f"Sender_id '{sender_id}' added to blacklist successfully.")
-    except Exception as e:
-        print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
-
-def save_to_database(data_row: dict, table_name: str):
+def save_to_database(data_row: dict, table_name):
     """
     Insert data_row to a PostgreSQL table.
     Parameters:
     data_row: dict
     table_name (str): The name of the table to insert to.
     """
+    # Get the list of columns from the data_row
+    columns = ', '.join(data_row.keys())
+    # print(f"Columns: {columns}")
+
+    # Prepare the placeholders for the INSERT statement
+    placeholders = ', '.join(['%s'] * len(data_row))
+    # print(f"Placeholders: {placeholders}")
+
+    # Prepare the INSERT statement
+    insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
+    # print(f"Insert statement: {insert_statement}")
     
+    # Prepare the data for insertion
+    data = tuple(data_row.values())
+    print(f"Data: {data}")
+    
+    try:
+        # Create a cursor object
+        cursor = db_conn.cursor()
+        
+        # Execute the INSERT statement
+        cursor.execute(insert_statement, data)
+        
+        # Commit the transaction
+        db_conn.commit()
+                
+    except Exception as e:
+        print(f"Failed to insert row into {schema1}.{table_name}: {e}")
+        # An error occurred, roll back the transaction
+        db_conn.rollback()
+
+        # Re-raise the exception
+        raise
+
+def save_to_attachment(message_id, folder, filename, mimeType):
+    table_name = 'attachments'
+    data_row = {
+        'messageid': message_id,
+        'filename': filename,
+        'filetype': mimeType,
+        'filepath': folder
+    }
+
+    print(f"\n\nData row: {data_row}")
+
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
     
     # Prepare the placeholders for the INSERT statement
     placeholders = ', '.join(['%s'] * len(data_row))
-    
+
     # Prepare the INSERT statement
-    insert_statement = f"INSERT INTO {schema1.table_name} ({columns}) VALUES ({placeholders});"
+    insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
+    # print(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
@@ -130,11 +137,50 @@ def save_to_database(data_row: dict, table_name: str):
         db_conn.commit()
                 
     except Exception as e:
-        print(f"Failed to insert row into {schema1.table_name}: {e}")
-        # An error occurred, roll back the transaction
+        print(f"Failed to insert row into {schema1}.{table_name}: {e}")
         db_conn.rollback()
+        # An error occurred, roll back the transaction
 
         # Re-raise the exception
         raise
 
+
+# # def is_in_blacklist(db_conn, sender_id):
+# def is_in_blacklist(sender_id):
+
+#     """
+#     Check if a sender_id exists in the blacklist table.
+
+#     Parameters:
+#     db_conn (psycopg2.extensions.connection): The database connection.
+#     sender_id (int): The sender_id to check.
+
+#     Returns:
+#     bool: True if the sender_id exists in the blacklist, False otherwise.
+#     """
+#     try:
+#         cursor = db_conn.cursor()
+#         cursor.execute("SELECT EXISTS(SELECT 1 FROM {schema1}.blacklist WHERE senderemail = %s);", (sender_id,))
+#         result = cursor.fetchone()[0]
+#         return result
+#     except Exception as e:
+#         print(f"Failed to check if sender_id exists in blacklist: {e}")
+#         return False
+
+# def add_to_blacklist(sender_id):
+
+#     """
+#     Insert a sender_id into the blacklist table.
+
+#     Parameters:
+#     db_conn (psycopg2.extensions.connection): The database connection.
+#     sender_id (int): The sender_id to insert into the blacklist.
+#     """
+#     try:
+#         cursor = db_conn.cursor()
+#         cursor.execute("INSERT INTO {schema1}.blacklist (senderemail) VALUES (%s);", (sender_id,))
+#         db_conn.commit()
+#         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
+#     except Exception as e:
+#         print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
 
