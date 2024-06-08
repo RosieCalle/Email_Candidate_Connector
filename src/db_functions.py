@@ -2,8 +2,10 @@ import psycopg2
 import json
 import os
 import pandas as pd
-
-# TODO add parameters for create or update users
+import logging
+from logger_config import setup_logger
+# Setup a logger with a custom name and log level
+logger = setup_logger('email-candidate')
 
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -56,7 +58,7 @@ def value_exists_in_column(table_name, column_name, value):
         # print(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
-        print(f"Failed to check if {value} exists in {column_name}: {e}")
+        logger.error(f"Failed to check if {value} exists in {column_name}: {e}")
         db_conn.rollback()
         # Re-raise the exception
         raise
@@ -95,7 +97,7 @@ def save_to_database(data_row: dict, table_name):
         db_conn.commit()
                 
     except Exception as e:
-        print(f"Failed to insert row into {schema1}.{table_name}: {e}")
+        logger.error(f"Failed to insert row into {schema1}.{table_name}: {e}")
         # An error occurred, roll back the transaction
         db_conn.rollback()
 
@@ -137,7 +139,7 @@ def save_to_attachment(message_id, folder, filename, mimeType):
         db_conn.commit()
                 
     except Exception as e:
-        print(f"Failed to insert row into {schema1}.{table_name}: {e}")
+        logger.error(f"Failed to insert row into {schema1}.{table_name}: {e}")
         db_conn.rollback()
         # An error occurred, roll back the transaction
 

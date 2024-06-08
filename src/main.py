@@ -43,6 +43,8 @@ from process_emails import process_email_data
 from db_functions import save_to_attachment
 import logging
 from logger_config import setup_logger
+# Setup a logger with a custom name and log level
+logger = setup_logger('email-candidate')
 
 
 # TODO check why is not working
@@ -74,9 +76,6 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
 
-
-# Setup a logger with a custom name and log level
-logger = setup_logger('my_application', log_level=logging.INFO, log_file='../logs/application.log')
 
 # # Log messages at different levels
 logger.debug('This is a debug message.')
@@ -124,17 +123,17 @@ def gmail_authenticate():
     # Log and print token information
     if creds:
         logger.info(f"Bearer token expires in: {creds.expiry}")
-        print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
+        # print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
 
     try:
         service = build('gmail', 'v1', credentials=creds)
         logger.info("Service created successfully.")
-        print("Service created successfully")     # for debugging purposes
+        # print("Service created successfully")     # for debugging purposes
         return service
     
     except Exception as e:
-        logger.info(f"An error occurred during Gmail authentication: {e}")
-        print(f"An error occurred: {e}")         # for debugging purposes
+        logger.error(f"An error occurred during Gmail authentication: {e}")
+        # print(f"An error occurred: {e}")         # for debugging purposes
         return None
 
 def get_messages(service, query, max_messages=2):
@@ -394,7 +393,7 @@ def main():
     for message in messages:
         process_message(service, message)
     
-    print(f"Number of unread messages: {len(messages)}")
+    # print(f"Number of unread messages: {len(messages)}")
 
 
 if __name__ == '__main__':
