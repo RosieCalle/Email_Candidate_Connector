@@ -76,15 +76,6 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
 
-
-# # Log messages at different levels
-logger.debug('This is a debug message.')
-logger.info('This is an informational message.')
-logger.warning('This is a warning message.')
-logger.error('This is an error message.')
-logger.critical('This is a critical message.')
-
-
 ###########################################################################################
 
 def gmail_authenticate():
@@ -118,22 +109,19 @@ def gmail_authenticate():
         # Save the credentials for the next run
         with open(TOKEN_PATH, 'wb') as token:
             pickle.dump(creds, token)
-            logger.info("New credentials saved to token file.")
+            logger.warning("New credentials saved to token file.")
 
     # Log and print token information
     if creds:
-        logger.info(f"Bearer token expires in: {creds.expiry}")
-        # print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
+        logger.warning(f"Bearer token expires in: {creds.expiry}")
 
     try:
         service = build('gmail', 'v1', credentials=creds)
         logger.info("Service created successfully.")
-        # print("Service created successfully")     # for debugging purposes
         return service
     
     except Exception as e:
         logger.error(f"An error occurred during Gmail authentication: {e}")
-        # print(f"An error occurred: {e}")         # for debugging purposes
         return None
 
 def get_messages(service, query, max_messages=2):
@@ -360,11 +348,9 @@ def process_message(service, message):
                     #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                     #     print(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                 except Exception as e:
-                    logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
-                    print(f"Error decoding data for message {message['id']}: {e}")
+                    logger.error(f"An error occurred while decoding data for message {message['id']}: {e}")
             else:
-                logger.info(f"\nNo body data found for part in message {message['id']}")
-                print(f"No body data found for part in message {message['id']}")
+                logger.error(f"\nNo body data found for part in message {message['id']}")
     # else:
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
