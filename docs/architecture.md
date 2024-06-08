@@ -1,10 +1,3 @@
-EMAIL ATTACHMENT TABLE 
-- messageid  
-- attachment1  
-- attachemnt2  
-- attachment3 
-
-Note:   save the path folder to a local folder with the doc
 
 
 PARSING email body, look for phone number, address , links like linkedin or personal web page

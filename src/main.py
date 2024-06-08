@@ -16,7 +16,6 @@ Functions:
 
 This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
 
-
 """
 
 import os
@@ -26,28 +25,27 @@ import base64
 # not used ?
 import re
 import time
-
 import pickle
 import json
-
-import datetime
 import dateutil.parser as parser
-
 import pandas as pd
-from jinja2 import Environment, FileSystemLoader
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 import itables.options as opt
 from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 from process_emails import process_email_data
+from db_functions import save_to_attachment
+import logging
+from logger_config import setup_logger
+# Setup a logger with a custom name and log level
+logger = setup_logger('email-candidate')
+
 
 # TODO check why is not working
 MAX_EMAILS = 1
@@ -73,63 +71,12 @@ elif os.name == 'posix': # 'posix' stands for Linux/Unix
 else:
     raise OSError("Unsupported operating system")
 
-# TODO move this code to a logger module
-# Create and configure logging
-import logging
-
-# TODO move to a module
-def setup_log_file():
-    """
-    Checks if the logs folder and log file exist. If they don't, it creates them.
-    """
-    # Define the path to the logs folder
-    logs_folder_path = os.path.join(os.getcwd(), '../logs')
-    # Define the path to the log file
-    log_file_path = os.path.join(logs_folder_path, 'app.log')
-
-    # Check if the logs folder exists, if not, create it
-    if not os.path.exists(logs_folder_path):
-        os.makedirs(logs_folder_path)
-
-    # Check if the log file exists, if not, create it
-    if not os.path.exists(log_file_path):
-        with open(log_file_path, 'w') as log_file:
-            log_file.write("Log file created.\n")
-
-    return log_file_path
-
-# Configure logging using the paths provided by setup_log_file() function.
-def configure_logging(log_file_path):
-    global logger
-    # print(f"global logger object added in the first line of configure_loggin() function.")
-    logging.basicConfig(filename=log_file_path, level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-
-    # Create a logger
-    logger = logging.getLogger('email_candidate_connector')
-    logger.setLevel(logging.INFO)
-
-    # Create a file handler
-    handler = logging.FileHandler(log_file_path)
-    handler.setLevel(logging.INFO)
-
-    # Create a logging format
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-
-    # Add the handler to the logger
-    logger.addHandler(handler)
-
-    return logger
-
-# global logger
-# print(f"global logger object added.")
-
 # Define the SCOPES
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
+
+###########################################################################################
 
 def gmail_authenticate():
     """
@@ -142,14 +89,6 @@ def gmail_authenticate():
     logger.info("Starting Gmail authentication process...")
 
     creds = None
-
-    # # Read the configuration from config.json
-    # with open(CREDENTIALS_PATH, 'r') as config_file:
-    #     config = json.load(config_file)
-
-    # # Save the credentials for the next run
-    # with open(TOKEN_PATH, 'wb') as token:
-    #     pickle.dump(creds, token)
 
     if os.path.exists(TOKEN_PATH):
         with open(TOKEN_PATH, 'rb') as token:
@@ -170,22 +109,19 @@ def gmail_authenticate():
         # Save the credentials for the next run
         with open(TOKEN_PATH, 'wb') as token:
             pickle.dump(creds, token)
-            logger.info("New credentials saved to token file.")
+            logger.warning("New credentials saved to token file.")
 
     # Log and print token information
     if creds:
-        logger.info(f"Bearer token expires in: {creds.expiry}")
-        print(f"Bearer token expires in: {creds.expiry}")  # for debugging purposes
+        logger.warning(f"Bearer token expires in: {creds.expiry}")
 
     try:
         service = build('gmail', 'v1', credentials=creds)
         logger.info("Service created successfully.")
-        print("Service created successfully")     # for debugging purposes
         return service
     
     except Exception as e:
-        logger.info(f"An error occurred during Gmail authentication: {e}")
-        print(f"An error occurred: {e}")         # for debugging purposes
+        logger.error(f"An error occurred during Gmail authentication: {e}")
         return None
 
 def get_messages(service, query, max_messages=2):
@@ -197,7 +133,7 @@ def get_messages(service, query, max_messages=2):
     # TODO Add more error handling for the message parsing process.  
     """
 
-    global logger # Ensure logger is accessible
+    # global logger # Ensure logger is accessible
 
     logger.info("Retrieving messages...")
     messages = []
@@ -232,32 +168,11 @@ def get_messages(service, query, max_messages=2):
     logger.info(f"Retrieved {len(messages)} messages.")
     return messages
 
-def save_data_to_file(data, folder, file_name):
-    """
-    Saves data to a file.   
-    """
-    file_path = os.path.join(folder, file_name)  # data/file
-    try:
-        # dont save the HTML
-        # with open(file_path, 'wb') as file:
-        #     file.write(data)
-        # logger.info(f"Data saved to {file_path}")     
-         
-        # Convert HTML to text
-        text = convert_html_to_text(data)   
-
-        # Save text to a separate file
-        file_name_text = file_name + ".txt"
-        text_file_path = os.path.join(folder, file_name_text)
-        with open(text_file_path, 'w', encoding='utf-8') as text_file:
-            text_file.write(text)
-        # logger.info(f"Text data saved to {text_file_path}")      
-    except Exception as e:
-        print(f"Failed to save data to {file_path}: {e}")
 
 def convert_html_to_text(html_data):
     """
     Converts HTML data to plain text, removing images and HTML formatting.
+    NOT USED ANYMORE.  
     """
     soup = BeautifulSoup(html_data, 'html.parser')
     
@@ -278,12 +193,69 @@ def convert_html_to_text(html_data):
     
     return text
 
+# TODO: make sure that html attachments are saved as html files
+# TODO: return value should be value (a boolean) indicating success
+# def save_data_to_file(data, folder, file_name):
+#     """
+#     Saves data to a file.   # NOT USED ANYMORE !!
+#     """
+#     file_path = os.path.join(folder, file_name)  # data/file
+#     try:
+#         # dont save the HTML
+#         # with open(file_path, 'wb') as file:
+#         #     file.write(data)
+#         # logger.info(f"Data saved to {file_path}")     
+         
+#         # Convert HTML to text
+#         text = convert_html_to_text(data)   
+
+#         # Save text to a separate file
+#         file_name_text = file_name + ".txt"
+#         text_file_path = os.path.join(folder, file_name_text)
+#         with open(text_file_path, 'w', encoding='utf-8') as text_file:
+#             text_file.write(text)
+#         # logger.info(f"Text data saved to {text_file_path}")      
+#     except Exception as e:
+#         print(f"Failed to save data to {file_path}: {e}")
+
+
+def save_data_to_file(data, folder, filename, message_id, mimeType):
+    """
+    Saves the given data to a file in the specified folder.
+    # message id is added to the filename to make it unique
+    # filename is the epoch time in nanoseconds + message id + file extension
+    # filetype is determined by the mimeType
+    # filepath is the folder 
+    """
+    try:
+        # Create the directory if it doesn't exist
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        # Save the data to the file
+        with open(os.path.join(folder, filename), 'wb') as f:
+            f.write(data)
+        logger.info(f"Data saved to {folder}/{filename}")
+
+        # try:
+        save_to_attachment(message_id, folder, filename, mimeType)
+        # except Exception as e:
+        #     logger.error(f"Failed to save data to database: {str(e)}")      
+        #    
+    except Exception as e:
+        logger.error(f"Failed to save data to {folder}/{filename}: {str(e)}")
+
+
+
+################ BUG ################
 def process_message(service, message):
     """
     Processes a single message, extracting its parts and saving them as needed.
     """
     logger.info(f"Processing message {message['id']}...")
+    print(f"\n\nProcessing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
+    
     headers = msg['payload']['headers']
     parts = msg['payload'].get("parts")
 
@@ -302,12 +274,53 @@ def process_message(service, message):
         if header['name'] == 'From':
                 sender_id = header['value']
 
+            #     # Handle plain text
+            #     file_name = f"message_{message['id']}_text.txt"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf']:
+            #     # Handle Word documents
+            #     file_name = f"message_{message['id']}_word.docx"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType == 'application/pdf':
+            #     # Handle PDFs
+            #     file_name = f"message_{message['id']}_pdf.pdf"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # elif mimeType in ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']:
+            #     # Handle images
+            #     file_name = f"message_{message['id']}_image.{mimeType.split('/')[-1]}"
+            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
+            # else:
+            #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
+
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
+            # print(f"----- mimeType: {mimeType}")
+
+            # TODO where is the attachment name ?
+            if 'attachmentId' in part['body']:
+                # print(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
+                if mimeType == 'application/pdf':
+                    print("    found pdf attachment")
+                    att_id = part['body']['attachmentId']
+                    att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
+                    data1 = att['data']
+                    message_id = message['id']
+                    file_data = base64.urlsafe_b64decode(data1)
+                    timeid = str(int(time.time_ns())) # epoch time in nanoseconds
+                    file_name = timeid + "-" + message_id + ".pdf"
+                    print(f"        file_name: {file_name}")    
+                    save_data_to_file(file_data, DATA_FOLDER, file_name, message_id, mimeType)   
+
+            ########### BUG ############
             body = part.get("body")
-            partID = part.get("partId")
-            if body and 'data' in body:
+            partID = part.get("partId") 
+         
+            # print(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
+
+            # if body and 'data' in body:
+            if body.get('data'):
+                        
                 # Ensure the data is correctly padded
                 padding_needed = 4 - (len(body['data']) % 4)
                 if padding_needed:
@@ -315,50 +328,43 @@ def process_message(service, message):
                     padded_data = body['data'] + padding
                 else:
                     padded_data = body['data']
+                
                 try:
                     padded_data = padded_data.replace("-","+").replace("_","/")
                     decoded_data = base64.b64decode(padded_data)
 
-                    if mimeType and mimeType.startswith('text/'):
+                    # if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
-                        # print(f"Decoded text part for message {message['id']}")
 
-                        #TODO insert these values into the database table 'emails'
-                        if partID == "0":
-                        #     
-                        #     # attachment count -- vcard -- pdf -- word
-                        #     # print(f"\n\npart: {part} ") 
-                        #     # print(f"partid: {partID}") 
-                            
-                            # print("======= retrieve_emails ======")
-                            # save_data_to_file(decoded_data, DATA_FOLDER, f"message_body_{message['id']}.html")
-                            message_id = message['id']
-                            thread_id = message['threadId']
-                            msg_body = convert_html_to_text(decoded_data)
+                    if partID == "0":                        
+                        message_id = message['id']
+                        thread_id = message['threadId']
+                        msg_body = convert_html_to_text(decoded_data)
 
-                            process_email_data(subject, date_time, sender_id, \
-                                            message_id, thread_id, msg_body )
-
-                    elif mimeType and mimeType.startswith('application/'):                  
-                        # This is an attachment
-                        print(f"Decoded attachment for message {message['id']}")
-                        file_name = f"attachment_{message['id']}_{part.get('filename', 'unknown')}"
-                        save_data_to_file(decoded_data, DATA_FOLDER,  file_name)
+                        process_email_data(subject, date_time, sender_id, \
+                                        message_id, thread_id, msg_body )
+                        
+                    # else:
+                    #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
+                    #     print(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                 except Exception as e:
-                    logger.info(f"An error occurred while decoding data for message {message['id']}: {e}")
-                    # print(f"Error decoding data for message {message['id']}: {e}")
+                    logger.error(f"An error occurred while decoding data for message {message['id']}: {e}")
             else:
-                logger.info(f"\nNo body data found for part in message {message['id']}")
-                # print(f"No body data found for part in message {message['id']}")
+                logger.error(f"\nNo body data found for part in message {message['id']}")
     # else:
         # logger.info(f"No parts found in message {message['id']}")
         # print(f"No parts found in message {message['id']}")
 
 
+
+
+
+
+
 def main():
     # Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
-    print(f"Authentication completed successfully.  The service object is now available for use.")
+    logger.info(f"Authentication completed successfully.  The service object is now available for use.")
 
     # Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
@@ -369,13 +375,16 @@ def main():
     logger.info(f"Number of retrieved messages: {len(messages)}")
 
     # Process each message
+    # TODO review why is getting 3 message for 1 message in gmail inbox
     for message in messages:
         process_message(service, message)
+    
+    # print(f"Number of unread messages: {len(messages)}")
 
-# Call the setup_log_file function during application initialization
+
 if __name__ == '__main__':
-    log_file_path = setup_log_file()
-    logger = configure_logging(log_file_path)
+    # log_file_path = setup_log_file()
+    # logger = configure_logging(log_file_path)
 
     main()
 

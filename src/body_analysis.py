@@ -1,24 +1,26 @@
 
 import re
+import nltk
+import logging
+
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
-import nltk
+from logger_config import setup_logger
+# Setup a logger with a custom name and log level
+logger = setup_logger('email-candidate')
 
 # https://www.nltk.org/install.html
-nltk.download('punkt')
-nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('stopwords')
 
 def preprocess_text(text):
     # Convert to lowercase
-    text = text.lower()
-    
+    text = text.lower() 
     # Remove punctuation
-    text = re.sub(r'[^\w\s]', '', text)
-    
+    text = re.sub(r'[^\w\s]', '', text) 
     # Tokenize the text
-    tokens = word_tokenize(text)
-    
+    tokens = word_tokenize(text) 
     # Remove stopwords
     stop_words = set(stopwords.words('english'))
     tokens = [word for word in tokens if word not in stop_words]
@@ -27,9 +29,7 @@ def preprocess_text(text):
     # https://tartarus.org/martin/PorterStemmer/
     stemmer = PorterStemmer()
     tokens = [stemmer.stem(word) for word in tokens]
-    
     return ' '.join(tokens)
-
 
 def determine_topic(text_body: str):
     # List of keywords for each topic

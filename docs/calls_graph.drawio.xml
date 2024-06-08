@@ -1,0 +1,44 @@
+graph TD;
+// Main.py
+    node [shape=box];
+    main_setup_log_file [label="setup_log_file()"];
+    main_configure_logging [label="configure_logging()"];
+    main_gmail_authenticate [label="gmail_authenticate()"];
+    main_get_messages [label="get_messages()"];
+    main_save_data_to_file [label="save_data_to_file()"];
+    main_convert_html_to_text [label="convert_html_to_text()"];
+    main_process_message [label="process_message()"];
+    main_main [label="main()"];
+
+    // db_functions.py
+    db_create_user [label="create_user()"];
+    db_update_user_password [label="update_user_password()"];
+    db_execute_sql [label="execute_sql()"];
+    db_value_exists_in_column [label="value_exists_in_column()"];
+    db_add_to_blacklist [label="add_to_blacklist()"];
+    db_save_to_database [label="save_to_database()"];
+
+    // process_emails.py
+    pe_mark_as_processed [label="mark_as_processed()"];
+    pe_extract_email [label="extract_email()"];
+    pe_filter_email [label="filter_email()"];
+    pe_process_email_data [label="process_email_data()"];
+
+    // body_analysis.py
+    ba_preprocess_text [label="preprocess_text()"];
+    ba_determine_topic [label="determine_topic()"];
+
+    // Edges representing function calls
+    main_main --> main_gmail_authenticate;
+    main_main --> main_get_messages;
+    main_main --> main_process_message;
+
+    main_process_message --> pe_process_email_data;
+
+    pe_process_email_data --> pe_filter_email;
+    pe_process_email_data --> db_value_exists_in_column;
+    pe_process_email_data --> db_save_to_database;
+
+    pe_filter_email --> db_save_to_database;
+
+    pe_process_email_data --> ba_determine_topic;
