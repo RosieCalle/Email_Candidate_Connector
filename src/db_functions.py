@@ -55,7 +55,7 @@ def value_exists_in_column(table_name, column_name, value):
         statement = f"SELECT EXISTS(SELECT 1 FROM {schema1}.{table_name} WHERE {column_name} = %s);"
         cursor.execute(statement, (value,))
         result = cursor.fetchone()[0]
-        # print(f"Checking if {value} exists in {column_name}: {result}")
+        logger.debug(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
         logger.error(f"Failed to check if {value} exists in {column_name}: {e}")
@@ -72,19 +72,19 @@ def save_to_database(data_row: dict, table_name):
     """
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
-    # print(f"Columns: {columns}")
+    logger.debug(f"Columns: {columns}")
 
     # Prepare the placeholders for the INSERT statement
     placeholders = ', '.join(['%s'] * len(data_row))
-    # print(f"Placeholders: {placeholders}")
+    logger.debug(f"Placeholders: {placeholders}")
 
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # print(f"Insert statement: {insert_statement}")
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
-    print(f"Data: {data}")
+    logger.debug(f"Data: {data}")
     
     try:
         # Create a cursor object
@@ -113,7 +113,7 @@ def save_to_attachment(message_id, folder, filename, mimeType):
         'filepath': folder
     }
 
-    print(f"\n\nData row: {data_row}")
+    logger.debug(f"\n\nData row: {data_row}")
 
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
@@ -123,7 +123,7 @@ def save_to_attachment(message_id, folder, filename, mimeType):
 
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # print(f"Insert statement: {insert_statement}")
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())

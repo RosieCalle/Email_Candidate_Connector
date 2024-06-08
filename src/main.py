@@ -153,8 +153,7 @@ def get_messages(service, query, max_messages=2):
             if not page_token or len(messages) >= max_messages:
                 cont = False
 
-            logger.info(f"Page {count} retrieved")            
-            #print (f"Page {count} retrieved")   # for debugging purposes
+            logger.debug (f"Page {count} retrieved")   # for debugging purposes
 
             # if count >= MAX_EMAILS:  # commented out when max_messages argument was added
             #     cont = False  # REMOVE THIS WHEN TESTING IS COMPLETE
@@ -162,7 +161,6 @@ def get_messages(service, query, max_messages=2):
 
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")
-            #print(f"An error occurred while retrieving messages: {e}")    # for debugging purposes
             break
 
     logger.info(f"Retrieved {len(messages)} messages.")
@@ -253,7 +251,6 @@ def process_message(service, message):
     Processes a single message, extracting its parts and saving them as needed.
     """
     logger.info(f"Processing message {message['id']}...")
-    print(f"\n\nProcessing message {message['id']}...")
     msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
     
     headers = msg['payload']['headers']
@@ -295,13 +292,13 @@ def process_message(service, message):
     if parts:
         for part in parts:
             mimeType = part.get("mimeType")
-            # print(f"----- mimeType: {mimeType}")
+            logger.debug(f"----- mimeType: {mimeType}")
 
             # TODO where is the attachment name ?
             if 'attachmentId' in part['body']:
-                # print(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
+                logger.debug(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
                 if mimeType == 'application/pdf':
-                    print("    found pdf attachment")
+                    logger.debug("      found pdf attachment")
                     att_id = part['body']['attachmentId']
                     att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
                     data1 = att['data']
@@ -309,14 +306,14 @@ def process_message(service, message):
                     file_data = base64.urlsafe_b64decode(data1)
                     timeid = str(int(time.time_ns())) # epoch time in nanoseconds
                     file_name = timeid + "-" + message_id + ".pdf"
-                    print(f"        file_name: {file_name}")    
+                    logger.debug(f"         file_name: {file_name}")    
                     save_data_to_file(file_data, DATA_FOLDER, file_name, message_id, mimeType)   
 
             ########### BUG ############
             body = part.get("body")
             partID = part.get("partId") 
          
-            # print(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
+            logger.debug(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
 
             # if body and 'data' in body:
             if body.get('data'):
@@ -346,14 +343,12 @@ def process_message(service, message):
                         
                     # else:
                     #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
-                    #     print(f"Unsupported MIME type for message {message['id']}: {mimeType}")
                 except Exception as e:
                     logger.error(f"An error occurred while decoding data for message {message['id']}: {e}")
             else:
-                logger.error(f"\nNo body data found for part in message {message['id']}")
-    # else:
-        # logger.info(f"No parts found in message {message['id']}")
-        # print(f"No parts found in message {message['id']}")
+                logger.info(f"\nNo body data found for part = {partID} in messageid = {message['id']}")
+    else:
+        logger.info(f"No parts found in message {message['id']}")
 
 
 
