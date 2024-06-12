@@ -55,7 +55,7 @@ def value_exists_in_column(table_name, column_name, value):
         statement = f"SELECT EXISTS(SELECT 1 FROM {schema1}.{table_name} WHERE {column_name} = %s);"
         cursor.execute(statement, (value,))
         result = cursor.fetchone()[0]
-        # print(f"Checking if {value} exists in {column_name}: {result}")
+        logger.debug(f"Checking if {value} exists in {column_name}: {result}")
         return result
     except Exception as e:
         logger.error(f"Failed to check if {value} exists in {column_name}: {e}")
@@ -72,19 +72,26 @@ def save_to_database(data_row: dict, table_name):
     """
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
-    # print(f"Columns: {columns}")
+    logger.debug(f"Columns: {columns}")
 
     # Prepare the placeholders for the INSERT statement
     placeholders = ', '.join(['%s'] * len(data_row))
-    # print(f"Placeholders: {placeholders}")
+    logger.debug(f"Placeholders: {placeholders}")
 
+    # check if the record already exists
+    record_exist = value_exists_in_column(table_name, 'messageid', data_row['messageid'])
+    
+    if record_exist:
+        logger.debug(f"Record already exists in {table_name}")
+        return
+    
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # print(f"Insert statement: {insert_statement}")
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
-    print(f"Data: {data}")
+    logger.debug(f"Data: {data}")
     
     try:
         # Create a cursor object
@@ -113,7 +120,7 @@ def save_to_attachment(message_id, folder, filename, mimeType):
         'filepath': folder
     }
 
-    print(f"\n\nData row: {data_row}")
+    logger.debug(f"\n\nData row: {data_row}")
 
     # Get the list of columns from the data_row
     columns = ', '.join(data_row.keys())
@@ -121,9 +128,17 @@ def save_to_attachment(message_id, folder, filename, mimeType):
     # Prepare the placeholders for the INSERT statement
     placeholders = ', '.join(['%s'] * len(data_row))
 
+    # check if the record already exists
+    record_exist = value_exists_in_column(table_name, 'filename', filename)
+    if record_exist:
+        logger.debug(f"Record already exists in {table_name}")
+        # TODO in case we want to keep always the latest attachment
+        # remove current record and continue with the insert
+        return
+
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # print(f"Insert statement: {insert_statement}")
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
@@ -145,44 +160,4 @@ def save_to_attachment(message_id, folder, filename, mimeType):
 
         # Re-raise the exception
         raise
-
-
-# # def is_in_blacklist(db_conn, sender_id):
-# def is_in_blacklist(sender_id):
-
-#     """
-#     Check if a sender_id exists in the blacklist table.
-
-#     Parameters:
-#     db_conn (psycopg2.extensions.connection): The database connection.
-#     sender_id (int): The sender_id to check.
-
-#     Returns:
-#     bool: True if the sender_id exists in the blacklist, False otherwise.
-#     """
-#     try:
-#         cursor = db_conn.cursor()
-#         cursor.execute("SELECT EXISTS(SELECT 1 FROM {schema1}.blacklist WHERE senderemail = %s);", (sender_id,))
-#         result = cursor.fetchone()[0]
-#         return result
-#     except Exception as e:
-#         print(f"Failed to check if sender_id exists in blacklist: {e}")
-#         return False
-
-# def add_to_blacklist(sender_id):
-
-#     """
-#     Insert a sender_id into the blacklist table.
-
-#     Parameters:
-#     db_conn (psycopg2.extensions.connection): The database connection.
-#     sender_id (int): The sender_id to insert into the blacklist.
-#     """
-#     try:
-#         cursor = db_conn.cursor()
-#         cursor.execute("INSERT INTO {schema1}.blacklist (senderemail) VALUES (%s);", (sender_id,))
-#         db_conn.commit()
-#         print(f"Sender_id '{sender_id}' added to blacklist successfully.")
-#     except Exception as e:
-#         print(f"Failed to add sender_id '{sender_id}' to blacklist: {e}")
 
