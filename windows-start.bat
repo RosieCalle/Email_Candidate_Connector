@@ -16,6 +16,6 @@ del /Q /F logs\*.log
 
 echo Starting the program...
 cd src
-python main.py
+python src/main.py
 
 

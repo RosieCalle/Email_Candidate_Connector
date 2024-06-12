@@ -6,26 +6,28 @@ Project Description
 
 ### Todo
 
+- [ ] Adjust filter: remove 'image' for spam. We lost linkedin emails (image)  
 - [ ] Bug: missed body for email with attachment  
-- [ ] Avoid record duplication  
-- [ ] Use  logger in other modules  
-- [ ] Mark email as opened  
+- [ ] Parser email for personal data  
 - [ ] Insert personal data into contacts table  
-- [ ] Paser email for personal data  
+- [ ] process Vcard attachments  
 - [ ] v2 Flask Interface  
-- [ ] v2 - Send emails answering with AI  
+- [ ] v2 Send emails answering with AI  
 
 ### In Progress
 
 - [ ] Diagram3 - dot2drawio and adjust  
-- [ ] Porcessing attachments  
 - [ ] Review and improve the documentation - ALWAYS  
-- [ ] EMAIL samples: email-chains, attachements (PDF)  
 
 ### Done ✓
 
+- [x] Porcessing attachments PDF/DOC  
+- [x] Mark email as opened  
+- [x] Use  logger in other modules  
+- [x] Avoid record duplication  
 - [x] Filtering email body  
 - [x] Diagram1 - Write how the program  should work  
 - [x] Diagram2 - Make the dot file  
 - [x] EMAIL TABLE subject, timestamp, messageid, threadid, body, senderid  
+- [x] EMAIL samples: email-chains, attachements (PDF)  
 

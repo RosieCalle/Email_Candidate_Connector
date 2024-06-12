@@ -146,9 +146,13 @@ def get_messages(service, query, max_messages=2):
                 result = service.users().messages().list(userId='me', q=query, pageToken=page_token).execute()
             else:
                 result = service.users().messages().list(userId='me', q=query).execute()
+                
             if 'messages' in result:
                 messages.extend(result['messages'])
-                
+                # Remove 'UNREAD' label from downloaded messages
+                for message in result['messages']:
+                    service.users().messages().modify(userId='me', id=message['id'], body={'removeLabelIds': ['UNREAD']}).execute()
+
             page_token = result.get('nextPageToken', None)
             if not page_token or len(messages) >= max_messages:
                 cont = False
@@ -294,51 +298,72 @@ def process_message(service, message):
             mimeType = part.get("mimeType")
             logger.debug(f"----- mimeType: {mimeType}")
 
+
+            if not isinstance(part, (str, list, tuple)):
+                partx = str(part)
+                logger.debug(f"------- 1 --------part: {partx[:300]}")
+
+
             # TODO where is the attachment name ?
+
             if 'attachmentId' in part['body']:
-                logger.debug(f"--1--- body:{part['body']}") # DONT REMOVE THIS LINE
+                logger.debug(f"------ 2 ----- body:{part['body']}") # DONT REMOVE THIS LINE
                 if mimeType == 'application/pdf':
-                    logger.debug("      found pdf attachment")
-                    att_id = part['body']['attachmentId']
-                    att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
-                    data1 = att['data']
-                    message_id = message['id']
-                    file_data = base64.urlsafe_b64decode(data1)
-                    timeid = str(int(time.time_ns())) # epoch time in nanoseconds
-                    file_name = timeid + "-" + message_id + ".pdf"
-                    logger.debug(f"         file_name: {file_name}")    
-                    save_data_to_file(file_data, DATA_FOLDER, file_name, message_id, mimeType)   
+                    logger.debug("      found PDF attachment")
+                    doc_type = "pdf"                
+                elif mimeType in ['application/msword', 
+                                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                                  'application/rtf']:
+                    logger.debug("      found WORD attachment")
+                    doc_type = "docx" 
+                
+                att_id = part['body']['attachmentId']
+                att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
+                data1 = att['data']
+                message_id = message['id']
+                file_data = base64.urlsafe_b64decode(data1)
+                filename = part.get("filename")
+                # timeid = str(int(time.time_ns())) # epoch time in nanoseconds
+                # file_name = timeid + "-" + message_id + "." + doc_type
+                logger.debug(f"         file_name: {filename}")    
+                save_data_to_file(file_data, DATA_FOLDER, filename, message_id, mimeType)   
+
+
 
             ########### BUG ############
-            body = part.get("body")
+            bodyx = part.get("body")
             partID = part.get("partId") 
-         
-            logger.debug(f"\n--3--- body:{body}\n") # DONT REMOVE THIS LINE
-
-            # if body and 'data' in body:
-            if body.get('data'):
-                        
+            
+            if bodyx:
+                data = bodyx.get("data")
                 # Ensure the data is correctly padded
-                padding_needed = 4 - (len(body['data']) % 4)
-                if padding_needed:
-                    padding = '=' * padding_needed
-                    padded_data = body['data'] + padding
-                else:
-                    padded_data = body['data']
+                # padding_needed = 4 - (len(body['data']) % 4)
+                # if padding_needed:
+                #     padding = '=' * padding_needed
+                #     padded_data = body['data'] + padding
+                # else:
+                #     padded_data = body['data']
                 
                 try:
-                    padded_data = padded_data.replace("-","+").replace("_","/")
-                    decoded_data = base64.b64decode(padded_data)
+                #     padded_data = padded_data.replace("-","+").replace("_","/")
+                #     decoded_data = base64.b64decode(padded_data)
+
+                    decoded_data = base64.urlsafe_b64decode(data)
 
                     # if mimeType and mimeType.startswith('text/'):
                         # This is a text part, likely the message body
 
-                    if partID == "0":                        
-                        message_id = message['id']
-                        thread_id = message['threadId']
-                        msg_body = convert_html_to_text(decoded_data)
+                    # if partID == "0":                        
+                    message_id = message['id']
+                    thread_id = message['threadId']
+                    msg_body = convert_html_to_text(decoded_data)
 
-                        process_email_data(subject, date_time, sender_id, \
+
+                    print("\n\n -------- 3 --------- partID: ", partID)
+                    print("=========== msg_body: ", msg_body)
+
+
+                    process_email_data(subject, date_time, sender_id, \
                                         message_id, thread_id, msg_body )
                         
                     # else:
@@ -375,6 +400,7 @@ def main():
         process_message(service, message)
     
     # print(f"Number of unread messages: {len(messages)}")
+    logger.info(f"Number of retrieved messages: {len(messages)}")
 
 
 if __name__ == '__main__':
