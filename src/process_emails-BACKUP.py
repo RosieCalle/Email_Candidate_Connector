@@ -8,9 +8,6 @@ from logger_config import setup_logger
 # Setup a logger with a custom name and log level
 logger = setup_logger('email-candidate')
 
-def safe_encode_string(s):
-    return s.encode('cp1252', errors='replace').decode('cp1252')
-
 def mark_as_processed(message_id):
     # Here you would apply a label to mark the message as processed
     # This is a placeholder function
@@ -19,7 +16,7 @@ def mark_as_processed(message_id):
 
 def extract_email(sender_id):
     name, email = parseaddr(sender_id)
-    return safe_encode_string(email)
+    return email
 
 def filter_email(new_data_row):
 
@@ -32,7 +29,7 @@ def filter_email(new_data_row):
 
     else:
         topic = determine_topic(new_data_row['body'])
-        logger.debug("determine_topic :", safe_encode_string(topic))
+        logger.debug("determine_topic :", topic)
         new_data_row['topic'] = topic
         if topic != "Uncategorized" and topic != "Spam":
             try:
@@ -56,9 +53,16 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
 
     """
  
+    # try:
+    #     # Remove timezone name if present
+    #     timestamp = date_time.split('(')[0].strip()
+    # except ValueError as e:
+    #     logger.error(f"Error converting date and time: {e}")
+    #     timestamp = None
+       
     sender_id = extract_email(sender_id)
     topic = "uncategorized"
-    new_row = {'subject': safe_encode_string(subject), 'timestamp': date_time, 'messageid': message_id, 'threadid': thread_id, 'body': safe_encode_string(message_body), 'senderid': sender_id, 'topic': topic}
+    new_row = {'subject': subject, 'timestamp': date_time, 'messageid': message_id, 'threadid': thread_id, 'body': message_body, 'senderid': sender_id, 'topic': topic}
 
     senderid_in_db = value_exists_in_column("emails", "senderid", sender_id)
     messageid_in_db = value_exists_in_column("emails", "messageid", message_id)
