@@ -33,7 +33,7 @@ def preprocess_text(text):
 
 def determine_topic(text_body: str):
     # List of keywords for each topic
-    spam = ["[image:", "discount", "buy now", "order now", "sponsorship"]
+    spam = ["discount", "buy now", "order now", "sponsorship"]
     job_offer_keywords = ["job alert", "job offer", "hiring", "vacancy", "open position"]
     job_interest_keywords = ["job search", "looking for a job", "career change"]
     person_looking_keywords = ["job hunting", "applying for jobs", "resume"]

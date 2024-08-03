@@ -6,12 +6,14 @@ Project Description
 
 ### Todo
 
-- [ ] Adjust filter: remove 'image' for spam. We lost linkedin emails (image)  
 - [ ] Bug: missed body for email with attachment  
+- [ ] Bug: Log has repeated message (4 times)  
+- [ ] Save all messages, in a temporary folder  o db for review before filter  
+- [ ] Adjust filter: remove 'image' for spam. We lost linkedin emails (image)  
 - [ ] Parser email for personal data  
 - [ ] Insert personal data into contacts table  
 - [ ] process Vcard attachments  
-- [ ] v2 Flask Interface  
+- [ ] v2 Flask/Streamlit Interface  
 - [ ] v2 Send emails answering with AI  
 
 ### In Progress

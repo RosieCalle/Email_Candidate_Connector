@@ -166,6 +166,8 @@ def get_messages(service, query, max_messages=2):
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")
             break
+    
+    print("count from while in get_message:", count)
 
     logger.info(f"Retrieved {len(messages)} messages.")
     return messages
@@ -294,7 +296,9 @@ def process_message(service, message):
             #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
 
     if parts:
+        cont = 0
         for part in parts:
+            cont = cont + 1
             mimeType = part.get("mimeType")
             logger.debug(f"----- mimeType: {mimeType}")
 
@@ -374,7 +378,8 @@ def process_message(service, message):
                 logger.info(f"\nNo body data found for part = {partID} in messageid = {message['id']}")
     else:
         logger.info(f"No parts found in message {message['id']}")
-
+    
+    print("number of parts:", cont )
 
 
 
@@ -396,8 +401,11 @@ def main():
 
     # Process each message
     # TODO review why is getting 3 message for 1 message in gmail inbox
+    cont = 0
     for message in messages:
         process_message(service, message)
+        cont = cont + 1
+    print("for loop in main: ", cont)
     
     # print(f"Number of unread messages: {len(messages)}")
     logger.info(f"Number of retrieved messages: {len(messages)}")
