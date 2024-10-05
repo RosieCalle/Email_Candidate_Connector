@@ -1,26 +1,16 @@
 #!/bin/bash
-#
-
-#https://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
-NORMAL=$(tput sgr0)
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
 
 # expected environment name
 env_name=$(basename "$PWD")
 
-# Get the name of the current conda environment
-current_env=$(conda env list | grep '*' | awk '{print $1}')
+# mamba env create --name $env_name --file conf/conda_config.yaml -y
 
-# Check if the environments match
-if [ "$env_name" != "$current_env" ]; then
-    printf "\n *** ERROR ***\n"
-    printf "\nThe current conda environment is not the expected environment."
-    printf "\n\n%40s" "Activate the enviroment running: ${RED}conda activate $env_name ${NORMAL}"
-    printf "\n\n%40s\n" "If you don't have the environment, create it by running: ${RED}source bin/setup.sh ${NORMAL}"
-  exit 1
+# Get the name of the current conda environment
+current_env=$(micromamba env list | grep '*' | awk '{print $1}')
+
+if [ "$current_env" != "$env_name" ]; then
+    echo "Activating conda environment: $env_name"
+    micromamba activate $env_name
 fi
 
 # clean old logs

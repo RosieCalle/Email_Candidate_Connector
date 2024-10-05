@@ -1,14 +1,17 @@
 
 import re
 import nltk
-import logging
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
+
+# from logger_config import setup_logger
+# # Setup a logger with a custom name and log level
+# logger = setup_logger('email-candidate')
+
 from logger_config import setup_logger
-# Setup a logger with a custom name and log level
-logger = setup_logger('email-candidate')
+logger = setup_logger('DEBUG',__name__)
 
 # https://www.nltk.org/install.html
 # nltk.download('punkt')

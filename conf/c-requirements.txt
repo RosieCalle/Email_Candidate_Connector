@@ -50,3 +50,4 @@ tzdata=2024a=h0c530f3_0
 wheel=0.43.0=pyhd8ed1ab_1
 xz=5.2.6=h166bdaf_0
 zipp=3.19.2=pyhd8ed1ab_0
+psycopg2

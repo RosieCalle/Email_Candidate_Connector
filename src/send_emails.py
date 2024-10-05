@@ -1,19 +1,18 @@
-"""
-This module contains functions to send emails using the Gmail API."""
 
-Functions:
-    gmail_authenticate(): Authenticates the user and initializes the Gmail API service.
-    search_messages(service, query): Searches for messages in the Gmail inbox based on a query.
-    parse_parts(service, parts): Parses the content of an email partition.
-    read_message(service, message): Reads a Gmail email and returns a dictionary with all the parts of the email.
-    load_template(template_name): Loads a jinja2 template from a file.
-    create_response(template, first_name): Creates a personalized response using a jinja2 template.
-    main(): The main function that uses the above functions to automate the email reading and response process.
+# This module contains functions to send emails using the Gmail API."""
 
-This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
+# Functions:
+#     gmail_authenticate(): Authenticates the user and initializes the Gmail API service.
+#     search_messages(service, query): Searches for messages in the Gmail inbox based on a query.
+#     parse_parts(service, parts): Parses the content of an email partition.
+#     read_message(service, message): Reads a Gmail email and returns a dictionary with all the parts of the email.
+#     load_template(template_name): Loads a jinja2 template from a file.
+#     create_response(template, first_name): Creates a personalized response using a jinja2 template.
+#     main(): The main function that uses the above functions to automate the email reading and response process.
+
+# This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
 
 
-"""
 
 import os
 import os.path
@@ -35,6 +34,12 @@ from itables import show
 from itables import init_notebook_mode
 from bs4 import BeautifulSoup
 from process_emails import process_email_data
+
+import logging
+from logger_config import setup_logger
+logger = setup_logger('DEBUG',__name__)
+
+
 
 def create_response(template, first_name):
     output = template.render(first_name=first_name)

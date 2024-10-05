@@ -26,7 +26,6 @@ pexpect==4.9.0
 prompt_toolkit==3.0.47
 proto-plus==1.23.0
 protobuf==4.25.3
-psycopg2==2.9.9
 ptyprocess==0.7.0
 pure-eval==0.2.2
 pyasn1==0.6.0

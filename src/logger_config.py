@@ -1,78 +1,96 @@
-import os 
-import json
+"""
+This module provides configuration and setup for logging within the AI Database Chatbot project.
+
+The module includes functions for:
+- Setting up a logger with a specified log level.
+- Loading the log level from a JSON configuration file.
+- Configuring the logger based on the log level specified in a given file.
+
+The logger is configured to write logs to a file named 'application.log' by default. The log level can be adjusted to control the verbosity of the logging output.
+
+Usage:
+    To configure the logger, import the module and call the `configure_logger_from_file` function with the path to your log configuration file.
+
+    Example:
+        from logger_config import configure_logger_from_file
+        logger = configure_logger_from_file('path/to/config.json')
+
+Dependencies:
+    - Python's built-in `logging` module.
+    - A JSON configuration file specifying the log level.
+"""
+
 import logging
+import os
+import json
 
 
-# def setup_logger(name, log_level=logging.DEBUG, log_file=None):
-def setup_logger(name):
+def setup_logger(log_level,log_title:str=None):
+    """
+    Set up a logger with the specified log level.
+
+    Args:
+        log_level (int): The log level to be set for the logger.
+
+    Returns:
+        logging.Logger: The configured logger object.
 
     """
-    Set up a logger with the specified name and log level.
-    
-    :param name: Name of the logger.
-    :param log_level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
-    :param log_file: Optional path to a log file.
-    :return: Logger instance.
-    """
+    # Create a logger
+    logger = logging.getLogger(log_title)
+    logger.setLevel(log_level)
 
-    # get paramters from config file
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    relative_config_path = os.path.join(script_dir, '..', 'conf', 'config.json')
-    config_path = os.path.abspath(relative_config_path)
-    with open(config_path, 'r') as file:
-        config = json.load(file)
+    # Create a file handler
+    handler = logging.FileHandler('logs/app.log')
+    handler.setLevel(log_level)
 
-    # get log parameters
-    if os.name == 'nt': # 'nt' stands for Windows
-        LOG_FILE = config['win_log_file']
-        LOG_LEVEL = config['log_level']
-    elif os.name == 'posix': # 'posix' stands for Linux/Unix
-        LOG_FILE = config['lin_log_file']
-        LOG_LEVEL = config['log_level']
-    else:
-        raise OSError("Unsupported operating system")
-
-    logger = logging.getLogger(name)
-    logger.setLevel(LOG_LEVEL)
-
-    # Create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(LOG_LEVEL)
-
-    # Create formatter and add it to the handlers
+    # Create a logging format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
+    handler.setFormatter(formatter)
 
-    # Add the console handler to the logger
-    logger.addHandler(ch)
-
-    # If a log file is specified, also add a file handler
-    if LOG_FILE:
-        fh = logging.FileHandler(LOG_FILE)
-        fh.setLevel(LOG_LEVEL)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
+    # Add the handlers to the logger
+    logger.addHandler(handler)
 
     return logger
 
-#### Log messages at different levels ####
-# logger.debug('This is a debug message.')
-# logger.info('This is an informational message.')
-# logger.warning('This is a warning message.')
-# logger.error('This is an error message.')
-# logger.critical('This is a critical message.')
+def load_log_level_from_file(file_name):
+    """
+    Loads the log level from a JSON configuration file.
 
-########### log LEVEL meaning ###########
-# DEBUG: Detailed information, typically of interest only when diagnosing problems.
-# INFO: Confirmation that things are working as expected.
-# WARNING: An indication that something unexpected happened, or there may 
-# be some problem in the near future (e.g., ‘disk space low’). 
-# The software is still working as expected.
-# ERROR: Due to a more serious problem, the software has not 
-# been able to perform some function.
-# CRITICAL: A very serious error, indicating that the program
-#  itself may be unable to continue running.
-# When you set a logging level, all the events at this level
-#  and above will be tracked. For example, if the level is 
-# set to INFO, the logger will handle both INFO, WARNING, ERROR, 
-# and CRITICAL messages.
+    Args:
+        file_path (str): The path to the JSON configuration file.
+
+    Returns:
+        int: The log level as an integer value.
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        json.JSONDecodeError: If the JSON file is not valid.
+
+    """
+    # Get the directory of the current script
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    # Construct the full path to the config.json file
+    file_path = os.path.join(dir_path, file_name)
+
+    print(f"Loading log level from file: {file_path}")
+
+    # with open(file_path, 'r', encoding="utf-8") as file:
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+        return logging.getLevelName(config['log_level'])
+
+def configure_logger_from_file(file_path):
+    """
+    Configures the logger based on the log level specified in the given file.
+
+    Args:
+        file_path (str): The path to the file containing the log level configuration.
+
+    Returns:
+        logger: The configured logger object.
+    """
+    log_level = load_log_level_from_file(file_path)
+    logger = setup_logger(log_level)
+    return logger

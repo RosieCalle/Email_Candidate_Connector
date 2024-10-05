@@ -19,7 +19,7 @@ fi
 
 echo " ------------------------------------- "
 echo "mamba activate "$enviro
-echo " temp: mamba install --file conf/c-requirements.txt -y
+echo " temp: mamba install --file conf/c-requirements.txt -y "
 echo " ------------------------------------- "
 echo " if conf/p-requirements.txt exists"
 echo "pip install -r conf/p-requirements.txt"

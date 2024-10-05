@@ -1,7 +1,3 @@
-name: emailagent
-channels:
-  - conda-forge
-
 dependencies:
   - python=3.12
   - jinja2
@@ -11,11 +7,12 @@ dependencies:
   - bs4
   - pip
   - python-dotenv
-
-pip:
+  - psycopg2
   - google-api-python-client
   - itables
   - request
   - nltk
+
+pip:
   - google_auth_oauthlib
-  - psycopg2
+  

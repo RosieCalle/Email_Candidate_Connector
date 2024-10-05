@@ -1,3 +1,17 @@
+- change process_email for something like save_email_body
+- change save_to_file for save_attachment 
+- add the attachment the email_id
+- make 2 folders in data 1-body 2-attachments
+
+
+
+
+
+
+
+
+
+
 # Email_Candidate_Connector
 Automated Email Agent to Help Recruiter and Candidate Connect. 
 # TODO - more details

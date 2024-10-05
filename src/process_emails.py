@@ -1,12 +1,12 @@
 import pandas as pd
-import logging
 from datetime import datetime
 from email.utils import parseaddr
 from db_functions import value_exists_in_column, save_to_database
 from body_analysis import determine_topic
+
 from logger_config import setup_logger
-# Setup a logger with a custom name and log level
-logger = setup_logger('email-candidate')
+logger = setup_logger('DEBUG',__name__)
+
 
 def mark_as_processed(message_id):
     # Here you would apply a label to mark the message as processed
