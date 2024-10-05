@@ -156,7 +156,7 @@ def get_messages(service, query, max_messages=2):
             logger.info(f"An error occurred while downloading messages: {e}")
             break
     
-    print("Count in while at get_message:", count)
+    print(f"Unread messages: {count-1}")
 
     logger.info(f"Total message at the inbox: {len(messages)}")
     return messages
@@ -178,7 +178,7 @@ def main():
     # TODO review why is getting 3 message for 1 message in gmail inbox
     cont = 0
     for message in messages:
-        parsing_message(service, message)
+        parsing_message(service, message, DATA_FOLDER)
         cont = cont + 1
         print("message number:", cont)
     
