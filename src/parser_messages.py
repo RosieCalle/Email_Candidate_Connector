@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from files import save_body_to_file, convert_html_to_text, save_attachment_to_file
 
 from logger_config import setup_logger
-logger = setup_logger('DEBUG',__name__)
+logger = setup_logger('INFO',__name__)
 
 def parsing_message(service, message, DATA_FOLDER):
     

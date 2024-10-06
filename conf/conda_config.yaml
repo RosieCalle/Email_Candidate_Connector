@@ -1,18 +1,10 @@
+channels:
+  - conda-forge
+  - defaults
 dependencies:
-  - python=3.12
-  - jinja2
-  - pandas
-  - cloudpickle
-  - jsonpickle
-  - bs4
-  - pip
-  - python-dotenv
-  - psycopg2
-  - google-api-python-client
-  - itables
-  - request
-  - nltk
-
-pip:
-  - google_auth_oauthlib
-  
+  - tenacity
+  - python==3.10.14
+  - streamlit==1.24.1
+  - psycopg2==2.9.9
+  - tiktoken==0.3.1
+  - ollama

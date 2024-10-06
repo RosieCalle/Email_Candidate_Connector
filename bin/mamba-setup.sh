@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script sets up the Mamba environment for the project.
+# This script sets up the conda environment using mamba.
 #
 APP_PATH=$(dirname "$0")
 enviro=$(basename "$PWD")

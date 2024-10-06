@@ -3,6 +3,9 @@
 - add the attachment the email_id
 - make 2 folders in data 1-body 2-attachments
 
+- add checking database connection before at main function
+2
+
 
 
 
@@ -14,6 +17,7 @@
 
 # Email_Candidate_Connector
 Automated Email Agent to Help Recruiter and Candidate Connect. 
+
 # TODO - more details
 
 # TODO: how can to setup the enviroment 
@@ -28,7 +32,7 @@ Automated Email Agent to Help Recruiter and Candidate Connect.
     "db_user": "postgres",
     "db_password": "abc...",
     "db_host": "localhost",
-    "db_port": "5432",
+    "db_port": "25432",
     "pg_user": "postgres",
     "pg_pass": "abc...",
     "win_data_folder": "..\\data\\",
@@ -41,32 +45,77 @@ Automated Email Agent to Help Recruiter and Candidate Connect.
     "lin_log_file": "/home/rafael/dev/projects/email-candidate/logs/app.log",
     "schema": "gmailemails"
 }
+- if there are more dockers, the db_host must be changed  to the docker host name
+- for docker the port should be different than 5432 in case that there is a postgres already running in local machine
 
+# How to setup database with dockers
+    - run bin/build-docker-images.sh
+        - this script will build the docker images for postgres and pgadmin4.
+    - go to 'add new server' and connect with postgres instance
+         (pgvectordb1, is the hostname defined in docker-compose.yml)
+            - use the user and password defined in config (or config.json)
+    - run python utils/db_utils.py 
+        - this script will create the database and tables
+            the schema is gmailemils, and tables are 'attachments', 'emails', and 'bademails'
 
 
 # TODO how to run the app
+- In Linux: source start-linux.sh
+- In Windows: 
 ...
 
 # folder structure
 
+├── bin
+│   ├── build-docker-images.sh
+│   ├── mamba-setup.sh
+│   ├── setup-conda.sh
+│   ├── start-docker-postgres.sh
+│   └── start.sh
 ├── conf
-│   └── config.json
-│   └── conda_config.yaml
+│   ├── conda_config.yaml
+│   ├── config
+│   ├── config.json
+│   ├── c-requirements.txt
+│   ├── p-requirements.txt
+│   └── setup-conda.bat
 ├── data
+│   ├── attach
+│   └── body
+├── docker-compose.yml
 ├── docs
-│   └── TODO.md
+│   ├── architecture.md
+│   ├── calls_graph.dot
+│   ├── calls_graph.drawio
+│   ├── calls_graph.drawio.xml
+│   ├── calls_graph.mermaid
+│   ├── candiate_connect_conda_env_list.txt
+│   ├── conda_create_command_for_candidate_connect_environment.md
+│   ├── DB_text_diagram.md
+│   ├── dot2drawio.py
+│   ├── google-authentication.md
+│   ├── notas.txt
+│   └── postgresql_setup.md
 ├── LICENSE
+├── linux-start.sh
 ├── logs
 │   └── app.log
 ├── README.md
 ├── src
-│   ├── db_create.py
 │   ├── db_functions.py
-│   └── recruiter_email_connector.py
-│   └── setup-conda.bat
-├── start-windows.bat
-├── start-linux.sh
-
+│   ├── files.py
+│   ├── filter.py
+│   ├── generate_mimetype_examples.py
+│   ├── logger_config.py
+│   ├── main.py
+│   ├── parser_messages.py
+│   ├── process_emails.py
+│   └── send_emails.py
+├── start.sh
+├── TODO.md
+├── utils
+│   └── db_utils.py
+└── windows-start.bat
 
 
 We did use for filtering

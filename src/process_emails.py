@@ -1,8 +1,8 @@
-import pandas as pd
+# import pandas as pd
 from datetime import datetime
 from email.utils import parseaddr
 from db_functions import value_exists_in_column, save_to_database
-from body_analysis import determine_topic
+from filter import determine_topic
 
 from logger_config import setup_logger
 logger = setup_logger('DEBUG',__name__)

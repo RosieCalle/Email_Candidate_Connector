@@ -28,7 +28,8 @@ token.pickle
 *email_download_batch*/*
 downloaded_message_ids.txt
 data/message_body*
-
+data/body/*
+data/attach/*
 # Log files
 *.log
 
