@@ -1,12 +1,8 @@
 import psycopg2
 import json
 import os
-import pandas as pd
 
-# import logging
-# from logger_config import setup_logger
-# # Setup a logger with a custom name and log level
-# logger = setup_logger('email-candidate')
+
 import logging
 from logger_config import setup_logger
 logger = setup_logger('DEBUG',__name__)
@@ -33,14 +29,14 @@ pg_pass = db_config['pg_pass']
 schema1 = db_config['schema']
 
 
-# # Connect to the PostgreSQL server
-# db_conn = psycopg2.connect(
-#     dbname=db_name,
-#     user=pg_user,
-#     password=pg_pass,
-#     host=db_host,
-#     port=db_port
-# )
+# Connect to the PostgreSQL server
+db_conn = psycopg2.connect(
+    dbname=db_name,
+    user=pg_user,
+    password=pg_pass,
+    host=db_host,
+    port=db_port
+)
 
 def value_exists_in_column(table_name, column_name, value):
     """
@@ -64,7 +60,6 @@ def value_exists_in_column(table_name, column_name, value):
     except Exception as e:
         logger.error(f"Failed to check if {value} exists in {column_name}: {e}")
         db_conn.rollback()
-        # Re-raise the exception
         raise
 
 def save_to_database(data_row: dict, table_name):
@@ -82,34 +77,21 @@ def save_to_database(data_row: dict, table_name):
     placeholders = ', '.join(['%s'] * len(data_row))
     logger.debug(f"Placeholders: {placeholders}")
 
-
-
-
-    # # check if the record already exists
-    # record_exist = value_exists_in_column(table_name, 'messageid', data_row['messageid'])
+    # check if the record already exists
+    record_exist = value_exists_in_column(table_name, 'messageid', data_row['messageid'])
     
-    # if record_exist:
-    #     logger.debug(f"Record already exists in {table_name}")
-    #     return
+    if record_exist:
+        logger.debug(f"Record already exists in {table_name}")
+        return
  
- 
-    
     # Prepare the INSERT statement
-    # insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # logger.debug(f"Insert statement: {insert_statement}")
+    insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
     logger.debug(f"Data: {data}")
     
-    
-    
-    
-    return 
-
-
-
-
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
@@ -145,9 +127,6 @@ def save_to_attachment_table(message_id, folder, filename, mimeType):
     # Prepare the placeholders for the INSERT statement
     placeholders = ', '.join(['%s'] * len(data_row))
 
-
-
-
     # check if the record already exists
     # record_exist = value_exists_in_column(table_name, 'filename', filename)
     # if record_exist:
@@ -156,21 +135,13 @@ def save_to_attachment_table(message_id, folder, filename, mimeType):
     #     # remove current record and continue with the insert
     #     return
 
-
-
-
     # Prepare the INSERT statement
-    # insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
-    # logger.debug(f"Insert statement: {insert_statement}")
+    insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
+    logger.debug(f"Insert statement: {insert_statement}")
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
-    
-    
-    
-    return
-    
-    
+      
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
@@ -185,7 +156,5 @@ def save_to_attachment_table(message_id, folder, filename, mimeType):
         logger.error(f"Failed to insert row into {schema1}.{table_name}: {e}")
         db_conn.rollback()
         # An error occurred, roll back the transaction
-
-        # Re-raise the exception
         raise
 

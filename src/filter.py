@@ -1,15 +1,5 @@
 
 import re
-import nltk
-
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
-
-# from logger_config import setup_logger
-# # Setup a logger with a custom name and log level
-# logger = setup_logger('email-candidate')
-
 from logger_config import setup_logger
 logger = setup_logger('DEBUG',__name__)
 
@@ -34,7 +24,7 @@ def preprocess_text(text):
     tokens = [stemmer.stem(word) for word in tokens]
     return ' '.join(tokens)
 
-def determine_topic(text_body: str):
+def determine_topic(text_body: str) -> str:
     # List of keywords for each topic
     spam = ["discount", "buy now", "order now", "sponsorship"]
     job_offer_keywords = ["job alert", "job offer", "hiring", "vacancy", "open position"]

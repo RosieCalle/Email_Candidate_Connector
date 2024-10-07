@@ -9,6 +9,4 @@ export PGADMIN_DEFAULT_PASSWORD="admin123Admin"
 export POSTGRES_HOST="pgvectordb1"
 export POSTGRES_PORT="25432"
 
-# TODO: explain the following
-export UID="$(id -u)"
-export GID="$(id -g)"
+

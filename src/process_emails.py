@@ -7,29 +7,33 @@ from filter import determine_topic
 from logger_config import setup_logger
 logger = setup_logger('DEBUG',__name__)
 
-
-def mark_as_processed(message_id):
-    # Here you would apply a label to mark the message as processed
-    # This is a placeholder function
-    print("this email should be marked as done\n")
-    pass
-
 def extract_email(sender_id):
     name, email = parseaddr(sender_id)
     return email
 
 def filter_email(new_data_row):
-
+    """
+    Filters and processes an email data row based on its message ID and thread ID.
+    This function determines whether the email is part of a thread or a new topic.
+    If it is part of a thread, it assigns a default topic and SAVES it to the "emails" table.
+    If it is a new topic, it determines the topic from the email body and SAVES it to the
+    appropriate table based on the topic classification.
+    Args:
+        new_data_row (dict): A dictionary containing email data with keys such as 'messageid',
+                             'threadid', and 'body'.
+    Raises:
+        Exception: If there is an error saving the email data to the database, it logs the error.
+    """
+    
     logger.debug("Started: filter_email")
 
     if new_data_row['messageid'] != new_data_row['threadid']:
         # this email is a thread for some message_id        
         new_data_row['topic'] = "- same -"
         save_to_database(new_data_row, "emails")
-
     else:
         topic = determine_topic(new_data_row['body'])
-        logger.debug("determine_topic :", topic)
+        logger.debug(f"determine_topic : {topic}")
         new_data_row['topic'] = topic
         if topic != "Uncategorized" and topic != "Spam":
             try:
@@ -52,13 +56,6 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
         thread_analysis: .... 
 
     """
- 
-    # try:
-    #     # Remove timezone name if present
-    #     timestamp = date_time.split('(')[0].strip()
-    # except ValueError as e:
-    #     logger.error(f"Error converting date and time: {e}")
-    #     timestamp = None
        
     sender_id = extract_email(sender_id)
     topic = "uncategorized"
@@ -90,5 +87,3 @@ def process_email_data(subject: str, date_time: str, sender_id: str, message_id:
         logger.info("new email address")
         filter_email(new_row)
 
-        # TODO
-        mark_as_processed(message_id)

@@ -1,44 +1,51 @@
 """
-Updated By: Rosie Calle
-Updated on: 2024.05.14 1555h
-
-This module contains functions to automate the process of reading emails from a Gmail account, 
-selecting the first 5 unread messages, and sending personalized responses using a mail merge template.
-
+This script is designed to interact with the Gmail API to authenticate a user, retrieve unread messages, and process them. It includes the following functionalities:
+1. Gmail Authentication:
+    - Checks for existing credentials and refreshes them if necessary.
+    - Initiates the OAuth2 flow to obtain new credentials if none are found.
+    - Saves new credentials for future use.
+    - Logs the expiration time of the credentials.
+    - Builds and returns a Gmail service object for API interactions.
+2. Message Retrieval:
+    - Retrieves messages from the user's mailbox matching a specified query.
+    - Removes the 'UNREAD' label from downloaded messages.
+    - Continues to fetch messages until a specified maximum number of messages is reached or there are no more messages to fetch.
+    - Logs the start of the message download process, page numbers retrieved, any errors that occur, and the total number of messages in the inbox after retrieval.
+3. Message Processing:
+    - Processes each retrieved message using a specified function.
+    - Logs the number of processed emails.
+Modules and Libraries:
+- os: Provides a way of using operating system dependent functionality.
+- pickle: Implements binary protocols for serializing and de-serializing a Python object structure.
+- json: Provides an easy way to encode and decode data in JSON format.
+- googleapiclient.discovery: Provides a way to build and interact with Google APIs.
+- google.oauth2.credentials: Manages OAuth 2.0 credentials.
+- google_auth_oauthlib.flow: Handles the OAuth 2.0 Authorization Grant Flow.
+- google.auth.transport.requests: Provides a way to refresh credentials.
+- process_emails: Custom module to process email data.
+- parser_messages: Custom module to parse messages.
+- logger_config: Custom module to set up logging configuration.
+Constants:
+- MAX_EMAILS: The maximum number of emails to process.
+- SCOPES: The scopes required for accessing Gmail API.
 Functions:
-    gmail_authenticate(): Authenticates the user and initializes the Gmail API service.
-    search_messages(service, query): Searches for messages in the Gmail inbox based on a query.
-    parse_parts(service, parts): Parses the content of an email partition.
-    read_message(service, message): Reads a Gmail email and returns a dictionary with all the parts of the email.
-    load_template(template_name): Loads a jinja2 template from a file.
-    create_response(template, first_name): Creates a personalized response using a jinja2 template.
-    main(): The main function that uses the above functions to automate the email reading and response process.
-
-This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
+- gmail_authenticate: Authenticates the user with Gmail and returns a service object for interacting with the Gmail API.
+- get_messages: Retrieves messages from the user's mailbox matching the specified query.
+- main: The main function that orchestrates the authentication, message retrieval, and message processing.
+Usage:
+- Run the script to authenticate with Gmail, retrieve unread messages, and process them.
 
 """
 
 import os
 import os.path
-# import base64
-
-# not used ?
-# import re
-# import time
 import pickle
 import json
-# import dateutil.parser as parser
-# import pandas as pd
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-# from email.mime.multipart import MIMEMultipart
-# from email.mime.text import MIMEText
-# from bs4 import BeautifulSoup
 from process_emails import process_email_data
-# from db_functions import save_to_attachment_table
-# from files import save_body_to_file, convert_html_to_text, save_attachment_to_file
 from parser_messages import parsing_message
 
 # import logging
@@ -75,11 +82,23 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
 
 def gmail_authenticate():
     """
-    Authenticates the user and initializes the Gmail API service.
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    Authenticates the user with Gmail and returns a service object for interacting with the Gmail API.
+
+    This function performs the following steps:
+    1. Checks if a token file exists and loads the credentials from it.
+    2. If no valid credentials are found, it initiates the OAuth2 flow to obtain new credentials.
+    3. Saves the new credentials to a token file for future use.
+    4. Logs the expiration time of the credentials.
+    5. Builds and returns a Gmail service object for API interactions.
+
+    Returns:
+        googleapiclient.discovery.Resource: A service object for interacting with the Gmail API.
+        None: If an error occurs during the authentication process.
+
+    Raises:
+        Exception: If an error occurs while building the Gmail service object.
     """
+
     logger.info("Starting Gmail authentication process...")
 
     creds = None
@@ -119,11 +138,24 @@ def gmail_authenticate():
 
 def get_messages(service, query, max_messages=2):
     """
-    Retrieves messages based on the provided query, up to a maximum number of messages.
-    The get_messages() function now handles the `pageToken` correctly and includes error handling to catch any exceptions that occur during the API request.
-    Function initializes page_token to None and only includes it in the API request if it has a value. 
-    It also includes error handling to catch and print any exceptions that occur during the API request, which can help in diagnosing issues.
-    # TODO Add more error handling for the message parsing process.  
+    Retrieve messages from the user's mailbox matching the specified query.
+    This function downloads messages from the user's mailbox using the provided
+    service object and query string. It removes the 'UNREAD' label from the
+    downloaded messages and continues to fetch messages until the specified
+    maximum number of messages is reached or there are no more messages to fetch.
+    Args:
+        service (googleapiclient.discovery.Resource): The Gmail API service instance.
+        query (str): The query string to filter messages.
+        max_messages (int, optional): The maximum number of messages to retrieve. Defaults to 2.
+    Returns:
+        list: A list of message objects retrieved from the mailbox.
+    Raises:
+        Exception: If an error occurs while downloading messages.
+    Logs:
+        Info: Logs the start of the message download process.
+        Debug: Logs the page number retrieved during the process.
+        Info: Logs any errors that occur during the message download process.
+        Info: Logs the total number of messages in the inbox after retrieval.
     """
 
     logger.info("Downloading messages...")
@@ -169,10 +201,13 @@ def main():
     # Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
     query = "is:unread" # Example query to search for unread messages
-    max_messages=1  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
+    
+    max_messages=1  # Limit the number of pages of messages to retrieve
+    
     # Retrieve messages based on the query
     messages = get_messages(service, query, max_messages)
-    logger.info(f"Number of retrieved messages: {len(messages)}")
+    logger.info(f"Number of retrieved emailss: {len(messages)}")
+    print(f"Number of retrieved emails: {len(messages)}")
 
     # Process each message
     # TODO review why is getting 3 message for 1 message in gmail inbox
@@ -182,7 +217,8 @@ def main():
         cont = cont + 1
         print("message number:", cont)
     
-    logger.info(f"Number of processed messages: {len(messages)}")
+    logger.info(f"Number of processed emails: {cont}")
+    print(f"Number of processed emails: {cont}")
 
 if __name__ == '__main__':
     main()
