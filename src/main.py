@@ -1,56 +1,60 @@
 """
-Updated By: Rosie Calle
-Updated on: 2024.05.14 1555h
-
-This module contains functions to automate the process of reading emails from a Gmail account, 
-selecting the first 5 unread messages, and sending personalized responses using a mail merge template.
-
+This script is designed to interact with the Gmail API to authenticate a user, retrieve unread messages, and process them. It includes the following functionalities:
+1. Gmail Authentication:
+    - Checks for existing credentials and refreshes them if necessary.
+    - Initiates the OAuth2 flow to obtain new credentials if none are found.
+    - Saves new credentials for future use.
+    - Logs the expiration time of the credentials.
+    - Builds and returns a Gmail service object for API interactions.
+2. Message Retrieval:
+    - Retrieves messages from the user's mailbox matching a specified query.
+    - Removes the 'UNREAD' label from downloaded messages.
+    - Continues to fetch messages until a specified maximum number of messages is reached or there are no more messages to fetch.
+    - Logs the start of the message download process, page numbers retrieved, any errors that occur, and the total number of messages in the inbox after retrieval.
+3. Message Processing:
+    - Processes each retrieved message using a specified function.
+    - Logs the number of processed emails.
+Modules and Libraries:
+- os: Provides a way of using operating system dependent functionality.
+- pickle: Implements binary protocols for serializing and de-serializing a Python object structure.
+- json: Provides an easy way to encode and decode data in JSON format.
+- googleapiclient.discovery: Provides a way to build and interact with Google APIs.
+- google.oauth2.credentials: Manages OAuth 2.0 credentials.
+- google_auth_oauthlib.flow: Handles the OAuth 2.0 Authorization Grant Flow.
+- google.auth.transport.requests: Provides a way to refresh credentials.
+- process_emails: Custom module to process email data.
+- parser_messages: Custom module to parse messages.
+- logger_config: Custom module to set up logging configuration.
+Constants:
+- MAX_EMAILS: The maximum number of emails to process.
+- SCOPES: The scopes required for accessing Gmail API.
 Functions:
-    gmail_authenticate(): Authenticates the user and initializes the Gmail API service.
-    search_messages(service, query): Searches for messages in the Gmail inbox based on a query.
-    parse_parts(service, parts): Parses the content of an email partition.
-    read_message(service, message): Reads a Gmail email and returns a dictionary with all the parts of the email.
-    load_template(template_name): Loads a jinja2 template from a file.
-    create_response(template, first_name): Creates a personalized response using a jinja2 template.
-    main(): The main function that uses the above functions to automate the email reading and response process.
-
-This module requires the following libraries: os, base64, re, time, dateutil.parser, googleapiclient.discovery, google_auth_oauthlib.flow, google.auth.transport.requests, and jinja2.
+- gmail_authenticate: Authenticates the user with Gmail and returns a service object for interacting with the Gmail API.
+- get_messages: Retrieves messages from the user's mailbox matching the specified query.
+- main: The main function that orchestrates the authentication, message retrieval, and message processing.
+Usage:
+- Run the script to authenticate with Gmail, retrieve unread messages, and process them.
 
 """
 
 import os
 import os.path
-import base64
-
-# not used ?
-import re
-import time
 import pickle
 import json
-import dateutil.parser as parser
-import pandas as pd
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import itables.options as opt
-from itables import show
-from itables import init_notebook_mode
-from bs4 import BeautifulSoup
 from process_emails import process_email_data
-from db_functions import save_to_attachment
-import logging
-from logger_config import setup_logger
-# Setup a logger with a custom name and log level
-logger = setup_logger('email-candidate')
+from parser_messages import parsing_message
 
+# import logging
+from logger_config import setup_logger
+logger = setup_logger('DEBUG',__name__)
 
 # TODO check why is not working
 MAX_EMAILS = 1
 
-# check for the correct folder paths for Windows and Linux
 # Read configuration file
 script_dir = os.path.dirname(os.path.realpath(__file__))
 relative_config_path = os.path.join(script_dir, '..', 'conf', 'config.json')
@@ -76,16 +80,25 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.send', 
           'https://www.googleapis.com/auth/gmail.modify']
 
-###########################################################################################
-
 def gmail_authenticate():
     """
-    Authenticates the user and initializes the Gmail API service.
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+    Authenticates the user with Gmail and returns a service object for interacting with the Gmail API.
+
+    This function performs the following steps:
+    1. Checks if a token file exists and loads the credentials from it.
+    2. If no valid credentials are found, it initiates the OAuth2 flow to obtain new credentials.
+    3. Saves the new credentials to a token file for future use.
+    4. Logs the expiration time of the credentials.
+    5. Builds and returns a Gmail service object for API interactions.
+
+    Returns:
+        googleapiclient.discovery.Resource: A service object for interacting with the Gmail API.
+        None: If an error occurs during the authentication process.
+
+    Raises:
+        Exception: If an error occurs while building the Gmail service object.
     """
-    global logger # Ensure logger is accessible
+
     logger.info("Starting Gmail authentication process...")
 
     creds = None
@@ -118,24 +131,34 @@ def gmail_authenticate():
     try:
         service = build('gmail', 'v1', credentials=creds)
         logger.info("Service created successfully.")
-        return service
-    
+        return service 
     except Exception as e:
         logger.error(f"An error occurred during Gmail authentication: {e}")
         return None
 
 def get_messages(service, query, max_messages=2):
     """
-    Retrieves messages based on the provided query, up to a maximum number of messages.
-    The get_messages() function now handles the `pageToken` correctly and includes error handling to catch any exceptions that occur during the API request.
-    Function initializes page_token to None and only includes it in the API request if it has a value. 
-    It also includes error handling to catch and print any exceptions that occur during the API request, which can help in diagnosing issues.
-    # TODO Add more error handling for the message parsing process.  
+    Retrieve messages from the user's mailbox matching the specified query.
+    This function downloads messages from the user's mailbox using the provided
+    service object and query string. It removes the 'UNREAD' label from the
+    downloaded messages and continues to fetch messages until the specified
+    maximum number of messages is reached or there are no more messages to fetch.
+    Args:
+        service (googleapiclient.discovery.Resource): The Gmail API service instance.
+        query (str): The query string to filter messages.
+        max_messages (int, optional): The maximum number of messages to retrieve. Defaults to 2.
+    Returns:
+        list: A list of message objects retrieved from the mailbox.
+    Raises:
+        Exception: If an error occurs while downloading messages.
+    Logs:
+        Info: Logs the start of the message download process.
+        Debug: Logs the page number retrieved during the process.
+        Info: Logs any errors that occur during the message download process.
+        Info: Logs the total number of messages in the inbox after retrieval.
     """
 
-    # global logger # Ensure logger is accessible
-
-    logger.info("Retrieving messages...")
+    logger.info("Downloading messages...")
     messages = []
     page_token = None
     cont = True
@@ -159,253 +182,44 @@ def get_messages(service, query, max_messages=2):
 
             logger.debug (f"Page {count} retrieved")   # for debugging purposes
 
-            # if count >= MAX_EMAILS:  # commented out when max_messages argument was added
-            #     cont = False  # REMOVE THIS WHEN TESTING IS COMPLETE
             count = count + 1
 
         except Exception as e:
-            logger.error(f"An error occurred while retrieving messages: {e}")
+            logger.info(f"An error occurred while downloading messages: {e}")
             break
+    
+    print(f"Unread messages: {count-1}")
 
-    logger.info(f"Retrieved {len(messages)} messages.")
+    logger.info(f"Total message at the inbox: {len(messages)}")
     return messages
-
-
-def convert_html_to_text(html_data):
-    """
-    Converts HTML data to plain text, removing images and HTML formatting.
-    NOT USED ANYMORE.  
-    """
-    soup = BeautifulSoup(html_data, 'html.parser')
-    
-    # Remove images
-    for img in soup.find_all('img'):
-        img.decompose()
-    
-    # Remove HTML formatting
-    text = soup.get_text(separator=' ')
-
-    # # Remove extra spaces and newlines, keep just one newline
-    # text = re.sub(r'\n+', '\n', text).strip()
-    # Remove extra spaces
-    text = re.sub(r'\s+', ' ', text)
-    
-    # Remove extra newlines
-    text = re.sub(r'\n+', '\n', text)
-    
-    return text
-
-# TODO: make sure that html attachments are saved as html files
-# TODO: return value should be value (a boolean) indicating success
-# def save_data_to_file(data, folder, file_name):
-#     """
-#     Saves data to a file.   # NOT USED ANYMORE !!
-#     """
-#     file_path = os.path.join(folder, file_name)  # data/file
-#     try:
-#         # dont save the HTML
-#         # with open(file_path, 'wb') as file:
-#         #     file.write(data)
-#         # logger.info(f"Data saved to {file_path}")     
-         
-#         # Convert HTML to text
-#         text = convert_html_to_text(data)   
-
-#         # Save text to a separate file
-#         file_name_text = file_name + ".txt"
-#         text_file_path = os.path.join(folder, file_name_text)
-#         with open(text_file_path, 'w', encoding='utf-8') as text_file:
-#             text_file.write(text)
-#         # logger.info(f"Text data saved to {text_file_path}")      
-#     except Exception as e:
-#         print(f"Failed to save data to {file_path}: {e}")
-
-
-def save_data_to_file(data, folder, filename, message_id, mimeType):
-    """
-    Saves the given data to a file in the specified folder.
-    # message id is added to the filename to make it unique
-    # filename is the epoch time in nanoseconds + message id + file extension
-    # filetype is determined by the mimeType
-    # filepath is the folder 
-    """
-    try:
-        # Create the directory if it doesn't exist
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-        # Save the data to the file
-        with open(os.path.join(folder, filename), 'wb') as f:
-            f.write(data)
-        logger.info(f"Data saved to {folder}/{filename}")
-
-        # try:
-        save_to_attachment(message_id, folder, filename, mimeType)
-        # except Exception as e:
-        #     logger.error(f"Failed to save data to database: {str(e)}")      
-        #    
-    except Exception as e:
-        logger.error(f"Failed to save data to {folder}/{filename}: {str(e)}")
-
-
-
-################ BUG ################
-def process_message(service, message):
-    """
-    Processes a single message, extracting its parts and saving them as needed.
-    """
-    logger.info(f"Processing message {message['id']}...")
-    msg = service.users().messages().get(userId='me', id=message['id'], format='full').execute()
-    
-    headers = msg['payload']['headers']
-    parts = msg['payload'].get("parts")
-
-    # Initialize variables to store subject, thread ID, and date/time
-    subject = ""
-    date_time = ""
-
-    # Extract subject, thread ID, and date/time from headers
-    for header in headers:
-        if header['name'] == 'Subject':
-            subject = header['value']
-
-        if header['name'] == 'Date':
-            date_time = header['value']
-
-        if header['name'] == 'From':
-                sender_id = header['value']
-
-            #     # Handle plain text
-            #     file_name = f"message_{message['id']}_text.txt"
-            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-            # elif mimeType in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/rtf']:
-            #     # Handle Word documents
-            #     file_name = f"message_{message['id']}_word.docx"
-            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-            # elif mimeType == 'application/pdf':
-            #     # Handle PDFs
-            #     file_name = f"message_{message['id']}_pdf.pdf"
-            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-            # elif mimeType in ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp']:
-            #     # Handle images
-            #     file_name = f"message_{message['id']}_image.{mimeType.split('/')[-1]}"
-            #     save_data_to_file(decoded_data, DATA_FOLDER, file_name)
-            # else:
-            #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
-
-    if parts:
-        for part in parts:
-            mimeType = part.get("mimeType")
-            logger.debug(f"----- mimeType: {mimeType}")
-
-
-            if not isinstance(part, (str, list, tuple)):
-                partx = str(part)
-                logger.debug(f"------- 1 --------part: {partx[:300]}")
-
-
-            # TODO where is the attachment name ?
-
-            if 'attachmentId' in part['body']:
-                logger.debug(f"------ 2 ----- body:{part['body']}") # DONT REMOVE THIS LINE
-                if mimeType == 'application/pdf':
-                    logger.debug("      found PDF attachment")
-                    doc_type = "pdf"                
-                elif mimeType in ['application/msword', 
-                                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-                                  'application/rtf']:
-                    logger.debug("      found WORD attachment")
-                    doc_type = "docx" 
-                
-                att_id = part['body']['attachmentId']
-                att = service.users().messages().attachments().get(userId='me', messageId=message['id'], id=att_id).execute()
-                data1 = att['data']
-                message_id = message['id']
-                file_data = base64.urlsafe_b64decode(data1)
-                filename = part.get("filename")
-                # timeid = str(int(time.time_ns())) # epoch time in nanoseconds
-                # file_name = timeid + "-" + message_id + "." + doc_type
-                logger.debug(f"         file_name: {filename}")    
-                save_data_to_file(file_data, DATA_FOLDER, filename, message_id, mimeType)   
-
-
-
-            ########### BUG ############
-            bodyx = part.get("body")
-            partID = part.get("partId") 
-            
-            if bodyx:
-                data = bodyx.get("data")
-                # Ensure the data is correctly padded
-                # padding_needed = 4 - (len(body['data']) % 4)
-                # if padding_needed:
-                #     padding = '=' * padding_needed
-                #     padded_data = body['data'] + padding
-                # else:
-                #     padded_data = body['data']
-                
-                try:
-                #     padded_data = padded_data.replace("-","+").replace("_","/")
-                #     decoded_data = base64.b64decode(padded_data)
-
-                    decoded_data = base64.urlsafe_b64decode(data)
-
-                    # if mimeType and mimeType.startswith('text/'):
-                        # This is a text part, likely the message body
-
-                    # if partID == "0":                        
-                    message_id = message['id']
-                    thread_id = message['threadId']
-                    msg_body = convert_html_to_text(decoded_data)
-
-
-                    print("\n\n -------- 3 --------- partID: ", partID)
-                    print("=========== msg_body: ", msg_body)
-
-
-                    process_email_data(subject, date_time, sender_id, \
-                                        message_id, thread_id, msg_body )
-                        
-                    # else:
-                    #     logger.info(f"Unsupported MIME type for message {message['id']}: {mimeType}")
-                except Exception as e:
-                    logger.error(f"An error occurred while decoding data for message {message['id']}: {e}")
-            else:
-                logger.info(f"\nNo body data found for part = {partID} in messageid = {message['id']}")
-    else:
-        logger.info(f"No parts found in message {message['id']}")
-
-
-
-
-
-
 
 def main():
     # Authenticate and Initialize Gmail API Service
     service = gmail_authenticate()
-    logger.info(f"Authentication completed successfully.  The service object is now available for use.")
+    logger.info(f"Authentication completed successfully.")
 
     # Read Gmail Inbox, get all new (unread) messages to a local folder
     # Define the query to search for messages
     query = "is:unread" # Example query to search for unread messages
-    max_messages=1  # FOR TESTING PURPOSES... Limit the number of messages to retrieve
+    
+    max_messages=1  # Limit the number of pages of messages to retrieve
+    
     # Retrieve messages based on the query
     messages = get_messages(service, query, max_messages)
-    logger.info(f"Number of retrieved messages: {len(messages)}")
+    logger.info(f"Number of retrieved emailss: {len(messages)}")
+    print(f"Number of retrieved emails: {len(messages)}")
 
     # Process each message
     # TODO review why is getting 3 message for 1 message in gmail inbox
+    cont = 0
     for message in messages:
-        process_message(service, message)
+        parsing_message(service, message, DATA_FOLDER)
+        cont = cont + 1
+        print("message number:", cont)
     
-    # print(f"Number of unread messages: {len(messages)}")
-    logger.info(f"Number of retrieved messages: {len(messages)}")
-
+    logger.info(f"Number of processed emails: {cont}")
+    print(f"Number of processed emails: {cont}")
 
 if __name__ == '__main__':
-    # log_file_path = setup_log_file()
-    # logger = configure_logging(log_file_path)
-
     main()
 

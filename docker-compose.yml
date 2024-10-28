@@ -1,0 +1,43 @@
+services:
+  pgvector:
+    hostname: pgvectordb1
+    container_name: pgvector1
+    image: ankane/pgvector
+    ports:
+      - 25432:5432
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./local_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - group2-docker
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin1
+    restart: unless-stopped
+    ports:
+      - 20080:80
+    user: "root"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+      - /var/log/pgadmin:/var/log/pgadmin
+    networks:
+      - group2-docker
+
+networks:
+  group2-docker:
+    external: false
+  

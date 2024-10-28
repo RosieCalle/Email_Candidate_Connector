@@ -28,7 +28,8 @@ token.pickle
 *email_download_batch*/*
 downloaded_message_ids.txt
 data/message_body*
-
+data/body/*
+data/attach/*
 # Log files
 *.log
 
@@ -48,7 +49,9 @@ token.pickle
 *.pickle
 zzz-old-pickles/
 
-
 # Conda Files WILL be included to provide instructions for other people
 # to build their own working development environment.
 # environment.yml"*.pickle" 
+
+conf/config.json
+conf/config

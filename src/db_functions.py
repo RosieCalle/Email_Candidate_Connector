@@ -1,11 +1,11 @@
 import psycopg2
 import json
 import os
-import pandas as pd
+
+
 import logging
 from logger_config import setup_logger
-# Setup a logger with a custom name and log level
-logger = setup_logger('email-candidate')
+logger = setup_logger('DEBUG',__name__)
 
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -60,7 +60,6 @@ def value_exists_in_column(table_name, column_name, value):
     except Exception as e:
         logger.error(f"Failed to check if {value} exists in {column_name}: {e}")
         db_conn.rollback()
-        # Re-raise the exception
         raise
 
 def save_to_database(data_row: dict, table_name):
@@ -84,7 +83,7 @@ def save_to_database(data_row: dict, table_name):
     if record_exist:
         logger.debug(f"Record already exists in {table_name}")
         return
-    
+ 
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
     logger.debug(f"Insert statement: {insert_statement}")
@@ -111,7 +110,7 @@ def save_to_database(data_row: dict, table_name):
         # Re-raise the exception
         raise
 
-def save_to_attachment(message_id, folder, filename, mimeType):
+def save_to_attachment_table(message_id, folder, filename, mimeType):
     table_name = 'attachments'
     data_row = {
         'messageid': message_id,
@@ -129,12 +128,12 @@ def save_to_attachment(message_id, folder, filename, mimeType):
     placeholders = ', '.join(['%s'] * len(data_row))
 
     # check if the record already exists
-    record_exist = value_exists_in_column(table_name, 'filename', filename)
-    if record_exist:
-        logger.debug(f"Record already exists in {table_name}")
-        # TODO in case we want to keep always the latest attachment
-        # remove current record and continue with the insert
-        return
+    # record_exist = value_exists_in_column(table_name, 'filename', filename)
+    # if record_exist:
+    #     logger.debug(f"Record already exists in {table_name}")
+    #     # TODO in case we want to keep always the latest attachment
+    #     # remove current record and continue with the insert
+    #     return
 
     # Prepare the INSERT statement
     insert_statement=f"INSERT INTO {schema1}.{table_name} ({columns}) VALUES ({placeholders});"
@@ -142,7 +141,7 @@ def save_to_attachment(message_id, folder, filename, mimeType):
     
     # Prepare the data for insertion
     data = tuple(data_row.values())
-    
+      
     try:
         # Create a cursor object
         cursor = db_conn.cursor()
@@ -157,7 +156,5 @@ def save_to_attachment(message_id, folder, filename, mimeType):
         logger.error(f"Failed to insert row into {schema1}.{table_name}: {e}")
         db_conn.rollback()
         # An error occurred, roll back the transaction
-
-        # Re-raise the exception
         raise
 

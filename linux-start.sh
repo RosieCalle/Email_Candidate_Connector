@@ -1,23 +1,34 @@
 #!/bin/bash
 
-# get enviroment name from the conda_config.yaml file
-yaml_file_path="conf/conda_config.yaml"
-# enviro=$(grep 'name:' "$yaml_file_path" | awk '{print $2}')
-enviro="emailagent"
+# expected environment name
+env_name=$(basename "$PWD")
 
-if [[ "$CONDA_DEFAULT_ENV" == "$enviro" ]]; then
-    echo "The conda environment $enviro is already activated."
-else
-    echo "#### please change the conda enviroment to $enviro ####"
-    echo ""
-    echo "conda activate "$enviro
-    echo ""
-    exit 1
+# If environment does not exist:
+# # mamba env create --name $env_name --file conf/conda_config.yaml -y
+
+# Get the name of the current conda environment
+current_env=$(micromamba env list | grep '*' | awk '{print $1}')
+
+if [ "$current_env" != "$env_name" ]; then
+    echo "Activating conda environment: $env_name"
+    micromamba activate $env_name
 fi
 
-echo "Logs cleaned up."
-rm logs/*.log
 
-echo "Starting the program..."
-cd src
-python main.py
+# pip install --upgrade pip setuptools
+pip install  python-dotenv
+
+# clean old logs
+rm logs/*.log > /dev/null 2>&1
+
+# # Start the main app
+python src/main.py
+
+
+
+
+
+
+
+
+

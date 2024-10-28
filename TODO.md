@@ -7,11 +7,10 @@ Project Description
 ### Todo
 
 - [ ] Adjust filter: remove 'image' for spam. We lost linkedin emails (image)  
-- [ ] Bug: missed body for email with attachment  
 - [ ] Parser email for personal data  
 - [ ] Insert personal data into contacts table  
 - [ ] process Vcard attachments  
-- [ ] v2 Flask Interface  
+- [ ] v2 Flet/Streamlit Interface  
 - [ ] v2 Send emails answering with AI  
 
 ### In Progress
@@ -21,6 +20,10 @@ Project Description
 
 ### Done ✓
 
+- [x] Add dockers for Postgres and PgAdmin  
+- [x] Save all messages, in a temporary folder  o db for review before filter  
+- [x] Bug: Log has repeated message (4 times)  
+- [x] Bug: missed body for email with attachment  
 - [x] Porcessing attachments PDF/DOC  
 - [x] Mark email as opened  
 - [x] Use  logger in other modules  

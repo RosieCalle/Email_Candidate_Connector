@@ -153,11 +153,12 @@ def create_attachments_table(db_conn):
         cursor = db_conn.cursor()
         query = """
             CREATE TABLE IF NOT EXISTS {}.{} (
-                messageid VARCHAR(20) PRIMARY KEY,
-                filename VARCHAR(20),
-                filetype VARCHAR(20),
-                filepath VARCHAR(100)
+                messageid VARCHAR(20),
+                filename VARCHAR(200),
+                filetype VARCHAR(200),
+                filepath VARCHAR(200)
             );
+
         """.format(schema1, 'attachments')
         cursor.execute(query)
         print("Table 'attachments' created within 'SCHEMA' {schema1}.")
